@@ -87,13 +87,14 @@ export SCRIPTSgfs=$HOMEgfs/scripts
 # Set up the UTILITIES
 ###################################
 export utilscript=/nwprod/util/ush
+export EXECutil=/nwprod/util/exec
 if [ $envir = "prod" ] || [ $envir = "para" ]
 then
   export HOMEutil=/nw${envir}/gfs_wafs.${gfs_wafs_version}
 else
   export HOMEutil=/global/save/Hui-Ya.Chuang/RFC/gfs_wafs.${gfs_wafs_version}
 fi
-export EXECutil=$HOMEutil/exec
+#export EXECutil=$HOMEutil/exec
 export FIXutil=$HOMEutil/fix
 export PARMutil=$HOMEutil/parm
 export USHutil=$HOMEutil/ush
