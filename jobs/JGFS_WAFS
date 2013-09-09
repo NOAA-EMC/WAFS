@@ -1,0 +1,151 @@
+#!/bin/sh
+
+########################################
+# GFS AWIPS PRODUCT GENERATION
+########################################
+
+set -xa
+# ###################################
+# SET SHELL PROCESSING VARIABLES
+# ###################################
+export PS4='$SECONDS + ' 
+date
+# 
+# obtain unique process id (pid) and make temp directories
+#
+
+if [ $envir = "prod" ]
+then
+  export pid=$$
+  export DATA=/tmpnwprd/${job}.${pid}
+else
+  export DATA=/ptmp/Hui-Ya.Chuang/wafs_${cyc}
+fi
+
+mkdir $DATA
+cd $DATA 
+
+####################################
+# File To Log Msgs
+####################################
+export jlogfile=/com/logs/jlogfiles/jlogfile.${job}.${pid}
+
+####################################
+# Determine Job Output Name on System
+####################################
+export outid="LL$job"
+export jobid="${outid}.o${pid}"
+export pgmout="OUTPUT.${pid}"
+
+export cycle=t${cyc}z 
+
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC
+# GET_IOPROFILE - Run I/O statistics
+############################################
+if [ $envir = "prod" ]
+then
+  export SENDCOM=YES
+  export SENDDBN=YES
+  export SENDDBN_GB2=YES
+  export SENDECF=YES
+  export SENDDAS1=YES
+  export GET_IOPROFILE=NO
+else
+  export SENDCOM=YES
+  export SENDDBN=NO
+  export SENDDBN_GB2=YES
+  export SENDECF=NO
+  export SENDDAS1=NO
+  export GET_IOPROFILE=NO
+fi
+#################################
+# Set up the NET and RUN
+#################################
+export NET=gfs
+export RUN=gfs
+export model=gfs
+
+################################
+# Set up the HOME directory
+################################
+if [ $envir = "prod" ] || [ $envir = "para" ]
+then
+  export HOMEgfs=/nw${envir}/gfs_wafs.${gfs_wafs_version}
+else
+  export HOMEgfs=/global/save/Hui-Ya.Chuang/RFC/gfs_wafs.${gfs_wafs_version}
+fi
+export EXECgfs=$HOMEgfs/exec
+export FIXgfs=$HOMEgfs/fix
+export PARMgfs=$HOMEgfs/parm
+export USHgfs=$HOMEgfs/ush
+export SCRIPTSgfs=$HOMEgfs/scripts
+
+###################################
+# Set up the UTILITIES
+###################################
+export utilscript=/nwprod/util/ush
+if [ $envir = "prod" ] || [ $envir = "para" ]
+then
+  export HOMEutil=/nw${envir}/gfs_wafs.${gfs_wafs_version}
+else
+  export HOMEutil=/global/save/Hui-Ya.Chuang/RFC/gfs_wafs.${gfs_wafs_version}
+fi
+export EXECutil=$HOMEutil/exec
+export FIXutil=$HOMEutil/fix
+export PARMutil=$HOMEutil/parm
+export USHutil=$HOMEutil/ush
+
+
+###################################
+# Run the setup script
+###################################
+$utilscript/setup.sh
+# Run setpdy and initialize PDY variables
+$utilscript/setpdy.sh
+. ./PDY
+
+########################################
+# Set up the input/output directory
+########################################
+if [ $envir = "prod" ] || [ $envir = "para" ]
+then
+  export com=/com/${NET}/${envir}
+  export COMIN=/com/${NET}/${envir}/${RUN}.${PDY}
+  export COMOUT=/com/${NET}/${envir}/${RUN}.${PDY}
+  export pcom=/pcom/gfs
+else
+  export com=/com/${NET}/prod
+  export COMIN=/com/${NET}/prod/${RUN}.${PDY}
+  export COMOUT=/ptmp/Hui-Ya.Chuang/com/${NET}/${envir}/${RUN}.${PDY}
+  export pcom=/ptmp/Hui-Ya.Chuang/pcom/wafs
+fi
+mkdir -p $COMOUT $pcom
+ 
+env
+
+########################################################
+# Execute the script.
+if [ $GET_IOPROFILE = YES ]; then
+   /usrx/local/mio/tools/bin/miostats -X0 \
+   ${SCRIPTSgfs}/exgfs_grib_wafs.sh.ecf $fcsthrs
+else
+   ${SCRIPTSgfs}/exgfs_grib_wafs.sh.ecf $fcsthrs
+fi
+########################################################
+
+##################################################
+# save the profiling data captured from miostats
+##################################################
+if [ $GET_IOPROFILE = YES ]; then
+    . /com/miostats/.set_IOprofile
+fi
+
+if [ $envir = "prod" ]
+then
+cd /tmpnwprd
+rm -rf $DATA
+fi
+date
