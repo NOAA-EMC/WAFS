@@ -94,13 +94,13 @@ else
   export HOMEGLOBAL=/global/save/Hui-Ya.Chuang/RFC/gfs_wafs.${gfs_wafs_version}
   export HOMEgfs=/global/save/Hui-Ya.Chuang/RFC/gfs_wafs.${gfs_wafs_version}
 fi
-export HOMEGLOBAL=${HOMEGLOBAL:-/nwprod}
+export HOMEGLOBAL=${HOMEGLOBAL:-/nwprod/gfs_wafs.${gfs_wafs_version}}
 export EXECGLOBAL=${EXECGLOBAL:-$HOMEGLOBAL/exec}
 export FIXGLOBAL=${FIXGLOBAL:-$HOMEGLOBAL/fix}
 export PARMGLOBAL=${PARMGLOBAL:-$HOMEGLOBAL/parm}
 export USHGLOBAL=${USHGLOBAL:-$HOMEGLOBAL/ush}
 
-export HOMEgfs=${HOMEgfs:-/nw${envir}}
+export HOMEgfs=${HOMEgfs:-"/nw${envir}/gfs_wafs.${gfs_wafs_version}"}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}

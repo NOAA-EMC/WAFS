@@ -73,6 +73,7 @@ then
 else
   export HOMEgfs=/global/save/Hui-Ya.Chuang/RFC/gfs_wafs.${gfs_wafs_version}
 fi
+export HOMEgfs=${HOMEgfs:-"/nw${envir}/gfs_wafs.${gfs_wafs_version}"}
 export EXECgfs=$HOMEgfs/exec
 export FIXgfs=$HOMEgfs/fix
 export PARMgfs=$HOMEgfs/parm
