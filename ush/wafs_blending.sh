@@ -45,8 +45,8 @@ then
    if [ $SEND_US_WAFS = "YES" -a $SEND_AWC_ALERT = "NO" ] ; then
       msg="No UK WAFS GRIB2 file or WAFS blending program. Send alert message to AWC ......"
       postmsg "$jlogfile" "$msg"
-      /nwprod/util/ush/make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXGLOBAL/wafs_admin_msg $pcom/wifs_admin_msg
-      /nwprod/util/ush/make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXGLOBAL/wafs_admin_msg $pcom/iscs_admin_msg
+      /nwprod/util/ush/make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_admin_msg $pcom/wifs_admin_msg
+      /nwprod/util/ush/make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_admin_msg $pcom/iscs_admin_msg
       if [ $SENDDBN = "YES" ] ; then
            $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $pcom/wifs_admin_msg
            $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $pcom/iscs_admin_msg
