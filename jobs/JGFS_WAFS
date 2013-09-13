@@ -109,6 +109,7 @@ fi
 export COM_OUT=${COM_OUT:-/com/${NET}/${envir}}
 export COMOUT=${COMOUT:-$COM_OUT/${RUN}.${PDY}}
 if [ $envir = "prod" ]
+then
   export pcom=${pcom:-/pcom/gfs}
 else
   export pcom=${pcom:-/pcom/${envir}/gfs}
