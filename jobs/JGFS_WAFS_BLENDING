@@ -95,16 +95,13 @@ export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export USHgfs=${USHgfs:-$HOMEgfs/ush}
 
-# New set of parm files for AWIPS products
-export PARMutil=$HOMEgfs/parm
-
-################################################
 # Define the location of codes and scripts
 ################################################
 ###################################
 # Set up the UTILITIES
 ###################################
 export HOMEutil=${HOMEutil:-/nwprod/util}
+export PARMutil=${HOMEparm:-$HOMEutil/parm}
 export utilscript=${utilscript:-/nwprod/util/ush}
 export utilexec=${utilexec:-/nwprod/util/exec}
 

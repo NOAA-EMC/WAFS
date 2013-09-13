@@ -254,7 +254,7 @@ export FORT11=blended_${PDY}${cyc}f${ffhr}.grib2
 export FORT31=" "
 export FORT51=grib2.t${cyc}z.WAFS_blended_f${ffhr}
 
-$utilexec/tocgrib2 <  $PARMutil/grib2_blended_wafs_wifs_f${ffhr}.45 >> $pgmout 2> errfile
+$utilexec/tocgrib2 <  $PARMgfs/grib2_blended_wafs_wifs_f${ffhr}.45 >> $pgmout 2> errfile
 
 err=$?;export err ;err_chk
 echo " error from tocgrib=",$err
