@@ -12,22 +12,22 @@ export PS4='$SECONDS + '
 date
 # 
 # obtain unique process id (pid) and make temp directories
+#   ($DATA may be preset for developer runs)
 #
-if [ $envir = "prod" ] || [ $envir = "para" ]
-then
-  export pid=$$
-  export DATA=/tmpnwprd/${job}.${pid}
-else
-  export DATA=/ptmp/Hui-Ya.Chuang/wafs_grib2_${cyc}
-fi
-
+export pid=$$
+export DATA=${DATA:-/tmpnwprd/$job.$pid}
+[ -d $DATA ] && rm -rf $DATA
 mkdir $DATA
 cd $DATA 
 
 ####################################
 # File To Log Msgs
 ####################################
-export jlogfile=/com/logs/jlogfiles/jlogfile.${job}.${pid}
+if [ ${envir} = "prod" ]; then
+  export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
+else
+  export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
+fi
 
 ####################################
 # Determine Job Output Name on System
@@ -43,17 +43,15 @@ export cycle=t${cyc}z
 # SENDECF=YES--Allow to talk back to ECF
 # SENDDBN=YES--Alert output file to TOC
 ############################################
+export SENDCOM=${SENDCOM:-YES}
+export SENDECF=${SENDECF:-YES}
 if [ $envir = "prod" ] || [ $envir = "para" ]
 then
-  export SENDCOM=YES
   export SENDDBN=YES
   export SENDDBN_GB2=YES
-  export SENDECF=YES
 else
-  export SENDCOM=YES
   export SENDDBN=NO
-  export SENDDBN_GB2=YES
-  export SENDECF=NO
+  export SENDDBN_GB2=NO
 fi
 #export SENDDAS1=YES
 
@@ -67,12 +65,6 @@ export model=gfs
 ################################
 # Set up the HOME directory
 ################################
-if [ $envir = "prod" ] || [ $envir = "para" ]
-then
-  export HOMEgfs=/nw${envir}/gfs_wafs.${gfs_wafs_version}
-else
-  export HOMEgfs=/global/save/Hui-Ya.Chuang/RFC/gfs_wafs.${gfs_wafs_version}
-fi
 export HOMEgfs=${HOMEgfs:-"/nw${envir}/gfs_wafs.${gfs_wafs_version}"}
 export EXECgfs=$HOMEgfs/exec
 export FIXgfs=$HOMEgfs/fix
@@ -83,18 +75,15 @@ export SCRIPTSgfs=$HOMEgfs/scripts
 ###################################
 # Set up the UTILITIES
 ###################################
+HOMEutil=${HOMEutil:-/nwprod/util}
 export utilscript=/nwprod/util/ush
 export utilexec=/nwprod/util/exec
-export HOMEutil=/nwprod/util
 
 export HOMEgraph=/nwprod/util
 export EXECgraph=$HOMEgraph/exec
 export FIXgraph=$HOMEgraph/fix
 export PARMgraph=$HOMEgraph/parm
 export USHgraph=$HOMEgraph/ush
-
-export utilscript=/nwprod/util/ush
-export utilexec=/nwprod/util/exec
 
 ###################################
 # Run the setup script
@@ -111,14 +100,14 @@ if [ $envir = "prod" ] || [ $envir = "para" ]
 then
  export com=/com/${NET}/${envir}
  export COMIN=/com/${NET}/${envir}/${RUN}.${PDY}
- export COMOUT=/com/${NET}/${envir}/${RUN}.${PDY}
- export pcom=/pcom/wafs
+ export pcom=${pcom:-/pcom/wafs}
 else
  export com=/com/${NET}/prod
  export COMIN=/com/${NET}/prod/${RUN}.${PDY}
- export COMOUT=/ptmp/Hui-Ya.Chuang/com/${NET}/${envir}/${RUN}.${PDY}
- export pcom=/ptmp/Hui-Ya.Chuang/pcom/wafs
+ export pcom=${pcom:-/pcom/${envir}/wafs}
 fi
+export COM_OUT=${COM_OUT:-/com/${NET}/${envir}}
+export COMOUT=${COMOUT:-$COM_OUT/${RUN}.${PDY}}
 mkdir -p $COMOUT $pcom
  
 env
