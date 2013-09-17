@@ -19,7 +19,7 @@ echo "History: AUG     1999 - Modified for implementation on IBM SP"
 echo "                      - Allows users to run interactively" 
 #
 
-set +x
+set -x
 hour_list="$1"
 sets_key=$2
 num=$#
@@ -79,7 +79,7 @@ do
    # BAG - Put in fix on 20070925 to force the percision of U and V winds
    #       to default to 1 through the use of the wafs.namelist file.
    #
-   $EXECutil/copygb -g3 -i0 -N$PARMutil/wafs.namelist -x pgrbf${hour} tmp
+   $EXECutil/copygb -g3 -i0 -N$PARMgfs/wafs.namelist -x pgrbf${hour} tmp
    mv tmp pgrbf${hour}
    $EXECutil/grbindex pgrbf${hour} pgrbif${hour}
 
@@ -108,7 +108,7 @@ do
    export FORT53="com.wafs${hour}${sets}"
 
    startmsg
-   $EXECutil/makewafs < $PARMutil/grib_wfs${NET}${hour}${sets} >>$pgmout 2>errfile
+   $EXECutil/makewafs < $PARMgfs/grib_wfs${NET}${hour}${sets} >>$pgmout 2>errfile
    export err=$?;err_chk
 
 
