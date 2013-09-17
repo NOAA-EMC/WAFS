@@ -45,8 +45,8 @@ then
    if [ $SEND_US_WAFS = "YES" -a $SEND_AWC_ALERT = "NO" ] ; then
       msg="No UK WAFS GRIB2 file or WAFS blending program. Send alert message to AWC ......"
       postmsg "$jlogfile" "$msg"
-      /nwprod/util/ush/make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXGLOBAL/wafs_admin_msg $pcom/wifs_admin_msg
-      /nwprod/util/ush/make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXGLOBAL/wafs_admin_msg $pcom/iscs_admin_msg
+      /nwprod/util/ush/make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_admin_msg $pcom/wifs_admin_msg
+      /nwprod/util/ush/make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_admin_msg $pcom/iscs_admin_msg
       if [ $SENDDBN = "YES" ] ; then
            $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $pcom/wifs_admin_msg
            $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $pcom/iscs_admin_msg
@@ -254,7 +254,7 @@ export FORT11=blended_${PDY}${cyc}f${ffhr}.grib2
 export FORT31=" "
 export FORT51=grib2.t${cyc}z.WAFS_blended_f${ffhr}
 
-$utilexec/tocgrib2 <  $PARMutil/grib2_blended_wafs_wifs_f${ffhr}.45 >> $pgmout 2> errfile
+$utilexec/tocgrib2 <  $PARMgfs/grib2_blended_wafs_wifs_f${ffhr}.45 >> $pgmout 2> errfile
 
 err=$?;export err ;err_chk
 echo " error from tocgrib=",$err
