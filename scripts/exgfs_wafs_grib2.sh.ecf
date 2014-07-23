@@ -32,9 +32,10 @@ do
   icnt=1
   while [ $icnt -lt 1000 ]
   do
-    if [ -s $COMIN/${RUN}.${cycle}.master.grbf${fcsthrs} ]
+#    if [ -s $COMIN/${RUN}.${cycle}.master.grbf${fcsthrs} ]
+    if [ -s $COMIN/${RUN}.${cycle}.master.grbif${fcsthrs} ]
     then
-      sleep 5
+      echo " $COMIN/${RUN}.${cycle}.master.grbif${fcsthrs} exists at icnt = $icnt"
       break
     fi
 
@@ -153,6 +154,9 @@ $utilexec/wgrib masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.list 
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $pcom/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_WIDX $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
+  fi 
+
+  if [ $SENDDBN_NTC = "YES" ] ; then
 #
 #    Distribute Data to TOC TO WIFS FTP SERVER (AWC)
 #

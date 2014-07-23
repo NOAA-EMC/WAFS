@@ -16,7 +16,7 @@ date
 #   ($DATA may be preset for developer runs)
 #
 export pid=$$
-export DATA=${DATA:-/tmpnwprd/$job.$pid}
+export DATA=${DATA:-/tmpnwprd1/$job.$pid}
 [ -d $DATA ] && rm -rf $DATA
 mkdir $DATA
 cd $DATA 
@@ -28,6 +28,7 @@ if [ ${envir} = "prod" ]; then
   export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
 else
   export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
+  export DBNROOT=/nwprod/spa_util/fakedbn
 fi
 
 ####################################
@@ -47,17 +48,10 @@ export cycle=t${cyc}z
 ############################################
 export SENDCOM=${SENDCOM:-YES}
 export SENDECF=${SENDECF:-YES}
-if [ $envir = "prod" ]
-then
-  export SENDDBN=YES
-  export SENDDBN_GB2=YES
-  export SENDDAS1=YES
-else
-  export SENDDBN=NO
-  export SENDDBN_GB2=NO
-  export SENDDAS1=NO
-fi
-export GET_IOPROFILE=${GET_IOPROFILE:-NO}
+export SENDDBN=${SENDDBN:-YES}
+export SENDDBN_GB2=${SENDDBN_GB2:-YES}
+export SENDDBN_NTC=${SENDDBN_NTC:-YES}
+
 #################################
 # Set up the NET and RUN
 #################################
@@ -68,7 +62,7 @@ export model=gfs
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-"/nw${envir}/gfs_wafs.${gfs_wafs_version}"}
+export HOMEgfs=${HOMEgfs:-"/nw${envir}/gfs_wafs.${model_ver}"}
 export EXECgfs=$HOMEgfs/exec
 export FIXgfs=$HOMEgfs/fix
 export PARMgfs=$HOMEgfs/parm
@@ -80,8 +74,7 @@ export SCRIPTSgfs=$HOMEgfs/scripts
 ###################################
 export utilscript=/nwprod/util/ush
 export EXECutil=/nwprod/util/exec
-HOMEutil=${HOMEutil:-/nwprod/util}
-#export EXECutil=$HOMEutil/exec
+export HOMEutil=${HOMEutil:-/nwprod/util}
 export FIXutil=$HOMEutil/fix
 export PARMutil=$HOMEutil/parm
 export USHutil=$HOMEutil/ush
@@ -120,24 +113,12 @@ env
 
 ########################################################
 # Execute the script.
-if [ $GET_IOPROFILE = YES ]; then
-   /usrx/local/mio/tools/bin/miostats -X0 \
-   ${SCRIPTSgfs}/exgfs_grib_wafs.sh.ecf $fcsthrs
-else
-   ${SCRIPTSgfs}/exgfs_grib_wafs.sh.ecf $fcsthrs
-fi
+${SCRIPTSgfs}/exgfs_grib_wafs.sh.ecf $fcsthrs
 ########################################################
-
-##################################################
-# save the profiling data captured from miostats
-##################################################
-if [ $GET_IOPROFILE = YES ]; then
-    . /com/miostats/.set_IOprofile
-fi
 
 if [ $envir = "prod" ]
 then
-cd /tmpnwprd
+cd /tmpnwprd1
 rm -rf $DATA
 fi
 date

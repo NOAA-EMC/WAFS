@@ -15,7 +15,7 @@ date
 #   ($DATA may be preset for developer runs)
 #
 export pid=$$
-export DATA=${DATA:-/tmpnwprd/$job.$pid}
+export DATA=${DATA:-/tmpnwprd1/$job.$pid}
 [ -d $DATA ] && rm -rf $DATA
 mkdir $DATA
 cd $DATA 
@@ -27,6 +27,7 @@ if [ ${envir} = "prod" ]; then
   export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
 else
   export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
+  export DBNROOT=/nwprod/spa_util/fakedbn
 fi
 
 ####################################
@@ -45,15 +46,9 @@ export cycle=t${cyc}z
 ############################################
 export SENDCOM=${SENDCOM:-YES}
 export SENDECF=${SENDECF:-YES}
-if [ $envir = "prod" ] || [ $envir = "para" ]
-then
-  export SENDDBN=YES
-  export SENDDBN_GB2=YES
-else
-  export SENDDBN=NO
-  export SENDDBN_GB2=NO
-fi
-#export SENDDAS1=YES
+export SENDDBN=${SENDDBN:-YES}
+export SENDDBN_GB2=${SENDDBN_GB2:-YES}
+export SENDDBN_NTC=${SENDDBN_NTC:-YES}
 
 #################################
 # Set up the NET and RUN
@@ -65,7 +60,7 @@ export model=gfs
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-"/nw${envir}/gfs_wafs.${gfs_wafs_version}"}
+export HOMEgfs=${HOMEgfs:-"/nw${envir}/gfs_wafs.${model_ver}"}
 export EXECgfs=$HOMEgfs/exec
 export FIXgfs=$HOMEgfs/fix
 export PARMgfs=$HOMEgfs/parm
@@ -75,7 +70,7 @@ export SCRIPTSgfs=$HOMEgfs/scripts
 ###################################
 # Set up the UTILITIES
 ###################################
-HOMEutil=${HOMEutil:-/nwprod/util}
+export HOMEutil=${HOMEutil:-/nwprod/util}
 export utilscript=/nwprod/util/ush
 export utilexec=/nwprod/util/exec
 
@@ -100,12 +95,17 @@ if [ $envir = "prod" ] || [ $envir = "para" ]
 then
  export com=/com/${NET}/${envir}
  export COMIN=/com/${NET}/${envir}/${RUN}.${PDY}
- export pcom=${pcom:-/pcom/wafs}
 else
  export com=/com/${NET}/prod
  export COMIN=/com/${NET}/prod/${RUN}.${PDY}
- export pcom=${pcom:-/pcom/${envir}/wafs}
 fi
+
+if [ $envir = prod ]; then
+  export pcom=${pcom:-/pcom/wafs}
+else
+  export pcom=${pcom:-/pcom/${envir}/wafs}
+fi
+
 export COM_OUT=${COM_OUT:-/com/${NET}/${envir}}
 export COMOUT=${COMOUT:-$COM_OUT/${RUN}.${PDY}}
 mkdir -p $COMOUT $pcom
@@ -118,7 +118,7 @@ ${SCRIPTSgfs}/exgfs_wafs_grib2.sh.ecf
 ########################################################
 if [ $envir = "prod" ]
 then
-cd /tmpnwprd
+cd /tmpnwprd1
 rm -rf $DATA
 fi
 date

@@ -121,7 +121,7 @@ do
       cp xtrn.wfs${NET}${hour}${sets} $pcom/xtrn.wfs${NET}${cyc}${hour}${sets}.$job
       cp com.wafs${hour}${sets} $pcom/com.wafs${cyc}${hour}${sets}.$job
 
-      if test "$SENDDBN" = 'YES'
+      if test "$SENDDBN_NTC" = 'YES'
       then
          if test "$NET" = 'gfs'
          then
@@ -137,7 +137,7 @@ do
    # Distribute Data 
    ##############################
 
-   if [ "$SENDDBN" = 'YES' ] ; then
+   if [ "$SENDDBN_NTC" = 'YES' ] ; then
       $DBNROOT/bin/dbn_alert GRIB_LOW $NET $job $pcom/xtrn.wfs${NET}${cyc}${hour}${sets}.$job
    else
       msg="xtrn.wfs${NET}${cyc}${hour}${sets}.$job file not posted to db_net."
