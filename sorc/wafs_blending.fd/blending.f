@@ -349,10 +349,17 @@ C  GET ARGUMENTS
 !	   call gf_free(gfld)
 	 else
 	   print*, pabbrev,trim(labbrev),
-     +	   ' not found, not writting this avg data'
-           icount=icount-1
-	   itot=itot-1
-	   go to 15
+     +	   ' not found, writting US data as blended' 
+!Chuang: use US data when UK missing
+           !icount=icount-1
+           !itot=itot-1
+           do j=1,jm
+            do i=1,im
+             jj=(j-1)*im+i
+             avgdata(jj,icount)=gfld%fld((j-1)*im+i)
+            end do
+           end do
+	   !go to 15
 	       
 !	   do j=1,jm
 !	    do i=1,im

@@ -22,6 +22,12 @@ cd $DATA
 # retrieve UK products
 
 cp $COMIN_UK/EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 .
+#Chuang: remove CAT data from UK unblended for testing
+wgrib2 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 |grep -v CAT|\
+wgrib2 -i EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 -grib test.grib2
+rm -f ./EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
+mv test.grib2 ./EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
+
 
 # pick up US data
 
@@ -47,7 +53,7 @@ then
       postmsg "$jlogfile" "$msg"
       /nwprod/util/ush/make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_admin_msg $pcom/wifs_admin_msg
       /nwprod/util/ush/make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_admin_msg $pcom/iscs_admin_msg
-      if [ $SENDDBN_NTC = "YES" ] ; then
+      if [ $SENDDBN = "YES" ] ; then
            $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $pcom/wifs_admin_msg
            $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $pcom/iscs_admin_msg
       fi
@@ -64,9 +70,7 @@ then
  if [ $SENDDBN_GB2 = "YES" -a $SEND_US_WAFS = "YES" ] ; then
    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2
    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_WIDX $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2.idx
- fi
 
- if [ $SENDDBN_NTC = "YES" -a $SEND_US_WAFS = "YES" ] ; then
  # $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $pcom/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45
    $DBNROOT/bin/dbn_alert NTC_LOW $NET $job   $pcom/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45
  fi
@@ -265,14 +269,11 @@ if [ $SENDCOM = YES ]; then
  cp  grib2.t${cyc}z.WAFS_blended_f${ffhr}  $pcom/grib2.t${cyc}z.WAFS_blended_f${ffhr}
 fi
 
-if [ $SENDDBN_NTC = "YES" ] ; then
+if [ $SENDDBN_GB2 = "YES" ] ; then
 #
 #   Distribute Data to NCEP FTP Server (WOC) and TOC
 #
 #   #$DBNROOT/bin/dbn_alert MODEL $DBN_ALERT_TYPE $job $pcom/grib2.t${cyc}z.WAFS_blended_f${ffhr}
     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $pcom/grib2.t${cyc}z.WAFS_blended_f${ffhr}
-fi
-
-if [ $SENDDBN_GB2 = "YES" ] ; then
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_BL_GB2 $job $COMOUT/WAFS_blended_${PDY}${cyc}f${ffhr}.grib2
 fi 
