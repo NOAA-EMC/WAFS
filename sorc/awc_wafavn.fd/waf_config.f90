@@ -19,8 +19,9 @@ public config_get_parms
 
 contains
 !----------------------------------------------------------------------------
-subroutine get_cfg_gparms(tag, sections, gparms, iret)
+subroutine get_cfg_gparms(grib, tag, sections, gparms, iret)
 ! extracts pds and missing values parameters from cfg sections
+    character(len=1), intent(in) :: grib
     character(len=*), intent(in) :: tag
     type(cfg_sect_t), dimension(:) :: sections
     type(gparms_t), intent(out) :: gparms
@@ -29,18 +30,45 @@ subroutine get_cfg_gparms(tag, sections, gparms, iret)
     type(cfg_sect_t) :: sect
     character(len=*), parameter :: myself = 'get_cfg_gparms(): '
 
-    call cfg_get_sect(tag, sections, sect, iret)
-    if (iret /= 0) return
-    call cfg_get_item('pds5', sect, gparms%pds5, iret)
-    if (iret /= 0) return
-    call cfg_get_item('pds6', sect, gparms%pds6, iret)
-    if (iret /= 0) return
-    call cfg_get_item('pds22', sect, gparms%pds22, iret)
-    if (iret /= 0) return
-    call cfg_get_item('missing', sect, gparms%msng, iret)
-    if (iret /= 0) return
-    call cfg_get_item('use_bitmap', sect, gparms%bitmap, iret)
-    if (iret /= 0) return
+    if(grib == "2") then
+      call cfg_get_sect(tag, sections, sect, iret)
+      if (iret /= 0) return
+      call cfg_get_item('npdt', sect, gparms%npdt, iret)
+      if (iret /= 0) return
+      call cfg_get_item('icat', sect, gparms%icat, iret)
+      if (iret /= 0) return
+      call cfg_get_item('iprm', sect, gparms%iprm, iret)
+      if (iret /= 0) return
+      call cfg_get_item('ilev', sect, gparms%ilev, iret)
+      if (iret /= 0) return
+      call cfg_get_item('stat', sect, gparms%stat, iret)
+      if (iret /= 0) return
+      call cfg_get_item('ndrt', sect, gparms%ndrt, iret)
+      if (iret /= 0) return
+      call cfg_get_item('drt2', sect, gparms%drt2, iret)
+      if (iret /= 0) return
+      call cfg_get_item('drt3', sect, gparms%drt3, iret)
+      if (iret /= 0) return
+      call cfg_get_item('drt4', sect, gparms%drt4, iret)
+      if (iret /= 0) return
+      call cfg_get_item('missing', sect, gparms%msng, iret)
+      if (iret /= 0) return
+      call cfg_get_item('use_bitmap', sect, gparms%bitmap, iret)
+      if (iret /= 0) return
+    else
+      call cfg_get_sect(tag, sections, sect, iret)
+      if (iret /= 0) return
+      call cfg_get_item('pds5', sect, gparms%pds5, iret)
+      if (iret /= 0) return
+      call cfg_get_item('pds6', sect, gparms%pds6, iret)
+      if (iret /= 0) return
+      call cfg_get_item('pds22', sect, gparms%pds22, iret)
+      if (iret /= 0) return
+      call cfg_get_item('missing', sect, gparms%msng, iret)
+      if (iret /= 0) return
+      call cfg_get_item('use_bitmap', sect, gparms%bitmap, iret)
+      if (iret /= 0) return
+    endif
     return
 end subroutine get_cfg_gparms
 
@@ -65,8 +93,9 @@ subroutine get_cfg_cell(tag, sections, cell, iret)
 end subroutine get_cfg_cell
 
 !----------------------------------------------------------------------------
-subroutine config_get_parms(products, filename, cfg, iret)
+subroutine config_get_parms(grib, products, filename, cfg, iret)
 ! reads configuration file
+    character(len=1), intent(in) :: grib
     type(product_t), intent(in) :: products ! requested products
     character(len=*), intent(in) :: filename ! configuration file
     type(cfg_t), intent(out) :: cfg ! parameters read from cfg file
@@ -81,31 +110,11 @@ subroutine config_get_parms(products, filename, cfg, iret)
     call cfg_read_file(glob_lu_cfg, filename, num_sect, cfg_sections, iret)
     if (iret /= 0) return
     if (products%do_icng) then
-        call get_cfg_gparms('icng_mean_gparms', cfg_sections, &
+        call get_cfg_gparms(grib, 'icng_mean_gparms', cfg_sections, &
             cfg%icng_mean_gparms, iret)
         if (iret /= 0) return
-        call get_cfg_gparms('icng_max_gparms', cfg_sections, &
+        call get_cfg_gparms(grib, 'icng_max_gparms', cfg_sections, &
             cfg%icng_max_gparms, iret)
-        if (iret /= 0) return
-        call fuzzy_from_config('icng_temp', cfg_sections, cfg%icng_t, iret)
-        if (iret /= 0) return
-        cfg%icng_t%p%x = cfg%icng_t%p%x + con_t0c ! deg C -> deg K
-        call fuzzy_from_config('icng_conv_temp', cfg_sections, &
-            cfg%icng_conv_t, iret)
-        if (iret /= 0) return
-        cfg%icng_conv_t%p%x = cfg%icng_conv_t%p%x + con_t0c ! deg C -> deg K
-        call fuzzy_from_config('icng_cloud_cover', cfg_sections, &
-            cfg%icng_cld_cover, iret)
-        if (iret /= 0) return
-        call fuzzy_from_config('icng_vert_velocity', cfg_sections, &
-            cfg%icng_vvel, iret)
-        if (iret /= 0) return
-        call fuzzy_from_config('icng_cloud_top_temp', cfg_sections, &
-            cfg%icng_cld_top_t, iret)
-        if (iret /= 0) return
-        cfg%icng_cld_top_t%p%x = cfg%icng_cld_top_t%p%x + con_t0c
-        call cfg_get_item('icng_min_cloud_cover', 'cover', cfg_sections, &
-            cfg%icng_min_cld_cover, iret)
         if (iret /= 0) return
         call cfg_get_item('icng_levels', 'p', cfg_sections, &
             cfg%num_icng_lvls, cfg%icng_lvls, iret)
@@ -114,10 +123,10 @@ subroutine config_get_parms(products, filename, cfg, iret)
         if (iret /= 0) return
     end if
     if (products%do_tcld) then
-        call get_cfg_gparms('tcld_mean_gparms', cfg_sections, &
+        call get_cfg_gparms(grib, 'tcld_mean_gparms', cfg_sections, &
             cfg%tcld_mean_gparms, iret)
         if (iret /= 0) return
-        call get_cfg_gparms('tcld_max_gparms', cfg_sections, &
+        call get_cfg_gparms(grib, 'tcld_max_gparms', cfg_sections, &
             cfg%tcld_max_gparms, iret)
         if (iret /= 0) return
         call cfg_get_sect('tcld_parms', cfg_sections, section, iret)
@@ -134,10 +143,10 @@ subroutine config_get_parms(products, filename, cfg, iret)
         if (iret /= 0) return
     end if
     if (products%do_cat) then
-        call get_cfg_gparms('cat_mean_gparms', cfg_sections, &
+        call get_cfg_gparms(grib, 'cat_mean_gparms', cfg_sections, &
             cfg%cat_mean_gparms, iret)
         if (iret /= 0) return
-        call get_cfg_gparms('cat_max_gparms', cfg_sections, &
+        call get_cfg_gparms(grib, 'cat_max_gparms', cfg_sections, &
             cfg%cat_max_gparms, iret)
         if (iret /= 0) return
         call cfg_get_item('cat_levels', 'p', cfg_sections, &
@@ -147,19 +156,19 @@ subroutine config_get_parms(products, filename, cfg, iret)
         if (iret /= 0) return
     end if
     if (products%do_cb) then
-        call get_cfg_gparms('cb_cover_gparms', cfg_sections, &
+        call get_cfg_gparms(grib, 'cb_cover_gparms', cfg_sections, &
             cfg%cb_cover_gparms, iret)
         if (iret /= 0) return
-        call get_cfg_gparms('cb_hgt_bot_gparms', cfg_sections, &
+        call get_cfg_gparms(grib, 'cb_hgt_bot_gparms', cfg_sections, &
             cfg%cb_hgt_bot_gparms, iret)
         if (iret /= 0) return
-        call get_cfg_gparms('cb_hgt_top_gparms', cfg_sections, &
+        call get_cfg_gparms(grib, 'cb_hgt_top_gparms', cfg_sections, &
             cfg%cb_hgt_top_gparms, iret)
         if (iret /= 0) return
-!        call get_cfg_gparms('cb_embd_hgt_bot_gparms', cfg_sections, &
+!        call get_cfg_gparms(grib, 'cb_embd_hgt_bot_gparms', cfg_sections, &
 !            cfg%cb_embd_hgt_bot_gparms, iret)
 !        if (iret /= 0) return
-!        call get_cfg_gparms('cb_embd_hgt_top_gparms', cfg_sections, &
+!        call get_cfg_gparms(grib, 'cb_embd_hgt_top_gparms', cfg_sections, &
 !            cfg%cb_embd_hgt_top_gparms, iret)
 !        if (iret /= 0) return
         call cfg_get_sect('cb_parms', cfg_sections, section, iret)

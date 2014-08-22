@@ -16,6 +16,9 @@ waf_icng.o: waf_glob.mod
 waf_main.o: funcphys.mod fuzzy.mod getoptions.mod kinds.mod physcons.mod
 waf_main.o: waf_cat.mod waf_cb.mod waf_config.mod waf_glob.mod waf_icng.mod
 waf_main.o: waf_phys.mod waf_tcld.mod
+waf_main.o: waf_grib2.mod waf_grib1.mod
+waf_grib1.o: kinds.mod waf_glob.mod getoptions.mod waf_phys.mod waf_gfip.o
+waf_grib2.o: kinds.mod waf_glob.mod getoptions.mod waf_phys.mod
 waf_phys.o: funcphys.mod kinds.mod physcons.mod
 waf_tcld.o: funcphys.mod fuzzy.mod kinds.mod physcons.mod waf_calc.mod
 waf_tcld.o: waf_filter.mod waf_glob.mod waf_phys.mod
@@ -34,5 +37,7 @@ waf_filter.mod: waf_filter.o
 waf_glob.mod: waf_glob.o
 waf_icng.mod: waf_icng.o
 waf_main.mod: waf_main.o
+waf_grib2.mod: waf_grib2.o
+waf_grib1.mod: waf_grib1.o
 waf_phys.mod: waf_phys.o
 waf_tcld.mod: waf_tcld.o

@@ -1,7 +1,9 @@
 # makefile for waf programs
 #
 FC = ifort
-FFLAGS = -g -O2 -convert big_endian -assume noold_ldout_format
+INC = /nwprod/lib/incmod/g2_4
+LIBS = -L /nwprod/lib -lg2_4 -lw3emc_4 -lw3nco_4 -lbacio_4 -lip_4 -lsp_4 -ljasper -lpng -lz
+FFLAGS = -FR -I$(INC) -g -O2 -convert big_endian -assume noold_ldout_format
 MKDEP = sfmakedepend.pl
 DEPFILE = makedepend.out
 
@@ -15,6 +17,9 @@ DEPFILE = makedepend.out
 #------------------------------------------------------------------------------
 
 OBJS = waf_main.o \
+	waf_grib2.o \
+	waf_grib1.o \
+	waf_gfip.o \
 	waf_calc.o \
 	waf_cat.o \
 	waf_cb.o \
@@ -34,16 +39,18 @@ OBJS = waf_main.o \
 
 PROG = awc_wafavn
 
-LIBS = -L . -L /nwprod/lib -lbacio_4 -lip_4 -lsp_4 -mkl -lw3nco_4 -lw3emc_4
 #SRC_ALL = $(patsubst %.o,%.f90, $(OBJS))
 SRC_ALL = waf_main.f90 \
+        waf_grib2.f90 \
+	waf_grib1.f90 \
+	waf_gfip.f90 \
         waf_calc.f90 \
         waf_cat.f90 \
         waf_cb.f90 \
         waf_config.f90 \
         waf_filter.f90 \
         waf_glob.f90 \
-        waf_icng.f90 \
+	waf_icng.f90 \
         waf_phys.f90 \
         waf_tcld.f90 \
         cfgini.f90 \
@@ -69,3 +76,4 @@ clean:
 #-----------------------------------------------------------------------------
 # dependency file
 -include $(DEPFILE)
+# DO NOT DELETE THIS LINE - used by make depend

@@ -298,7 +298,7 @@ subroutine filter_avg2d(nx, ny, array, dx, dy, delta, msng, mask, &
         if (do_min) amin = msng
         if (do_max) amax = msng
     end if
-    do j = 2, ny-1
+    do j = 1, ny
         num_x = int(delta/dx(j)) ! number of x points in the cell is 2*num_x+1
         jstart = max(1, j-num_y)
         jend = min(ny, j+num_y)
@@ -412,7 +412,7 @@ subroutine filter_avg3d(nx, ny, np, lvl, array, dx, dy, dp, delta_xy, &
         if (do_min) amin = msng
         if (do_max) amax = msng
     end if
-    do j = 2, ny-1
+    do j = 1, ny
         num_x = int(delta_xy/dx(j)) ! number of x points in the cell is 
                                     ! 2*num_x+1
         jstart = max(1, j-num_y)
