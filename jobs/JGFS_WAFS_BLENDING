@@ -14,21 +14,17 @@ set -x
 export RUN_ENVIR=${RUN_ENVIR:-prod}
 if [ $envir = "prod" ]
 then
-   export SENDDBN=YES
-   export SENDDBN_GB2=YES
    export DBN_ALERT_TYPE=GFS_WAFSA_GB2
    export wgrib2=${wgrib2:-/nwprod/util/exec/wgrib2}
 else
-   export SENDDBN=NO
-   export SENDDBN_GB2=NO
-   export SENDDBN_GB2_PARA=NO
+   export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
    export DBN_ALERT_TYPE_PARA=GFS_WAFSA_GB2_PARA 
    export DBN_ALERT_TYPE=GFS_WAFSA_GB2_PARA 
-   export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
+   export DBNROOT=/nwprod/spa_util/fakedbn
+   #export SENDDBN_NTC=NO
    export NET=gfs
    export RUN=gfs
    export wgrib2=${wgrib2:-/nwprod/util/exec/wgrib2}
-   export SENDDBN_NTC=NO
    export RUN_PLOT=NO
 fi
 
@@ -43,7 +39,7 @@ date
 #   ($DATA may be preset for developer runs)
 ##########################################################
 export pid=$$
-export DATA_IN=${DATA_IN:-/tmpnwprd}
+export DATA_IN=${DATA_IN:-/tmpnwprd1}
 export DATA=${DATA:-$DATA_IN/${job}.${pid}}
 [ -d $DATA ] && rm -rf $DATA
 mkdir -p $DATA
@@ -83,7 +79,7 @@ export SENDECF=${SENDECF:-YES}
 export RERUN=${RERUN:-NO}
 
 # Specify Execution Areas
-export HOMEgfs=${HOMEgfs:-"/nw${envir}/gfs_wafs.${gfs_wafs_version}"}
+export HOMEgfs=${HOMEgfs:-"/nw${envir}/gfs_wafs.${model_ver}"}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
@@ -115,7 +111,7 @@ $utilscript/setpdy.sh
 #################################################
 export COMIN_US=${COMIN_US:-/pcom/wafs}
 export COMIN_UK=${COMIN_UK:-/dcom/us007003/$PDY/wgrbbul/ukmet_wafs}
-export COM_IN=${COM_IN:-/com/${NET}/prod}
+export COM_IN=${COM_IN:-/com/${NET}/${envir}}
 
 export COM_OUT=${COM_OUT:-/com/${NET}/${envir}}
 export COMOUT=${COMOUT:-$COM_OUT/${RUN}.${PDY}}
