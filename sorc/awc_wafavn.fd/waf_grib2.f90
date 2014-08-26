@@ -94,7 +94,7 @@ subroutine put_grib2(parms, nlevel, gfld, nx, ny, fld, iret)
       igds(2)=gfld%ngrdpts    ! Number of grid points in the defined grid.
       igds(3)=gfld%numoct_opt ! Number of octets needed for each additional grid points definition
       igds(4)=gfld%interp_opt ! Interpretation of list for optional points definition (Code Table 3.11)
-      igds(5)=gfld%igdtnum    !Grid Definition Template Number (Code Table3.1)
+      igds(5)=gfld%igdtnum    ! Grid Definition Template Number (Code Table3.1)
       if ( associated(gfld%igdtmpl) ) then
          call addgrid(cgrib, lcgrib, igds, gfld%igdtmpl, gfld%igdtlen,&
                      ilistopt, gfld%num_opt, iret)

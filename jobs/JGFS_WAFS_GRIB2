@@ -99,11 +99,11 @@ $utilscript/setpdy.sh
 if [ $envir = "prod" ] || [ $envir = "para" ]
 then
  export com=/com/${NET}/${envir}
- export COMIN=/com/${NET}/${envir}/${RUN}.${PDY}
+ export COMIN=${COMIN:-/com/${NET}/${envir}/${RUN}.${PDY}}
  export pcom=${pcom:-/pcom/wafs}
 else
  export com=/com/${NET}/prod
- export COMIN=/com/${NET}/prod/${RUN}.${PDY}
+ export COMIN=${COMIN:-/com/${NET}/prod/${RUN}.${PDY}}
  export pcom=${pcom:-/pcom/${envir}/wafs}
 fi
 export COM_OUT=${COM_OUT:-/com/${NET}/${envir}}
@@ -114,6 +114,7 @@ env
 
 ########################################################
 # Execute the script.
+export WAFSEXEC=${WAFSEXEC:-$EXECgfs/awc_wafavn}
 ${SCRIPTSgfs}/exgfs_wafs_grib2.sh.ecf
 ########################################################
 if [ $envir = "prod" ]
