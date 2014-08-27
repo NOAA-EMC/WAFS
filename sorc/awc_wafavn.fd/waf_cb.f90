@@ -21,7 +21,7 @@ contains
 !----------------------------------------------------------------------------
 subroutine cb_alg(cfg, model, waf)
 ! calculates CB coverage
-    type(cfg_t), intent(out) :: cfg
+    type(cfg_t), intent(in) :: cfg
     type(input_data_t), intent(in) :: model
     type(output_data_t), intent(inout) :: waf
 

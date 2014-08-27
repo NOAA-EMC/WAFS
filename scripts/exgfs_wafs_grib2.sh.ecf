@@ -1,6 +1,6 @@
 #!/bin/sh
 ######################################################################
-#  UTILITY SCRIPT NAME :  exgfs_wafs_grib2.sh.sm
+#  UTILITY SCRIPT NAME :  exgfs_wafs_grib2.sh.ecf
 #         DATE WRITTEN :  07/15/2009
 #
 #  Abstract:  This utility script produces the WAFS GRIB2. The output 
@@ -11,6 +11,9 @@
 #             We are processing WFAS grib2 for fcsthrs from 06 - 36 
 #             with 3-hour time increment.
 #
+# History:  08/20/2014
+#              - ingest master file in grib2 (or grib1 if grib2 fails)
+#              - output of icng tcld cat cb are in grib2
 #####################################################################
 echo "-----------------------------------------------------"
 echo "JGFS_WAFS_GRIB2 at 00Z/06Z/12Z/18Z GFS postprocessing"
@@ -29,22 +32,29 @@ do
 ##########################################################
 # Wait for the availability of the gfs master pgrib file
 ##########################################################
+  # master file in grib1 or grib2
+  # grib2 has the priority, run grib1 version only if grib2 fails
+  master1=$COMIN/${RUN}.${cycle}.master.grbf${fcsthrs}
+  master2=$COMIN/${RUN}.${cycle}.master.grb2f${fcsthrs}
   icnt=1
   while [ $icnt -lt 1000 ]
   do
-#    if [ -s $COMIN/${RUN}.${cycle}.master.grbf${fcsthrs} ]
-    if [ -s $COMIN/${RUN}.${cycle}.master.grbif${fcsthrs} ]
+    if [ -s $master2 ]
     then
-      echo " $COMIN/${RUN}.${cycle}.master.grbif${fcsthrs} exists at icnt = $icnt"
+      sleep 5
       break
     fi
 
     sleep 10
     icnt=$((icnt + 1))
-    if [ $icnt -ge 180 ]
-    then
-      msg="ABORTING after 30 min of waiting for the gfs master file!"
-      err_exit $msg
+    if [ $icnt -ge 180 ] ;    then
+      # if master in grib2 fails, check master in grib1, no waiting
+      if [ -s $master1 ] ; then
+         master2=""
+      else
+        msg="ABORTING after 30 min of waiting for the gfs master file!"
+        err_exit $msg
+      fi
     fi
   done
 
@@ -65,22 +75,61 @@ do
   echo "#####################################"
   echo " "
   set -x
-  cp $FIXgfs/awc_wafavn.cfg waf.cfg
-  cp $COMIN/gfs.t${cyc}z.master.grbf${fcsthrs}  masterfilef${fcsthrs}
-$utilexec/wgrib masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.list | $utilexec/wgrib -i -grib -o tmpfile_gfsf${fcsthrs} masterfilef${fcsthrs}
 
-  $EXECgfs/awc_wafavn -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb
+  if [[ -z $master2 ]] ; then 
+     # ===================  process master file grib1  ===================
+     # 1) new WAFS fields
+     cp $FIXgfs/awc_wafavn.grb1.cfg waf.cfg
+     cp $master1  masterfilef${fcsthrs}
+     $WAFSEXEC -g 1 -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb
+     $utilexec/copygb  -g45 -i2 -x  tmpfile_icaof${fcsthrs} tmpfile_icao_grb45f${fcsthrs}
 
-  $utilexec/copygb  -g45 -i2 -x  tmpfile_gfsf${fcsthrs}  tmpfile_gfs_grb45f${fcsthrs}
+     # 2) traditional WAFS fields
+     $utilexec/wgrib masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.grb1.list | grep "kpds6=6:" | \
+                     $utilexec/wgrib -i -grib -o tmpfile_gfsf${fcsthrs}.maxwind masterfilef${fcsthrs}
+     # interpolate by '2 neighbor' for max wind fields (max U V wind and its height)
+     $utilexec/copygb  -g45 -i2 -x  tmpfile_gfsf${fcsthrs}.maxwind  tmpfile_gfs_grb45f${fcsthrs}.maxwind
+     $utilexec/wgrib masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.grb1.list | grep -v "kpds6=6:" | \
+                     $utilexec/wgrib -i -grib -o tmpfile_gfsf${fcsthrs}.nomaxwind masterfilef${fcsthrs}
+     # interpolate by '0 bilinear' for other fields
+     $utilexec/copygb  -g45 -i0 -x  tmpfile_gfsf${fcsthrs}.nomaxwind  tmpfile_gfs_grb45f${fcsthrs}.nomaxwind
+     # combine back together
+     cat tmpfile_gfs_grb45f${fcsthrs}.maxwind tmpfile_gfs_grb45f${fcsthrs}.nomaxwind > tmpfile_gfs_grb45f${fcsthrs}
+     rm tmpfile_gfs_grb45f${fcsthrs}.maxwind tmpfile_gfs_grb45f${fcsthrs}.nomaxwind
 
-  $utilexec/copygb  -g45 -i2 -x  tmpfile_icaof${fcsthrs} tmpfile_icao_grb45f${fcsthrs}
+     # 3) combine new and traditional WAFS fields
+     cat tmpfile_gfs_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs} > gfs.t${cyc}z.wafs_grb45f${fcsthrs}
 
-  cat tmpfile_gfs_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs} > gfs.t${cyc}z.wafs_grb45f${fcsthrs}
+     # $utilexec/cnvgrib -g12 -p40 -nv  gfs.t${cyc}z.wafs_grb45f${fcsthrs}  gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+     $utilexec/cnvgrib2_wafs -g12 -p40 -mastertable_ver_6 -nv  gfs.t${cyc}z.wafs_grb45f${fcsthrs}  gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+  else
+     # ===================  process master file grib2  ===================
+     # 1) new WAFS fields
+     cp $FIXgfs/awc_wafavn.grb2.cfg waf.cfg
+     cp $master2  masterfilef${fcsthrs}
+     $WAFSEXEC -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb
+     $utilexec/wgrib2 tmpfile_icaof${fcsthrs} -set_grib_type same \
+                      -new_grid_winds earth -new_grid_interpolation bilinear \
+                      -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_icao_grb45f${fcsthrs}
 
-#  $utilexec/cnvgrib -g12 -p40 -nv  gfs.t${cyc}z.wafs_grb45f${fcsthrs}  gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+     # 2) traditional WAFS fields
+     $utilexec/wgrib2 masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.grb2.list | $utilexec/wgrib2 -i masterfilef${fcsthrs} -grib tmpfile_gfsf${fcsthrs}
+# U V will have the same grid messange number by using -ncep_uv.
+#     $utilexec/wgrib2 tmpfile_gfsf${fcsthrs} \
+#                      -new_grid_winds earth -set_grib_type jpeg \
+#                      -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
+#                      -new_grid latlon 0:288:1.25 90:145:-1.25 - -inv /dev/null | wgrib2 - -ncep_uv tmpfile_gfs_grb45f${fcsthrs}                       
+# U V will have the different grid messange number without -ncep_uv.
+     $utilexec/wgrib2 tmpfile_gfsf${fcsthrs} \
+                      -new_grid_winds earth -set_grib_type jpeg \
+                      -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
+                      -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_gfs_grb45f${fcsthrs}
 
-  $utilexec/cnvgrib2_wafs -g12 -p40 -mastertable_ver_6 -nv  gfs.t${cyc}z.wafs_grb45f${fcsthrs}  gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+     # 3) combine new and traditional WAFS fields
+     cat tmpfile_gfs_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs} > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
 
+     $utilexec/cnvgrib -g21 gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 gfs.t${cyc}z.wafs_grb45f${fcsthrs}
+  fi
   $utilexec/wgrib2 -s gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx
   
 # Chuang: create a file in working dir without US unblended WAFS product for ftp server 
@@ -132,7 +181,6 @@ $utilexec/wgrib masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.list 
      mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx
      mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
      mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
-     
 
    ##############################
    # Post Files to PCOM
@@ -154,9 +202,6 @@ $utilexec/wgrib masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.list 
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $pcom/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_WIDX $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
-  fi 
-
-  if [ $SENDDBN_NTC = "YES" ] ; then
 #
 #    Distribute Data to TOC TO WIFS FTP SERVER (AWC)
 #
