@@ -77,12 +77,14 @@ do
   set -x
 
   if [[ -z $master2 ]] ; then 
-     # process master file grib1
+     # ===================  process master file grib1  ===================
+     # 1) new WAFS fields
      cp $FIXgfs/awc_wafavn.grb1.cfg waf.cfg
      cp $master1  masterfilef${fcsthrs}
      $WAFSEXEC -g 1 -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb
      $utilexec/copygb  -g45 -i2 -x  tmpfile_icaof${fcsthrs} tmpfile_icao_grb45f${fcsthrs}
 
+     # 2) traditional WAFS fields
      $utilexec/wgrib masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.grb1.list | grep "kpds6=6:" | \
                      $utilexec/wgrib -i -grib -o tmpfile_gfsf${fcsthrs}.maxwind masterfilef${fcsthrs}
      # interpolate by '2 neighbor' for max wind fields (max U V wind and its height)
@@ -95,12 +97,14 @@ do
      cat tmpfile_gfs_grb45f${fcsthrs}.maxwind tmpfile_gfs_grb45f${fcsthrs}.nomaxwind > tmpfile_gfs_grb45f${fcsthrs}
      rm tmpfile_gfs_grb45f${fcsthrs}.maxwind tmpfile_gfs_grb45f${fcsthrs}.nomaxwind
 
+     # 3) combine new and traditional WAFS fields
      cat tmpfile_gfs_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs} > gfs.t${cyc}z.wafs_grb45f${fcsthrs}
 
      # $utilexec/cnvgrib -g12 -p40 -nv  gfs.t${cyc}z.wafs_grb45f${fcsthrs}  gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
      $utilexec/cnvgrib2_wafs -g12 -p40 -mastertable_ver_6 -nv  gfs.t${cyc}z.wafs_grb45f${fcsthrs}  gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
   else
-     # process master file grib2
+     # ===================  process master file grib2  ===================
+     # 1) new WAFS fields
      cp $FIXgfs/awc_wafavn.grb2.cfg waf.cfg
      cp $master2  masterfilef${fcsthrs}
      $WAFSEXEC -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb
@@ -108,6 +112,7 @@ do
                       -new_grid_winds earth -new_grid_interpolation bilinear \
                       -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_icao_grb45f${fcsthrs}
 
+     # 2) traditional WAFS fields
      $utilexec/wgrib2 masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.grb2.list | $utilexec/wgrib2 -i masterfilef${fcsthrs} -grib tmpfile_gfsf${fcsthrs}
 # U V will have the same grid messange number by using -ncep_uv.
 #     $utilexec/wgrib2 tmpfile_gfsf${fcsthrs} \
@@ -120,6 +125,7 @@ do
                       -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
                       -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_gfs_grb45f${fcsthrs}
 
+     # 3) combine new and traditional WAFS fields
      cat tmpfile_gfs_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs} > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
 
      $utilexec/cnvgrib -g21 gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 gfs.t${cyc}z.wafs_grb45f${fcsthrs}
