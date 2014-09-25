@@ -23,10 +23,10 @@ cd $DATA
 
 cp $COMIN_UK/EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 .
 #Chuang: remove CAT data from UK unblended for testing
-$wgrib2 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 |grep -v CAT|\
-$wgrib2 -i EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 -grib test.grib2
-rm -f ./EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
-mv test.grib2 ./EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
+#$wgrib2 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 |grep -v CAT|\
+#$wgrib2 -i EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 -grib test.grib2
+#rm -f ./EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
+#mv test.grib2 ./EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
 
 # pick up US data
 
