@@ -24,13 +24,12 @@ cd $DATA
 ####################################
 # File To Log Msgs
 ####################################
-if [ ${envir} = "prod" ]; then
-  export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
-else
+if [ ${envir} != "prod" ]; then
   export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
   export DBNROOT=/nwprod/spa_util/fakedbn
 fi
 
+export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
 ####################################
 # Determine Job Output Name on System
 ####################################
@@ -62,22 +61,22 @@ export model=gfs
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-"/nw${envir}/gfs_wafs.${model_ver}"}
-export EXECgfs=$HOMEgfs/exec
-export FIXgfs=$HOMEgfs/fix
-export PARMgfs=$HOMEgfs/parm
-export USHgfs=$HOMEgfs/ush
-export SCRIPTSgfs=$HOMEgfs/scripts
+export HOMEgfs=${HOMEgfs:-/nw${envir}/gfs_wafs.${model_ver}}
+export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
+export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
+export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
+export USHgfs=${USHgfs:-$HOMEgfs/ush}
+export SCRIPTSgfs=${SCRIPTSgfs:-$HOMEgfs/scripts}
 
 ###################################
 # Set up the UTILITIES
 ###################################
-export utilscript=/nwprod/util/ush
-export EXECutil=/nwprod/util/exec
-export HOMEutil=${HOMEutil:-/nwprod/util}
-export FIXutil=$HOMEutil/fix
-export PARMutil=$HOMEutil/parm
-export USHutil=$HOMEutil/ush
+export HOMEutil=${HOMEutil:-/nw${envir}/util.${util_ver}}
+export utilscript=${utilscript:-$HOMEutil/ush}
+export EXECutil=${EXECutil:$HOMEutil/exec}
+export FIXutil=${FIXutil:-$HOMEutil/fix}
+export PARMutil=${PARMutil:-$HOMEutil/parm}
+export USHutil=${USHutil:-$HOMEutil/ush}
 
 
 ###################################

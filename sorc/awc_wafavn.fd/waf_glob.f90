@@ -39,7 +39,7 @@ type gparms_t
     integer :: drt3   ! Decimal scale factor
     integer :: drt4   ! Number of bits to hold data
 
-    ! values used to write data to GRIB 2 file
+    ! values used to write data to GRIB 1 file
      integer :: pds5             ! pds(5): field number (GRIB table 2) 
     integer :: pds6             ! pds(6): field level type (GRIB table 3)
     integer :: pds22            ! pds(22): precision (number of digits)

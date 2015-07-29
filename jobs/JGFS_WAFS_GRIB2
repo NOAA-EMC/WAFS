@@ -23,13 +23,12 @@ cd $DATA
 ####################################
 # File To Log Msgs
 ####################################
-if [ ${envir} = "prod" ]; then
-  export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
-else
+if [ ${envir} != "prod" ]; then
   export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
   export DBNROOT=/nwprod/spa_util/fakedbn
 fi
 
+export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
 ####################################
 # Determine Job Output Name on System
 ####################################
@@ -70,15 +69,15 @@ export SCRIPTSgfs=$HOMEgfs/scripts
 ###################################
 # Set up the UTILITIES
 ###################################
-export HOMEutil=${HOMEutil:-/nwprod/util}
-export utilscript=/nwprod/util/ush
-export utilexec=/nwprod/util/exec
+export HOMEutil=${HOMEutil:-/nw${envir}/util.${util_ver}}
+export utilscript=${utilscript:-$HOMEutil/ush}
+export utilexec=${utilexec:-$HOMEutil/exec}
 
-export HOMEgraph=/nwprod/util
-export EXECgraph=$HOMEgraph/exec
-export FIXgraph=$HOMEgraph/fix
-export PARMgraph=$HOMEgraph/parm
-export USHgraph=$HOMEgraph/ush
+export HOMEgraph=${HOMEgraph:-/nw${envir}/util.${util_ver}}
+export EXECgraph=${EXECgraph:-$HOMEgraph/exec}
+export FIXgraph=${FIXgraph:-$HOMEgraph/fix}
+export PARMgraph=${PARMgraph:-$HOMEgraph/parm}
+export USHgraph=${USHgraph:-$HOMEgraph/ush}
 
 ###################################
 # Run the setup script

@@ -248,6 +248,7 @@ subroutine get_input_data1(gds, cfg, model)
     if(iret == 0) then
       ! icing is available, read it
       do lvl = 1, model%np
+        p = model%p(lvl)
         call get_grib1(pds_icng_potential, p, nx, ny, model%pot(:,:,lvl), iret)
         if (iret /= 0) print *, myself, 'failed to retrieve icing potential at ',p,&
             ' hPa, iret = ', iret

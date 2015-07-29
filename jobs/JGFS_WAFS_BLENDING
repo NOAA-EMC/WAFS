@@ -12,19 +12,9 @@ set -x
 # for the NCO running enviroment
 #######################################################
 export RUN_ENVIR=${RUN_ENVIR:-prod}
-if [ $envir = "prod" ]
-then
-   export DBN_ALERT_TYPE=GFS_WAFSA_GB2
-   export wgrib2=${wgrib2:-/nwprod/util/exec/wgrib2}
-else
+if [ $envir != "prod" ]; then
    export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
-   export DBN_ALERT_TYPE_PARA=GFS_WAFSA_GB2_PARA 
-   export DBN_ALERT_TYPE=GFS_WAFSA_GB2_PARA 
    export DBNROOT=/nwprod/spa_util/fakedbn
-   #export SENDDBN_NTC=NO
-   export NET=gfs
-   export RUN=gfs
-   export wgrib2=${wgrib2:-/nwprod/util/exec/wgrib2}
    export RUN_PLOT=NO
 fi
 
@@ -73,13 +63,12 @@ export RUN=${RUN:-gfs}
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}  # need to set to NO for testing
 export SENDDBN_GB2=${SENDDBN_GB2:-YES}  # need to set to NO for testing
-export SENDDBN_GB2_PARA=${SENDDBN_GB2_PARA:-NO}  # for PARA only, need to set to NO for prod
 export SENDDBN_NTC=${SENDDBN_NTC:-YES}  # need to set to NO for testing
 export SENDECF=${SENDECF:-YES}
 export RERUN=${RERUN:-NO}
 
 # Specify Execution Areas
-export HOMEgfs=${HOMEgfs:-"/nw${envir}/gfs_wafs.${model_ver}"}
+export HOMEgfs=${HOMEgfs:-/nw${envir}/gfs_wafs.${model_ver}}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
@@ -90,10 +79,12 @@ export USHgfs=${USHgfs:-$HOMEgfs/ush}
 ###################################
 # Set up the UTILITIES
 ###################################
-export HOMEutil=${HOMEutil:-/nwprod/util}
+export HOMEutil=${HOMEutil:-/nw${envir}/util.${util_ver}}
 export PARMutil=${HOMEparm:-$HOMEutil/parm}
-export utilscript=${utilscript:-/nwprod/util/ush}
-export utilexec=${utilexec:-/nwprod/util/exec}
+export utilscript=${utilscript:-$HOMEutil/ush}
+export utilexec=${utilexec:-$HOMEutil/exec}
+
+export wgrib2=${wgrib2:-$utilexec/wgrib2}
 
 ####################################################
 # Run the setup to obtain utilities such as err_chk
