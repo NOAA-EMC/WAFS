@@ -1,9 +1,10 @@
 # makefile for waf programs
 #
-FC = ifort
-INC = /nwprod/lib/incmod/g2_4
-LIBS = -L /nwprod/lib -lg2_4 -lw3emc_4 -lw3nco_4 -lbacio_4 -lip_4 -lsp_4 -ljasper -lpng -lz
-FFLAGS = -FR -I$(INC) -g -O2 -convert big_endian -assume noold_ldout_format
+#FC = ifort
+#INC = /nwprod/lib/incmod/g2_4
+#LIBS = -L /nwprod/lib -lg2_4 -lw3emc_4 -lw3nco_4 -lbacio_4 -lip_4 -lsp_4 -ljasper -lpng -lz
+#FFLAGS = -FR -I$(INC) -g -O2 -convert big_endian -assume noold_ldout_format
+FFLAGS = ${FFLAGSawc}
 MKDEP = sfmakedepend.pl
 DEPFILE = makedepend.out
 
@@ -12,7 +13,7 @@ DEPFILE = makedepend.out
 	$(FC) $(FFLAGS) -c $<
 
 %.o : %.f
-	ifort $(FFLAGS) -c $<
+	$(FC) $(FFLAGS) -c $<
 
 #------------------------------------------------------------------------------
 
@@ -37,7 +38,7 @@ OBJS = waf_main.o \
 	physcons.o \
 	tokenize.o
 
-PROG = awc_wafavn
+CMD = awc_wafavn
 
 #SRC_ALL = $(patsubst %.o,%.f90, $(OBJS))
 SRC_ALL = waf_main.f90 \
@@ -61,9 +62,9 @@ SRC_ALL = waf_main.f90 \
         physcons.f90 \
         tokenize.f90
 #------------------------------------------------------------------------------
-all:	$(PROG)
+all:	$(CMD)
 
-$(PROG):	$(OBJS)
+$(CMD):	$(OBJS)
 	$(FC) $(FFLAGS) -o $@ $(OBJS) $(LIBS)
 
 depend:
@@ -73,6 +74,8 @@ depend:
 clean:
 	rm -f *.o *.mod
 
+install:
+	mv $(CMD) ../../exec/.
 #-----------------------------------------------------------------------------
 # dependency file
 -include $(DEPFILE)
