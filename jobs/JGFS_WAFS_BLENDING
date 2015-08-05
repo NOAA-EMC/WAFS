@@ -3,117 +3,109 @@
 # This job runs the code to blend US's and UK's WAFS products 
 ########################################################
 
+date
+export PS4='$SECONDS + ' 
 set -x
 
-######################################################
-# The following two variable could be defined in the 
-# loadleveler submission script (the ecf script), if 
-# not they will take the default values which is set 
-# for the NCO running enviroment
-#######################################################
+############################################
+# Override some ecFlow environment variables
+############################################
 export RUN_ENVIR=${RUN_ENVIR:-prod}
-if [ $envir != "prod" ]; then
-   export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
-   export DBNROOT=/nwprod/spa_util/fakedbn
-   export RUN_PLOT=NO
+
+export NWROOTp1=${NWROOTp1:-/nwprod}
+
+if [ ${envir} != "prod" ]; then
+  export jlogfile=${jlogfile:-$COMROOT/logs/${envir}/jlogfile}
+  export DBNROOT=$NWROOTp1/spa_util/fakedbn
+  export RUN_PLOT=NO
 fi
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${jobid}}
+export DBNROOT=${DNBROOT:-/iodprod/dbnet_siphon}
 
-# #### 08/25/1999 ###################
-# SET SHELL PROCESSING VARIABLES
-# ###################################
-export PS4='$SECONDS + ' 
-date
+export DATAROOT=${DATAROOT:-/tmpnwprd1}
 
-##########################################################
-# obtain unique process id (pid) and make temp directories
-#   ($DATA may be preset for developer runs)
-##########################################################
-export pid=$$
-export DATA_IN=${DATA_IN:-/tmpnwprd1}
-export DATA=${DATA:-$DATA_IN/${job}.${pid}}
+# keep the working directory or not
+export KEEPDATA=${KEEPDATA:-YES}
+
+############################################
+# Working Directory
+############################################
+export DATA=${DATA:-${DATAROOT:?}/$jobid}
 [ -d $DATA ] && rm -rf $DATA
 mkdir -p $DATA
 cd $DATA
 
-####################################
-# File To Log Msgs
-####################################
-export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
+############################################
+# Output for executables
+############################################
+export pgmout=OUTPUT.$$
 
-####################################
-# Determine Job Output Name on System
-####################################
-export outid="LL$job"
-export jobid="${outid}.o${pid}"
-export pgmout="OUTPUT.${pid}"
-
-export cycle=t${cyc}z 
-
-######################
-# Set NET and RUN
-######################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
-
-################################################################
-# SENDCOM=YES--Copy output file to /com
-# SENDECF=YES--Allow to talk back to ECF
-# SENDDBN=YES--Alert output file to TOC, set to NO for testing
-################################################################
-export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-YES}  # need to set to NO for testing
-export SENDDBN_GB2=${SENDDBN_GB2:-YES}  # need to set to NO for testing
-export SENDDBN_NTC=${SENDDBN_NTC:-YES}  # need to set to NO for testing
-export SENDECF=${SENDECF:-YES}
-export RERUN=${RERUN:-NO}
-
-# Specify Execution Areas
-export HOMEgfs=${HOMEgfs:-/nw${envir}/gfs_wafs.${model_ver}}
-export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
-export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
-export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
-export USHgfs=${USHgfs:-$HOMEgfs/ush}
-
-# Define the location of codes and scripts
-################################################
-###################################
-# Set up the UTILITIES
-###################################
-export HOMEutil=${HOMEutil:-/nw${envir}/util.${util_ver}}
-export PARMutil=${HOMEparm:-$HOMEutil/parm}
-export utilscript=${utilscript:-$HOMEutil/ush}
-export utilexec=${utilexec:-$HOMEutil/exec}
-
-export wgrib2=${wgrib2:-$utilexec/wgrib2}
-
-####################################################
-# Run the setup to obtain utilities such as err_chk
-####################################################
-$utilscript/setup.sh
+############################################
+# Load the UTILITIES module
+############################################
+module load prod_util
+module load grib_util
 
 ###########################################
 # Run setpdy and initialize PDY variables
 ###########################################
-$utilscript/setpdy.sh
-. $DATA/PDY
+export cycle=t${cyc}z 
+setpdy.sh
+. ./PDY
 
-#################################################
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC, set to NO for testing
+############################################
+export SENDCOM=${SENDCOM:-YES}
+export SENDECF=${SENDECF:-YES}
+export SENDDBN=${SENDDBN:-YES}  # need to set to NO for testing
+export SENDDBN_GB2=${SENDDBN_GB2:-YES}  # need to set to NO for testing
+export SENDDBN_NTC=${SENDDBN_NTC:-YES}  # need to set to NO for testing
+export RERUN=${RERUN:-NO}
+
+############################################
+# Set up the NET and RUN
+############################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+
+############################################
+# Specify Execution Areas
+############################################
+export HOMEgfs_wafs=${HOMEgfs_wafs:-$NWROOT/gfs_wafs.${gfs_wafs_ver}}
+export EXECgfs_wafs=$HOMEgfs_wafs/exec
+export FIXgfs_wafs=$HOMEgfs_wafs/fix
+export PARMgfs_wafs=$HOMEgfs_wafs/parm
+export USHgfs_wafs=$HOMEgfs_wafs/ush
+export SCRIPTSgfs_wafs=$HOMEgfs_wafs/scripts
+
+export HOMEutil=${HOMEutil:-$NWROOTp1/util.${util_ver}}
+export USHutil=$HOMEutil/ush
+
+################################################
 # Set up the INPUT and OUTPUT directories
-#################################################
-export COMIN_US=${COMIN_US:-/pcom/wafs}
-export COMIN_UK=${COMIN_UK:-/dcom/us007003/$PDY/wgrbbul/ukmet_wafs}
-export COM_IN=${COM_IN:-/com/${NET}/${envir}}
+################################################
+export COMINus=${COMINus:-$PCOMROOT/wafs}
+export COMINuk=${COMINuk:-$DCOMROOT/us007003/$PDY/wgrbbul/ukmet_wafs}
 
-export COM_OUT=${COM_OUT:-/com/${NET}/${envir}}
-export COMOUT=${COMOUT:-$COM_OUT/${RUN}.${PDY}}
-if [ $envir = "prod" ]
-then
-  export pcom=${pcom:-/pcom/wafs}
+if [ $envir = "prod" ] ; then
+  export PCOM=${PCOM:-$PCOMROOT/wafs}
 else
-  export pcom=${pcom:-/pcom/${envir}/wafs}
+  export PCOM=${PCOM:-$PCOMROOT/${envir}/wafs}
 fi
 
-mkdir -p $COMOUT $pcom
+export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
+
+if [ $SENDCOM = YES ] ; then
+  mkdir -p $COMOUT $PCOM
+fi
+
+############################################
+# print current environment
+############################################
+env
 
 ##############################################
 # Set up the forecast hours
@@ -149,11 +141,11 @@ then
   then
     if [ $recvy_shour -lt $EHOUR ]
     then
-      NEW_SHOUR=`expr $recvy_shour + $FHINC`
+      new_shour=`expr $recvy_shour + $FHINC`
     fi
-    if test $NEW_SHOUR -ge $SHOUR
+    if test $new_shour -ge $SHOUR
     then
-      export SHOUR=$NEW_SHOUR
+      export SHOUR=$new_shour
       if [ $SHOUR -lt 10 ]; then SHOUR=0$SHOUR; fi
     fi
     if test $recvy_shour -ge $EHOUR
@@ -167,12 +159,14 @@ then
   fi
 fi
 
-env
-
-######################
+############################################
 # Execute the script.
-######################
-$HOMEgfs/scripts/exwafs_blending.sh.ecf
+############################################
+${SCRIPTSgfs_wafs}/exwafs_blending.sh.ecf
+export err=$?; err_chk
+
+msg="JOB $job HAS COMPLETED NORMALLY."
+postmsg "$jlogfile" "$msg"
 
 ###############################################
 # This part is for developers usage only 
@@ -183,14 +177,18 @@ then
   /global/save/Hui-Ya.Chuang/WAFC/scripts/plot_wafs.sh $PDY $cyc
 fi
 
-cat $pgmout
-
-msg="JOB $job HAS COMPLETED NORMALLY."
-postmsg "$jlogfile" "$msg"
-
-if [ $envir = "prod" ]
-then
-cd $DATA_IN
-rm -rf $DATA
+############################################
+# print exec output
+############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
 fi
+
+############################################
+# remove temporary working directory
+############################################
+if [ $KEEPDATA != YES ] ; then
+    rm -rf $DATA
+fi
+
 date

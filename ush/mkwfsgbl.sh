@@ -28,28 +28,29 @@ if test $num -ge 2
 then
    echo " Appropriate number of arguments were passed"
    set -x
-   export EXECutil=${EXECutil:-/nwprod/util/exec} 
-   export PARMutil=${PARMutil:-/nwprod/util/parm} 
-   export envir=${envir:-prod} 
-   export jlogfile=${jlogfile:-jlogfile} 
-   export NET=${NET:-gfs} 
-   export RUN=${RUN:-gfs} 
-   export cyc=${cyc:-00} 
-   export cycle=${cycle:-t${cyc}z} 
-   export SENDCOM=${SENDCOM:-NO}
-   export SENDDBN=${SENDDBN:-NO}
+#   export EXECutil=${EXECutil:-/nwprod/util/exec} 
+#   export PARMutil=${PARMutil:-/nwprod/util/parm} 
+#   export envir=${envir:-prod} 
+#   export jlogfile=${jlogfile:-jlogfile} 
+#   export NET=${NET:-gfs} 
+#   export RUN=${RUN:-gfs} 
+#   export cyc=${cyc:-00} 
+#   export cycle=${cycle:-t${cyc}z} 
+#   export SENDCOM=${SENDCOM:-NO}
+#   export SENDDBN=${SENDDBN:-NO}
    if [ -z "$DATA" ]
    then
       export DATA=`pwd`
       cd $DATA
-      /nwprod/util/ush/setup.sh
-      /nwprod/util/ush/setpdy.sh
+#      /nwprod/util/ush/setup.sh
+#      /nwprod/util/ush/setpdy.sh
+      setpdy.sh
       . PDY
    fi
-   export COMIN=${COMIN:-/com/$NET/$envir/$NET.$PDY} 
-   export pcom=${pcom:-/pcom/$NET} 
-   export job=${job:-interactive} 
-   export pgmout=${pgmout:-OUTPUT.$$}
+#   export COMIN=${COMIN:-/com/$NET/$envir/$NET.$PDY} 
+#   export PCOM=${PCOM:-/pcom/$NET} 
+#   export job=${job:-interactive} 
+#   export pgmout=${pgmout:-OUTPUT.$$}
 else
    echo ""
    echo "Usage: mkwfsgbl.sh \$hour [a|b]"
@@ -72,16 +73,16 @@ do
 
    if test ! -f pgrbf${hour}
    then
-      cp $COMIN/${RUN}.${cycle}.pgrbf${hour} pgrbf${hour}
+      cpfs $COMIN/${RUN}.${cycle}.pgrbf${hour} pgrbf${hour}
    fi
 
    #
    # BAG - Put in fix on 20070925 to force the percision of U and V winds
    #       to default to 1 through the use of the wafs.namelist file.
    #
-   $EXECutil/copygb -g3 -i0 -N$PARMgfs/wafs.namelist -x pgrbf${hour} tmp
+   $COPYGB -g3 -i0 -N$PARMgfs_wafs/wafs.namelist -x pgrbf${hour} tmp
    mv tmp pgrbf${hour}
-   $EXECutil/grbindex pgrbf${hour} pgrbif${hour}
+   $GRBINDEX pgrbf${hour} pgrbif${hour}
 
    ##############################
    # Process WAFS
@@ -108,7 +109,7 @@ do
    export FORT53="com.wafs${hour}${sets}"
 
    startmsg
-   $EXECutil/makewafs < $PARMgfs/grib_wfs${NET}${hour}${sets} >>$pgmout 2>errfile
+   $EXECutil/makewafs < $PARMgfs_wafs/grib_wfs${NET}${hour}${sets} >>$pgmout 2>errfile
    export err=$?;err_chk
 
 
@@ -118,17 +119,17 @@ do
 
    if test "$SENDCOM" = 'YES'
    then
-      cp xtrn.wfs${NET}${hour}${sets} $pcom/xtrn.wfs${NET}${cyc}${hour}${sets}.$job
-      cp com.wafs${hour}${sets} $pcom/com.wafs${cyc}${hour}${sets}.$job
+      cpfs xtrn.wfs${NET}${hour}${sets} $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$job
+      cpfs com.wafs${hour}${sets} $PCOM/com.wafs${cyc}${hour}${sets}.$job
 
       if test "$SENDDBN_NTC" = 'YES'
       then
          if test "$NET" = 'gfs'
          then
                $DBNROOT/bin/dbn_alert MODEL GFS_WAFS $job \
-                         $pcom/com.wafs${cyc}${hour}${sets}.$job
+                         $PCOM/com.wafs${cyc}${hour}${sets}.$job
                $DBNROOT/bin/dbn_alert MODEL GFS_XWAFS $job \
-                         $pcom/xtrn.wfs${NET}${cyc}${hour}${sets}.$job
+                         $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$job
          fi
       fi
    fi
@@ -138,7 +139,7 @@ do
    ##############################
 
    if [ "$SENDDBN_NTC" = 'YES' ] ; then
-      $DBNROOT/bin/dbn_alert GRIB_LOW $NET $job $pcom/xtrn.wfs${NET}${cyc}${hour}${sets}.$job
+      $DBNROOT/bin/dbn_alert GRIB_LOW $NET $job $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$job
    else
       msg="xtrn.wfs${NET}${cyc}${hour}${sets}.$job file not posted to db_net."
       postmsg "$jlogfile" "$msg"

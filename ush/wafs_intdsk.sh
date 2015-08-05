@@ -13,6 +13,7 @@
 #             1st argument - Forecast Hour (00 to 120)
 #
 echo "History: June  2000 - First implementation of this utility script"
+echo "         Aug 2015 - Modified for Phase II"
 echo " "
 #
 
@@ -40,21 +41,21 @@ cd $DATA
 # Define Script/Exec and Variables
 #####################################
 
-export cyc=${cyc:-00}
-export cycle=${cycle:-t${cyc}z}
-export jlogfile=${jlogfile:-jlogfile}
-export envir=${envir:-prod}
+#export cyc=${cyc:-00}
+#export cycle=${cycle:-t${cyc}z}
+#export jlogfile=${jlogfile:-jlogfile}
+#export envir=${envir:-prod}
 
-export GRBIDX=/nwprod/util/exec/grbindex
-export WGRIB2=/nwprod/util/exec/wgrib2
-export CNVGRIB=/nwprod/util/exec/cnvgrib
-export EXECutil=${EXECutil:-/nwprod/util/exec}
-export PARMutil=${PARMutil:-/nwprod/util/parm}
-export SENDCOM=${SENDCOM:-NO}
-export SENDDBN=${SENDDBN:-NO}
-export RUN=${RUN:-gfs}
-export NET=${NET:-gfs}
-export COMIN=${COMIN:-/com/$NET/$envir/$NET.$PDY}
+#export GRBIDX=/nwprod/util/exec/grbindex
+#export WGRIB2=/nwprod/util/exec/wgrib2
+#export CNVGRIB=/nwprod/util/exec/cnvgrib
+#export EXECutil=${EXECutil:-/nwprod/util/exec}
+#export PARMutil=${PARMutil:-/nwprod/util/parm}
+#export SENDCOM=${SENDCOM:-NO}
+#export SENDDBN=${SENDDBN:-NO}
+#export RUN=${RUN:-gfs}
+#export NET=${NET:-gfs}
+#export COMIN=${COMIN:-/com/$NET/$envir/$NET.$PDY}
 
 echo " ------------------------------------------"
 echo " BEGIN MAKING ${NET} WAFS PRODUCTS"
@@ -68,13 +69,13 @@ for hour in $fcsthrs_list
 do 
    if test ! -f pgrbf${hour}
    then
-      cp $COMIN/${RUN}.${cycle}.pgrbf${hour} pgrbf${hour}
+      cpfs $COMIN/${RUN}.${cycle}.pgrbf${hour} pgrbf${hour}
    fi
 
    for gid in 37 38 39 40 41 42 43 44;
    do
-      $EXECutil/wgrib pgrbf${hour} | grep -F -f $parmlist | $EXECutil/wgrib -i -grib -o tmpfile pgrbf${hour}
-      $EXECutil/copygb -g${gid} -i0 -x tmpfile wafs${NET}${gid}.t${cyc}z.gribf${hour}
+      $WGRIB pgrbf${hour} | grep -F -f $parmlist | $WGRIB -i -grib -o tmpfile pgrbf${hour}
+      $COPYGB -g${gid} -i0 -x tmpfile wafs${NET}${gid}.t${cyc}z.gribf${hour}
      
       ##########################
       # Convert to grib2 format
@@ -82,9 +83,9 @@ do
       $CNVGRIB -g12 -p40 wafs${NET}${gid}.t${cyc}z.gribf${hour} wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2
       $WGRIB2 wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2 -s >wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2.idx
  
-      cp wafs${NET}${gid}.t${cyc}z.gribf${hour}   $COMOUT
-      cp wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2 $COMOUT
-      cp wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2.idx $COMOUT
+      cpfs wafs${NET}${gid}.t${cyc}z.gribf${hour}   $COMOUT
+      cpfs wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2 $COMOUT
+      cpfs wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2.idx $COMOUT
 
       chmod 775 $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${hour}
       if [ "$SENDDBN" = "YES" ]

@@ -1,12 +1,12 @@
 #!/bin/sh
 
-########################################
-# GFS AWIPS PRODUCT GENERATION
-########################################
+############################################
+# GFS GCIP PRODUCT GENERATION
+############################################
 
 date
 export PS4='$SECONDS + ' 
-set -x
+set -xa
 
 ############################################
 # Override some ecFlow environment variables
@@ -15,7 +15,7 @@ export NWROOTp1=${NWROOTp1:-/nwprod}
 
 if [ ${envir} != "prod" ]; then
   export jlogfile=${jlogfile:-$COMROOT/logs/${envir}/jlogfile}
-  export DBNROOT=$NWROOTp1/spa_util/fakedbn
+  export DBNROOT=/$NWROOTp1/spa_util/fakedbn
 fi
 export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${jobid}}
 export DBNROOT=${DNBROOT:-/iodprod/dbnet_siphon}
@@ -44,9 +44,9 @@ export pgmout=OUTPUT.$$
 module load prod_util
 module load grib_util
 
-###########################################
+############################################
 # Run setpdy and initialize PDY variables
-###########################################
+############################################
 export cycle=t${cyc}z 
 setpdy.sh
 . ./PDY
@@ -54,13 +54,11 @@ setpdy.sh
 ############################################
 # SENDCOM=YES--Copy output file to /com
 # SENDECF=YES--Allow to talk back to ECF
-# SENDDBN=YES--Alert output file to TOC, set to NO for testing
+# SENDDBN=YES--Alert output file to TOC
 ############################################
 export SENDCOM=${SENDCOM:-YES}
-export SENDECF=${SENDECF:-YES}
-export SENDDBN=${SENDDBN:-YES}  # need to set to NO for testing
-export SENDDBN_GB2=${SENDDBN_GB2:-YES}  # need to set to NO for testing
-export SENDDBN_NTC=${SENDDBN_NTC:-YES}  # need to set to NO for testing
+export SENDECF=${SENDECF:-NO}
+export SENDDBN=${SENDDBN:-NO}
 
 ############################################
 # Set up the NET and RUN
@@ -78,25 +76,48 @@ export PARMgfs_wafs=$HOMEgfs_wafs/parm
 export USHgfs_wafs=$HOMEgfs_wafs/ush
 export SCRIPTSgfs_wafs=$HOMEgfs_wafs/scripts
 
-export HOMEutil=${HOMEutil:-$NWROOTp1/util.${util_ver}}
-export EXECutil=$HOMEutil/exec
+# Set up BUFR dump directory
+export TMPDIR=$DATA # TMPDIR must be defined for developers
+export HOMEobsproc_dump=${HOMEobsproc_dump:-$NWROOTp1/obsproc_dump.${obsproc_dump_ver}}
+export USHobsproc_dump=${USHobsproc_dump:-$HOMEobsproc_dump/ush}
+#obsproc_shared_bufr_dumplist_ver must be defined
 
-################################################
+############################################
 # Set up the input/output directory
-################################################
+############################################
+
+#============  INPUT  ==================
+# model data
 if [ $envir = "prod" ] || [ $envir = "para" ] ; then
   export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY}
+  export COMINgfs=${COMINgfs:-$COMROOT/${NET}/${envir}/$RUN.$PDY}
 else
   export COMIN=${COMIN:-$COMROOT/${NET}/prod/$RUN.$PDY}
+  export COMINgfs=${COMINgfs:-$COMROOT/${NET}/prod/$RUN.$PDY}
 fi
 
+# satellite data
+# ftp://ftp.star.nesdis.noaa.gov/pub/smcd/opdb/globalmosaicgeosat/testdata/
+# Have to change IP address to digital ones, which BSUB can identify
+#export COMINsat=ftp://140.90.107.15/pub/smcd/opdb/globalmosaicgeosat/testdata
+#
+#ftp://satepsanone.nesdis.noaa.gov/2day/gmosaic/
+export COMINsat=ftp://140.90.213.161/2day/gmosaic
+
+#  radar data
+export COMINradar=${COMINradar:-$COMROOT/hourly/prod/radar.$PDY}
+
+# metar/ships/lightning/pireps
+# data are dumped by $USHobsproc_dump/dumpjb
+#
+
+#============  OUTPUT  ================
 if [ $envir = prod ]; then
   export PCOM=${PCOM:-$PCOMROOT/wafs}
 else
   export PCOM=${PCOM:-$PCOMROOT/${envir}/wafs}
 fi
-
-export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
+export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/$RUN.$PDY}
 
 if [ $SENDCOM = YES ] ; then
   mkdir -p $COMOUT $PCOM
@@ -107,11 +128,29 @@ fi
 ############################################
 env
 
+##############################################
+# Set up the forecast hours
+##############################################
+# GCIP runs f00 f03 for each cycle, 4 times/day,
+# to make the output valid every 3 hours 
+
+#start forecast hour
+export SHOUR=${SHOUR:-00}
+#end forecast hour, either 00/03
+export EHOUR=${EHOUR:-03}
+# forecast hour increasement/interval
+export FHINC=${FHINC:-03}
+
+##############################################
+# Grib version: 1/2
+##############################################
+export IGRIB=${IGRIB:-2}
+
 ############################################
 # Execute the script.
 ############################################
 
-${SCRIPTSgfs_wafs}/exgfs_wafs_grib2.sh.ecf
+${SCRIPTSgfs_wafs}/exgfs_wafs_gcip.sh.ecf
 export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY!"
@@ -132,4 +171,3 @@ if [ $KEEPDATA != YES ] ; then
 fi
 
 date
-

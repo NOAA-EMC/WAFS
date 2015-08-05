@@ -21,20 +21,20 @@ cd $DATA
 
 # retrieve UK products
 
-cp $COMIN_UK/EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 .
+cpfs $COMINuk/EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 .
 #Chuang: remove CAT data from UK unblended for testing
-#$wgrib2 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 |grep -v CAT|\
-#$wgrib2 -i EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 -grib test.grib2
+#$WGRIB2 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 |grep -v CAT|\
+#$WGRIB2 -i EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 -grib test.grib2
 #rm -f ./EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
 #mv test.grib2 ./EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
 
 # pick up US data
 
-cp ${COMIN_US}/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 .
+cpfs ${COMINus}/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 .
 
 # run blending code
-
-${EXECgfs}/blending grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 \
+startmsg
+$EXECgfs_wafs/blending grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 \
 blended_${PDY}${cyc}f${ffhr}.grib2 > f${ffhr}.out
 
 err1=$?
@@ -50,11 +50,11 @@ then
    if [ $SEND_US_WAFS = "YES" -a $SEND_AWC_ALERT = "NO" ] ; then
       msg="No UK WAFS GRIB2 file or WAFS blending program. Send alert message to AWC ......"
       postmsg "$jlogfile" "$msg"
-      /nwprod/util/ush/make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_admin_msg $pcom/wifs_admin_msg
-      /nwprod/util/ush/make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_admin_msg $pcom/iscs_admin_msg
+      $USHutil/make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs_wafs/wafs_admin_msg $PCOM/wifs_admin_msg
+      $USHutil/make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs_wafs/wafs_admin_msg $PCOM/iscs_admin_msg
       if [ $SENDDBN_NTC = "YES" ] ; then
-           $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $pcom/wifs_admin_msg
-           $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $pcom/iscs_admin_msg
+           $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/wifs_admin_msg
+           $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/iscs_admin_msg
       fi
       export SEND_AWC_ALERT=YES
    fi
@@ -64,7 +64,7 @@ then
  #
  echo "altering the unblended US WAFS products - $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2 "
  echo "and $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2.idx "
- echo "and $pcom/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 "
+ echo "and $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 "
 
  if [ $SENDDBN_GB2 = "YES" -a $SEND_US_WAFS = "YES" ] ; then
    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2
@@ -72,8 +72,8 @@ then
  fi
 
  if [ $SENDDBN_NTC = "YES" -a $SEND_US_WAFS = "YES" ] ; then
- # $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $pcom/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45
-   $DBNROOT/bin/dbn_alert NTC_LOW $NET $job   $pcom/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45
+ # $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45
+   $DBNROOT/bin/dbn_alert NTC_LOW $NET $job   $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45
  fi
  export SEND_US_WAFS=NO
 exit
@@ -115,121 +115,121 @@ else
 # were used for testing during the initial set up of the WAFS blending job.
 ###########################################################################################
 
-#$wgrib2 -V blended_${PDY}${cyc}f${ffhr}.grib2 | grep "cumulonimbus base"|grep "ICAHT"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YHX${ukffhr}02_KWBC_${uktime}00.grib2
+#$WGRIB2 -V blended_${PDY}${cyc}f${ffhr}.grib2 | grep "cumulonimbus base"|grep "ICAHT"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YHX${ukffhr}02_KWBC_${uktime}00.grib2
  
-#$wgrib2 -V blended_${PDY}${cyc}f${ffhr}.grib2 | grep "cumulonimbus top"|grep "ICAHT"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YHX${ukffhr}03_KWBC_${uktime}00.grib2
+#$WGRIB2 -V blended_${PDY}${cyc}f${ffhr}.grib2 | grep "cumulonimbus top"|grep "ICAHT"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YHX${ukffhr}03_KWBC_${uktime}00.grib2
  
-#$wgrib2 -V blended_${PDY}${cyc}f${ffhr}.grib2 | grep "entire atmosphere"|grep "CBHE"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YBX${ukffhr}01_KWBC_${uktime}00.grib2
+#$WGRIB2 -V blended_${PDY}${cyc}f${ffhr}.grib2 | grep "entire atmosphere"|grep "CBHE"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YBX${ukffhr}01_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:700 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}70_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:700 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}70_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:700 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}71_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:700 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}71_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:600 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}60_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:600 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}60_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:600 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}61_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:600 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}61_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:500 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}50_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:500 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}50_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:500 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}51_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:500 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}51_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:400 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}40_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:400 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}40_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:400 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}41_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:400 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}41_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:300 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}30_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:300 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}30_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:300 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}31_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CTP:300 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YFX${ukffhr}31_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:400 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}40_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:400 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}40_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:400 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}41_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:400 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}41_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:350 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}35_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:350 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}35_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:350 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}36_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:350 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}36_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:300 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}30_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:300 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}30_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:300 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}31_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:300 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}31_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:250 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}25_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:250 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}25_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:250 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}26_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:250 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}26_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:200 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}20_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:200 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}20_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:200 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}21_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:200 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}21_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:150 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}15_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:150 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}15_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:150 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}16_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "CAT:150 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YLX${ukffhr}16_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:800 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}80_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:800 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}80_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:800 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}81_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:800 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}81_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:700 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}70_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:700 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}70_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:700 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}71_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:700 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}71_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:600 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}60_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:600 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}60_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:600 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}61_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:600 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}61_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:500 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}50_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:500 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}50_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:500 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}51_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:500 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}51_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:400 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}40_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:400 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}40_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:400 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}41_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:400 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}41_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:300 mb"|grep "spatial ave"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}30_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:300 mb"|grep "spatial ave"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}30_KWBC_${uktime}00.grib2
  
-#$wgrib2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:300 mb"|grep "spatial max"| \
-#$wgrib2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}31_KWBC_${uktime}00.grib2
+#$WGRIB2 blended_${PDY}${cyc}f${ffhr}.grib2 | grep "ICIP:300 mb"|grep "spatial max"| \
+#$WGRIB2 -i blended_${PDY}${cyc}f${ffhr}.grib2 -grib YIX${ukffhr}31_KWBC_${uktime}00.grib2
 
 fi
 
 if [ $SENDCOM = YES ]; then
- cp blended_${PDY}${cyc}f${ffhr}.grib2 $COMOUT/WAFS_blended_${PDY}${cyc}f${ffhr}.grib2
+ cpfs blended_${PDY}${cyc}f${ffhr}.grib2 $COMOUT/WAFS_blended_${PDY}${cyc}f${ffhr}.grib2
 #cp *${ukffhr}*KWBC_${uktime}00.grib2 $COMOUT/
 fi
 
@@ -251,8 +251,7 @@ fi
 #fi 
 
 
-pgm=tocgrib2
-export pgm;. prep_step
+. prep_step
 startmsg
 
 # Processing WAFS Blending GRIB2 (Icing, CB, CAT)
@@ -261,21 +260,21 @@ export FORT11=blended_${PDY}${cyc}f${ffhr}.grib2
 export FORT31=" "
 export FORT51=grib2.t${cyc}z.WAFS_blended_f${ffhr}
 
-$utilexec/tocgrib2 <  $PARMgfs/grib2_blended_wafs_wifs_f${ffhr}.45 >> $pgmout 2> errfile
+$TOCGRIB2 <  $PARMgfs_wafs/grib2_blended_wafs_wifs_f${ffhr}.45 >> $pgmout 2> errfile
 
 err=$?;export err ;err_chk
 echo " error from tocgrib=",$err
 
 if [ $SENDCOM = YES ]; then
- cp  grib2.t${cyc}z.WAFS_blended_f${ffhr}  $pcom/grib2.t${cyc}z.WAFS_blended_f${ffhr}
+ cpfs  grib2.t${cyc}z.WAFS_blended_f${ffhr}  $PCOM/grib2.t${cyc}z.WAFS_blended_f${ffhr}
 fi
 
 if [ $SENDDBN_NTC = "YES" ] ; then
 #
 #   Distribute Data to NCEP FTP Server (WOC) and TOC
 #
-#   #$DBNROOT/bin/dbn_alert MODEL $DBN_ALERT_TYPE $job $pcom/grib2.t${cyc}z.WAFS_blended_f${ffhr}
-    $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $pcom/grib2.t${cyc}z.WAFS_blended_f${ffhr}
+#   #$DBNROOT/bin/dbn_alert MODEL $DBN_ALERT_TYPE $job $PCOM/grib2.t${cyc}z.WAFS_blended_f${ffhr}
+    $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.t${cyc}z.WAFS_blended_f${ffhr}
 fi
 
 if [ $SENDDBN_GB2 = "YES" ] ; then
