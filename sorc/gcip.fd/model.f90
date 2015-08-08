@@ -19,7 +19,7 @@ module Model
   use Grib1
   use Grib2
   use Hybrid2Pressure  ! For RAP
-  use DerivedFields
+  use Derived_Fields
 
   IMPLICIT NONE
 
@@ -180,7 +180,7 @@ contains
     !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
     ! calculate derived fields for all models
     !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
-    call calculateDerivedFields(nx, ny, nz, CFG_CMODEL, fields, modelData, iret)
+    call calculateDerived_Fields(nx, ny, nz, CFG_CMODEL, fields, modelData, iret)
     if(iret /= 0) then
        write(*,*) myself, "unable to derive fields"
        return

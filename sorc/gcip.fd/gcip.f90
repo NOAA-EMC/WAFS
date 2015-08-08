@@ -108,14 +108,14 @@ real, allocatable :: realData3D(:,:, :) ! used for output data into binary file
 
   if(iret /= 0) stop "Error: not able to read model data sucessfully"
 
-call writeBIN3D(nx, ny, nz, "rh.sample", inputs%model%rh)
-call writeBIN3D(nx, ny, nz, "t.sample", inputs%model%t)
-call writeBIN3D(nx, ny, nz, "pvv.sample", inputs%model%pvv)
-call writeBIN3D(nx, ny, nz, "lqc.sample", inputs%model%lqc)
-call writeBIN3D(nx, ny, nz, "icc.sample", inputs%model%icc)
-call writeBIN3D(nx, ny, nz, "ept.sample", inputs%model%ept)
-call writeBIN3D(nx, ny, nz, "slw.sample", inputs%model%slw)
-call writeBIN3D(nx, ny, nz, "twp.sample", inputs%model%twp)
+!call writeBIN3D(nx, ny, nz, "rh.sample", inputs%model%rh)
+!call writeBIN3D(nx, ny, nz, "t.sample", inputs%model%t)
+!call writeBIN3D(nx, ny, nz, "pvv.sample", inputs%model%pvv)
+!call writeBIN3D(nx, ny, nz, "lqc.sample", inputs%model%lqc)
+!call writeBIN3D(nx, ny, nz, "icc.sample", inputs%model%icc)
+!call writeBIN3D(nx, ny, nz, "ept.sample", inputs%model%ept)
+!call writeBIN3D(nx, ny, nz, "slw.sample", inputs%model%slw)
+!call writeBIN3D(nx, ny, nz, "twp.sample", inputs%model%twp)
 
 
   !================================================!
@@ -133,14 +133,14 @@ call writeBIN3D(nx, ny, nz, "twp.sample", inputs%model%twp)
      endif
   end if
 
-if(iret /= 0) stop "Error: not able to read Metar/Ship file sucessfully"
+  if(iret /= 0) stop "Error: not able to read Metar/Ship file sucessfully"
 
-allocate(realData2D(nx, ny))
-realData2D = inputs%metar%cloudCoverage
-call writeBIN2D(nx, ny, "metarCoverage.sample", realData2D)
-realData2D = inputs%metar%cloudBaseHeight
-call writeBIN2D(nx, ny, "metarCldBase.sample", realData2D)
-deallocate(realData2D)
+!allocate(realData2D(nx, ny))
+!realData2D = inputs%metar%cloudCoverage
+!call writeBIN2D(nx, ny, "metarCoverage.sample", realData2D)
+!realData2D = inputs%metar%cloudBaseHeight
+!call writeBIN2D(nx, ny, "metarCldBase.sample", realData2D)
+!deallocate(realData2D)
 
 
   !================================================!
@@ -152,16 +152,16 @@ deallocate(realData2D)
 
   nfiner = cfg%sat%nfiner
 
-if(iret == 0) then
-call writeBIN2D(nx*nfiner, ny*nfiner, "ch2.sample", inputs%sat%ch2)
-call writeBIN2D(nx*nfiner, ny*nfiner, "vis.sample", inputs%sat%vis)
-call writeBIN2D(nx*nfiner, ny*nfiner, "ch4.sample", inputs%sat%ch4)
-print *, allocated(inputs%sat%ch2mch4)
-call writeBIN2D(nx*nfiner, ny*nfiner, "ch2mch4.sample", inputs%sat%ch2mch4)
-call writeBIN2D(nx*nfiner, ny*nfiner, "sunz.sample", inputs%sat%sunz)
-call writeBIN2D(nx*nfiner, ny*nfiner, "ch2_ref.sample", inputs%sat%ch2_ref)
-call writeBIN2D(nx*nfiner, ny*nfiner, "satice.sample", inputs%sat%satice)
-endif
+!if(iret == 0) then
+!call writeBIN2D(nx*nfiner, ny*nfiner, "ch2.sample", inputs%sat%ch2)
+!call writeBIN2D(nx*nfiner, ny*nfiner, "vis.sample", inputs%sat%vis)
+!call writeBIN2D(nx*nfiner, ny*nfiner, "ch4.sample", inputs%sat%ch4)
+!print *, allocated(inputs%sat%ch2mch4)
+!call writeBIN2D(nx*nfiner, ny*nfiner, "ch2mch4.sample", inputs%sat%ch2mch4)
+!call writeBIN2D(nx*nfiner, ny*nfiner, "sunz.sample", inputs%sat%sunz)
+!call writeBIN2D(nx*nfiner, ny*nfiner, "ch2_ref.sample", inputs%sat%ch2_ref)
+!call writeBIN2D(nx*nfiner, ny*nfiner, "satice.sample", inputs%sat%satice)
+!endif
 
   !================================================!
   ! pirep            default: MISSING
@@ -188,14 +188,14 @@ endif
   write(*,*) "Ingesting lightning data ..."
   call runLightning(trim(lightningFile), iruntime, cfg, kgds, inputs%lightning, iret)
 
-  if(iret == 0) then
-     allocate(realData2D(nx, ny))
-     realData2D = inputs%lightning%dist
-     if(iret==0) call writeBIN2D(nx, ny, "lightningDist.sample", realData2D)
-     realData2D = inputs%lightning%rate
-     if(iret==0) call writeBIN2D(nx, ny, "lightningRate.sample", realData2D)
-     deallocate(realData2D)
-  end if
+!  if(iret == 0) then
+!     allocate(realData2D(nx, ny))
+!     realData2D = inputs%lightning%dist
+!     if(iret==0) call writeBIN2D(nx, ny, "lightningDist.sample", realData2D)
+!     realData2D = inputs%lightning%rate
+!     if(iret==0) call writeBIN2D(nx, ny, "lightningRate.sample", realData2D)
+!     deallocate(realData2D)
+!  end if
 
   !================================================!
   ! radar
@@ -204,24 +204,23 @@ endif
   write(*,*) "Ingesting radar data ..."
   call runRadar(trim(radarFile), cfg, inputs%model%top, kgds, inputs%radar, iret)
 
-  if(iret==0) then
-     allocate(realData3D(nx, ny, 7))
-     realData3D = 0
-     realData3D = inputs%radar%vipPct
-     call writeBIN3D(nx, ny,7, "radarvip.sample", realData3D)
-     deallocate(realData3D)
-
-     allocate(realData3D(nx, ny, 2))
-     realData3D = 0
-     realData3D = inputs%radar%dbzPct
-     call writeBIN3D(nx, ny,2, "radardbz.sample", realData3D)
-     deallocate(realData3D)
-  end if
+!  if(iret==0) then
+!     allocate(realData3D(nx, ny, 7))
+!     realData3D = 0
+!     realData3D = inputs%radar%vipPct
+!     call writeBIN3D(nx, ny,7, "radarvip.sample", realData3D)
+!     deallocate(realData3D)
+!
+!     allocate(realData3D(nx, ny, 2))
+!     realData3D = 0
+!     realData3D = inputs%radar%dbzPct
+!     call writeBIN3D(nx, ny,2, "radardbz.sample", realData3D)
+!     deallocate(realData3D)
+!  end if
 
   !================================================!
   ! run algo
   !================================================!
-print *, "inputs%sat%ch4 2", allocated(inputs%sat%ch4)
 
   ! adjust some inputs
   write(*,*) LF, "*****************************************"
@@ -268,7 +267,8 @@ print *, "inputs%sat%ch4 2", allocated(inputs%sat%ch4)
   elseif(igrib == 2) then
      call writeIcing(output_file, outdat, iret, gfld=gfld)
   end if
-write(*,*) "writing iret=", iret
+  write(*,*) "writing iret=", iret
+
   !================================================!
   ! pressure2flight, category embedded
   !================================================!
@@ -287,7 +287,7 @@ write(*,*) "writing iret=", iret
 
 
   !================================================!
-  ! write cip outputs to GRIB 1 file
+  ! write cip outputs to GRIB file
   !================================================!
   write(*,*) LF, "*****************************************"
   outdat_FL%ctype="FLT"

@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------
 !
-! MODULE: DerivedFields
+! MODULE: Derived_Fields
 !
 ! DESCRIPTION:
 !> Calculate derived fields
@@ -11,14 +11,14 @@
 !
 !------------------------------------------------------------------------------
 
-module DerivedFields
+module Derived_Fields
 
   use Kinds
 
   IMPLICIT NONE
 
   private
-  public calculateDerivedFields
+  public calculateDerived_Fields
 
   !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
   ! Parameters
@@ -41,7 +41,7 @@ contains
 !> GFS has different ice condensate and liquid condensate from RAP and NAM 
 !------------------------------------------------------------------------------
 
-  subroutine calculateDerivedFields(nx, ny, nz, cmodel, fields, modelData, iret)
+  subroutine calculateDerived_Fields(nx, ny, nz, cmodel, fields, modelData, iret)
     IMPLICIT NONE
 
     integer, intent(in) :: nx, ny, nz
@@ -132,7 +132,7 @@ contains
 
     iret = 0
     return
-  end subroutine calculateDerivedFields
+  end subroutine calculateDerived_Fields
 
 !------------------------------------------------------------------------------
 ! Description
@@ -495,4 +495,4 @@ contains
     return
   end function m_calcESubS
 
-end module DerivedFields
+end module Derived_Fields

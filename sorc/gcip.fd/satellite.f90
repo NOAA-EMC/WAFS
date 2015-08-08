@@ -216,7 +216,8 @@ CONTAINS
 
     ! convert report time to minutes since julian day 00:00
     mRuntime = IW3JDN(iruntime(1), iruntime(2), iruntime(3))
-    mRuntime = mRuntime*24*60 + iruntime(4)*60 + iruntime(5)
+    ! iruntime(4) - time zone; iruntime(5) - hour
+    mRuntime = mRuntime*24*60 + (iruntime(4) + iruntime(5))*60
     ! convert to since 00:00, Jan 1 1970 UTC
     mRuntime = mRuntime - IW3JDN(1970, 1, 1)*24*60
 
@@ -993,11 +994,14 @@ CONTAINS
     REAL(kind=BYTE8) ::  rightAscension, declination
 
     CALL m_calcSolarRadec(data_time, rightAscension, declination)
+    print *, "sun=", data_time, rightAscension, declination
 
     sunLon = (m_gmt2gst(data_time) - rightAscension) + 360.0
     sunLon = sunLon - 360.0*FLOOR(sunLon/360.0)
     sunLat = declination
     sunDist = Earth2SunDist + EquatorEarthRadius
+    sunLon = 360. - sunLon
+    print *, "sunlon=", sunLon
 
     RETURN
   END SUBROUTINE m_getSolarPosition

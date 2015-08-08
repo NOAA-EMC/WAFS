@@ -151,32 +151,6 @@ contains
         end do
        end do
     end do
-!unit = 10
-!open(unit, file="/ptmpp1/Yali.Mao/satcld.sample", form="unformatted", access="direct", recl=m_nx*m_ny*4)
-!write(unit, rec=1, iostat=iret) m_satcloud(:, :)
-!if(iret /= 0) write(*,*) iret
-!close(unit)
-!deallocate(m_satcloud)
-
-!open(unit, file="/ptmpp1/Yali.Mao/ctt.sample", form="unformatted", access="direct", recl=m_nx*m_ny*m_nz*4)
-!write(unit, rec=1, iostat=iret) m_ctt(:, :, :)
-!if(iret /= 0) write(*,*) iret
-!close(unit)
-!deallocate(m_ctt)
-
-!unit = 10
-!open(unit, file="/ptmpp1/Yali.Mao/metarPrcp.sample", form="unformatted", access="direct", recl=m_nx*m_ny*4)
-!write(unit, rec=1, iostat=iret) m_metarPrcp(:, :)
-!if(iret /= 0) write(*,*) iret
-!close(unit)
-!deallocate(m_metarPrcp)
-
-!unit = 10
-!open(unit, file="/ptmpp1/Yali.Mao/modSLW.sample", form="unformatted", access="direct", recl=m_nx*m_ny*m_nz*4)
-!write(unit, rec=1, iostat=iret) m_slw(:, :, :)
-!if(iret /= 0) write(*,*) iret
-!close(unit)
-!deallocate(m_slw)
 
     ! release memory of id and int_d
     call cleanup_Algo(id, int_d)

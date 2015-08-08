@@ -119,36 +119,29 @@ contains
 ! * 
 ! * Returns:     category value
 ! *
-! * Notes: 
-! *             1 = trace      0.175
-! *             2 = light      0.375
-! *             3 = moderate   0.7
-! *             4 = heavy      1.0
+  ! 0 = none (0, 0.08) 
+  ! 4 = trace [0.08, 0.21]
+  ! 1 = light (0.21, 0.37]
+  ! 2 = moderate (0.37, 0.67]
+  ! 3 (no value yet, July 2015)
+  ! 5 = heavy (0.67, 1]
+  !http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-207.shtml
 !*
   real function mapSev2Cat(data)
     real, intent(in) :: data
 
-    type :: map2D
-      real :: key
-      real :: value
-    end type map2D
-    integer, parameter :: N_SMAP = 4
-    type(map2D) :: SEVERITY_CATEGORY_MAP(N_SMAP) = (/ map2D(0.175, 1), &
-         map2D(0.375, 2), map2D(0.7, 3), map2D(1, 4) /)
+    if (data < 0.08) then
+       mapSev2Cat = 0.0
+    elseif (data <= 0.21) then
+       mapSev2Cat = 4.
+    else if(data <= 0.37) then
+       mapSev2Cat = 1.0
+    else if(data <= 0.67) then
+       mapSev2Cat = 2.0
+    else
+       mapSev2Cat = 5.0
+    endif
 
-    type(map2D), pointer :: current(:)
-  
-    integer :: i
-  
-    do i = 1, N_SMAP
-       if (data <= SEVERITY_CATEGORY_MAP(i)%key) then
-          ! the missing/bad value is categorized as zero
-          mapSev2Cat = SEVERITY_CATEGORY_MAP(i)%value
-          return
-       end if
-    end do
-
-    mapSev2Cat = 0.0  ! any value greater than 1 (if possible) is categorized as zero
     return
   end function mapSev2Cat
 
