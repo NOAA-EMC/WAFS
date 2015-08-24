@@ -81,6 +81,7 @@ export TMPDIR=$DATA # TMPDIR must be defined for developers
 export HOMEobsproc_dump=${HOMEobsproc_dump:-$NWROOTp1/obsproc_dump.${obsproc_dump_ver}}
 export USHobsproc_dump=${USHobsproc_dump:-$HOMEobsproc_dump/ush}
 #obsproc_shared_bufr_dumplist_ver must be defined
+export obsproc_shared_bufr_dumplist_ver=${obsproc_shared_bufr_dumplist_ver:-v1.1.0}
 
 ############################################
 # Set up the input/output directory
