@@ -92,7 +92,7 @@ contains
     nx = kgds(2)
     ny = kgds(3)
     nxy = nx * ny
-print *, "model kgds=", kgds
+    print *, "model kgds=", kgds(1:22)
 
     ! return if not a proper grid number
     igrid = kpds(3)

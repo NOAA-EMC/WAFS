@@ -170,7 +170,7 @@ contains
     ! functions outside 
     integer :: IW3JDN
 
-integer :: count, count1
+    integer :: count_valid, count_reports
 
     getPireps = 0
     nullify(pireps%next)
@@ -195,8 +195,8 @@ integer :: count, count1
     call openbf(iunit,'IN',iunit)
     call datelen(10)
 
-count = 0
-count1 = 0
+    count_reports = 0
+    count_valid = 0
 
     loop_msg: do while(ireadmg(iunit, msgtype, report_date) == 0)
 
@@ -217,8 +217,8 @@ count1 = 0
           ! only collect PIREP data in the time window
           ireport_time(1:5) = headers(1:5)
           write(report_time, "((I4,4I2.2))") (ireport_time(i), i=1,5)
-!write(*,*) report_time, " ", start_time, " ", end_time
-count1 = count1 + 1
+          !write(*,*) report_time, " ", start_time, " ", end_time
+          count_reports = count_reports + 1
           if(report_time < start_time .or. report_time > end_time) cycle
 
           ! airframe icing (height of base of icing, height of top of icing)
@@ -227,7 +227,7 @@ count1 = count1 + 1
 
           ! raw PIREP report
           call ufbint(iunit, raw, 1, size(raw), iret, 'RRSTG')
-count = count + 1
+          count_valid = count_valid + 1
           ! Must have a valid location
           if(headers(6) > BUFR_MISSING .or. headers(7) > BUFR_MISSING) cycle
 
@@ -279,7 +279,7 @@ print *, icingNumReports, icing(1,1),  icing(2,1), icing(1,2),  icing(2,2)
        end do loop_readsb
     end do loop_msg
 
-print *, "count =", count, count1
+    print *, "PIREPs count(valid, reports) =", count_valid, count_reports
 
     close(iunit)
 

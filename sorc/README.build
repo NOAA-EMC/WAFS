@@ -1,4 +1,4 @@
-Library are defined in Module_wafs_v3.0.1
+Library are defined in Module_wafs_v3.0.2
 
 To build codes:
 
@@ -6,6 +6,6 @@ To build codes:
      1) bash
      2) module purge
      3) module use .
-     4) module load Module_wafs_v3.0.1
+     4) module load Module_wafs_v3.0.2
      5) ./build.sh
 

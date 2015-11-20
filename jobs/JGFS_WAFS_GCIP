@@ -103,7 +103,8 @@ fi
 #export COMINsat=ftp://140.90.107.15/pub/smcd/opdb/globalmosaicgeosat/testdata
 #
 #ftp://satepsanone.nesdis.noaa.gov/2day/gmosaic/
-export COMINsat=ftp://140.90.213.161/2day/gmosaic
+export COMINsat=${COMINsat:-ftp://140.90.213.161/2day/gmosaic}
+#export COMINsat=${COMINsat:/dcom/us007003/$PDY/mcidas}
 
 #  radar data
 export COMINradar=${COMINradar:-$COMROOT/hourly/prod/radar.$PDY}

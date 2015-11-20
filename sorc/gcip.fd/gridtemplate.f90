@@ -396,18 +396,11 @@ contains
     real, allocatable :: crot(:,:), srot(:,:)
     real :: fill
 
-    !
-integer :: count
-
     fill = MISSING
 
     nx = tgds(2)
     ny = tgds(3)
 
-print *, "sgds"
-print *, sgds
-print *, "tgds"
-print *, tgds
 
     ! get earth coordinate (lat, lon) for each grid point of the target tgds
     allocate(x(nx, ny))
@@ -420,50 +413,24 @@ print *, tgds
     npts = nx * ny
     lrot = 0       ! only '1' is a valid value to turn on crot and srot.
     call GDSWIZ(tgds,iopt,npts,fill,x,y,lon,lat,iret,lrot,crot,srot)
+    write(*,*) "convertProjection: get target (lat,lon), numbers:", iret
 
-print *, "get earth coords"
-
-    ! obtain value from source projection data to fill in the target data
-!    npts = 1
-!    iopt = -1     ! COMPUTE GRID COORDS OF SELECTED EARTH COORDS
-!    do j = 1, ny
-!       do i = 1, nx
-!          lon0 = lon(i,j)
-!          lat0 = lat(i,j)
-!          call GDSWIZ(sgds,iopt,npts,fill,x0,y0,lon0,lat0,iret,lrot,crot0,srot0)
-!       end do
-!    end do
-!          i0 = nint(x0)
-!          j0 = nint(y0)
-!print *, i, j, lat0, lon0, i0, j0
-!          if( (i0 >= 1 .and. i0 <= sgds(2)) .and. (j0 >= 1 .and. j0 <= sgds(3))) then
-!             tdata(i,j) = sdata(i0,j0)
-!          end if
-!       end do
-!    end do
     iopt = -1 ! COMPUTE GRID COORDS OF SELECTED EARTH COORDS
     
     call GDSWIZ(sgds,iopt,npts,fill,x,y,lon,lat,iret,lrot,crot,srot)
+    write(*,*) "convertProjection: convert target (lat,lon) to source (x,y), numbers:", iret
 
-count = 0
     tdata(:,:) = MISSING
     do j = 1, ny
        do i = 1, nx
           i0 = nint(x(i,j))
           j0 = nint(y(i,j))
-!print *, i, j, lat0, lon0, i0, j0
           if( (i0 >= 1 .and. i0 <= sgds(2)) .and. (j0 >= 1 .and. j0 <= sgds(3))) then
              tdata(i,j) = sdata(i0,j0)
-count = count + 1
           end if
        end do
     end do
           
-
-
-
-print *, "get grid coords", count
-
     deallocate(x)
     deallocate(y)
     deallocate(crot)

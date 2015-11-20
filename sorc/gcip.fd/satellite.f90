@@ -113,8 +113,7 @@ CONTAINS
     ! functions outside 
     integer :: IW3JDN
 
-    INTEGER :: nx, ny, i, j, n
-
+    INTEGER :: nx, ny, ii, jj, i, j, n
 
     ! configuration fields
     CFG_calibrations => cfg%sat%calibrations
@@ -184,18 +183,37 @@ CONTAINS
        elseif(n == 4) then	! satellite sensor sources
           allocate(ss(nx, ny), stat=iret)
           call convertProjection(sgds, calibratedData, tgds, ss, iret)
-          where(abs(ss(:,:) - CFG_ss(1).key) < 0.1)
-             ss(:,:) = CFG_ss(1).value
-          elsewhere(abs(ss(:,:) - CFG_ss(2).key) < 0.1)
-             ss(:,:) = CFG_ss(2).value
-          elsewhere(abs(ss(:,:) - CFG_ss(3).key) < 0.1)
-             ss(:,:) = CFG_ss(3).value
-          elsewhere(abs(ss(:,:) - CFG_ss(4).key) < 0.1)
-             ss(:,:) = CFG_ss(4).value
-          elsewhere
-             ss(:,:) = MISSING
-          endwhere
 
+          ! some printouts
+          do jj = 1, 2
+             j = ny/3 * jj
+             do ii = 1, 5
+                i=nx/6*ii
+                write(*,"(A,2I6,1X,A,F10.2)") "i,j=",i,j,"ss =", ss(i,j)
+             end do
+          end do
+
+          ! assign satellite longitude to the corresponding sensor source (ss) number
+          do j = 1, ny
+          do i = 1, nx
+             do ii = 1, size(CFG_ss)
+                if(abs(ss(i,j)-CFG_ss(ii).key)  < 0.1) then
+                   ss(i,j) = CFG_ss(ii).value
+                   exit
+                end if
+             end do
+             ! no matching satellite, try the well known SS numbers
+             if (ii > size(CFG_ss)) then
+                if(ss(i,j) >= 51. .and. ss(i,j) <= 58.) then
+                   ss(i,j) = 0.0
+                elseif(ss(i,j) >= 84. .and. ss(i,j) <= 85.) then
+                   ss(i,j) = 145.0
+                else
+                   ss(i,j)=MISSING
+                end if
+             end if
+          end do
+          end do
        end if
 
        if(iret /= 0) then
@@ -206,6 +224,29 @@ CONTAINS
        deallocate(calibratedData)
 
     END DO loop_n
+
+    where(ss(:,:) < MISSING + 1)
+       satData%vis(:,:) = MISSING
+       satData%ch2(:,:) = MISSING
+       satData%ch4(:,:) = MISSING
+    endwhere
+
+    ! If ch2 or ch4 is missing, mark this grid point useless
+    where(satData%ch2(:,:) < MISSING + 1 .or. satData%ch4(:,:) < MISSING + 1)
+       satData%vis(:,:) = MISSING
+       satData%ch2(:,:) = MISSING
+       satData%ch4(:,:) = MISSING
+    end where
+
+    ! some printouts
+    do jj = 1, 2
+       j = ny/3 * jj
+       do ii = 1, 5
+          i=nx/6*ii
+          write(*,"(A,2I6,1X,A,4F10.2)") "i,j=",i,j,"vis ch2 ch4 ss=",satData%vis(i,j),satData%ch2(i,j),satData%ch4(i,j), ss(i,j)
+       end do
+    end do
+
 
     ! Now all data on the target satellite projection are ready
     ! (an expanded version of model projection)
@@ -525,11 +566,11 @@ CONTAINS
        endif
 
        kgds(9) = stdlat
-       ! scanning mode:                                                                    
-       ! Satellite data is stored from North/top to South/bottom                           
-       !                          from West/left to East/right                             
-       kgds(11) = 0                                                                        
-       kgds(12) = dx  ! unit: meter                                   
+       ! scanning mode:
+       ! Satellite data is stored from North/top to South/bottom
+       !                          from West/left to East/right
+       kgds(11) = 0 
+       kgds(12) = dx  ! unit: meter
        kgds(13) = dx  ! unit: meter
        kgds(20) = 255
     case default
@@ -882,6 +923,8 @@ CONTAINS
        visible = MISSING
     ELSE IF (ABS(sol_zen) < CFG_SolarAngleMax) THEN
        visible = visible / COS(sol_zen * D2R)
+       ! Can get rid of some calibration error
+       if (visible > 100.) visible = MISSING
     else
        visible = MISSING
     END IF
@@ -915,7 +958,7 @@ CONTAINS
     REAL, DIMENSION(:,:), INTENT(inout) :: sol_zen
     INTEGER, INTENT(out) :: iret
 
-    integer :: nx, ny
+    integer :: nx, ny, ii, jj, i, j
 
     TYPE(xyz_t), ALLOCATABLE :: gridGeoPos(:,:), gridTanPlaneE(:,:), gridTanPlaneN(:,:)
 
@@ -962,6 +1005,20 @@ CONTAINS
        rel_az(:,:) = MISSING
     end where
 
+
+    ! Azimuth should be added 270 degree. will not add 270 since only relative azimuth is used.
+
+    ! some printouts
+    do jj = 1, 2
+       j = ny/3 * jj
+       do ii = 1, 5
+          i=nx/6*ii
+          write(*,"(A,2I6,1X,A,F10.2,1X,A,F10.2)") "i,j=",i,j,"sunLat=",sunLat, "relative azimuth=", rel_az(i,j)
+          write(*,"(A,3F10.2)") "sun      lon,zenith,azimuth=",sunLon,sol_zen(i,j),sol_az(i,j)
+          write(*,"(A,3F10.2)") "satelite lon,zenith,azimuth=",satLon(i,j),sat_zen(i,j),sat_az(i,j)
+       end do
+    end do
+
     DEALLOCATE(gridGeoPos)
     DEALLOCATE(gridTanPlaneE)
     DEALLOCATE(gridTanPlaneN)
@@ -982,6 +1039,7 @@ CONTAINS
   ! Note:
   !  Since the reference system is longitude is positive westward, the
   !  calculated solar longitude is in [0,180] West, and in [180, 360] East
+  !  Then converted to positive eastward.
   !
   !----------------------------------------------------------------------------
   SUBROUTINE m_getSolarPosition(data_time, sunLon, sunLat, sunDist)
@@ -994,7 +1052,7 @@ CONTAINS
     REAL(kind=BYTE8) ::  rightAscension, declination
 
     CALL m_calcSolarRadec(data_time, rightAscension, declination)
-    print *, "sun=", data_time, rightAscension, declination
+    write(*, "(A, I12, 2F10.3)")"sun time,right ascension, declination=", data_time, rightAscension, declination
 
     sunLon = (m_gmt2gst(data_time) - rightAscension) + 360.0
     sunLon = sunLon - 360.0*FLOOR(sunLon/360.0)
@@ -1135,7 +1193,7 @@ CONTAINS
     integer :: iopt, npts, lrot, nret
     real :: fill, crot, srot
 
-    integer :: nx, ny
+    integer :: nx, ny, ii, jj, i, j
 
     real(kind=BYTE8), allocatable :: rlat(:,:), rlon(:,:)
 
@@ -1163,6 +1221,15 @@ CONTAINS
     p(:,:) = m_geocentricP(1.0_BYTE8, rlat(:,:), rlon(:,:))
     e(:,:) = m_tangentPlaneE(rlon(:,:))
     n(:,:) = m_tangentPlaneN(rlat(:,:), rlon(:,:))
+
+    ! some printouts
+    do jj = 1, 2
+       j = ny/3 * jj
+       do ii = 1, 5
+          i=nx/6*ii
+          write(*,"(A,2I6,1X,A,2F10.2)") "i,j=",i,j,"satellite grid (lat, lon)=",lat(i,j), lon(i,j)
+       end do
+    end do
 
     deallocate(lat)
     deallocate(lon)
@@ -1507,7 +1574,8 @@ CONTAINS
        loop_i: DO i = 1, nx
 
           ! if either channel 2 or channel 4 are bad go on to next point.
-          IF( micron039(i,j) < MISSING + 1. .OR. micron110(i,j) <  MISSING + 1.) THEN
+          IF( micron039(i,j) < MISSING + 1. .OR. micron110(i,j) <  MISSING + 1. &
+             .or. sat_zen(i,j) < MISSING + 1. .OR. rel_az(i,j) <  MISSING + 1.) THEN
              CYCLE ! sw_refl (i, j) = MISSING
           END IF
 
@@ -1600,7 +1668,6 @@ CONTAINS
     END IF
 
     WRITE(fmtStr, "(A4, I2.2, A5)") "(1x,",NUM_SUN_ARF , "F8.4)"
-
     DO k = 1,  NUM_SAT_ARF! difference between Fortran & C++
        DO j = 1, NUM_REL_AZIM_ARF
           READ(iunit, fmtStr) lowCloudArf(:, j, k)
@@ -1608,6 +1675,9 @@ CONTAINS
     END DO
 
     CLOSE(iunit, iostat=iret)
+
+    ! some printouts
+    write(*,*)"ARF table 5,5,1=", lowCloudArf( 5,5,1)
 
     !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
     ! Calculate the (upper) box boundaries 
@@ -1774,10 +1844,11 @@ CONTAINS
     f0_gvar_ch2 = 1.0E7*f0_gvar_ch2/PI  ! convert it to mW m^-2 cm^-1 / pi 
 
     !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
-    !  If sun angle is below the horizon then return 
+    !  If sun angle is larger than SolarAngleMax 
+    !  (to be consistent with visible channel)
     !  If ch4 temperature is too cold then return 
     !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
-    IF (sunz < 0 .OR. ch4 < CFG_MICRON_110ShortwaveReflThreshold) THEN
+    IF (sunz < COS(CFG_SolarAngleMax*D2R) .OR. ch4 < CFG_MICRON_110ShortwaveReflThreshold) THEN
        m_reflectance = 0.0
        RETURN
     END IF
@@ -1794,6 +1865,11 @@ CONTAINS
 
     top = radiance - emission
     bottom = f0_gvar_ch2*sunz*arf  - emission
+
+    if(abs(bottom) < 0.01) then
+       m_reflectance = 0.0
+       return
+    endif
 
     !Avoid false positives   
     IF (top <= 0.0 .OR. bottom <= 0.0) THEN

@@ -102,7 +102,7 @@ contains
     nx = kgds(2)
     ny = kgds(3)
 
-print *, "model kgds=", kgds
+print *, "model kgds=", kgds(1:22)
 
     ! return if not a proper grid number
     if( cmodel == 'RAP' .and. (igrid /= 252 .and. igrid /= 130)) then

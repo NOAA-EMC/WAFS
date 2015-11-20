@@ -1038,7 +1038,7 @@ contains
              ! If ch2-ch4 is between -2.1C and 4.1C, we are seeing ground (NO CLOUD).
              ! If surface observation (METAR) indicates BKN or greater - CLOUDY.
              ((sd%ch4(k) > MISSING+1. .and. sd%ch4(k) <= 5.0) .and. &
-              ((sd%ch2mch4(k)<=-2.1 .or. sd%ch2mch4(k)>=4.1) &
+              (((sd%ch2mch4(k)>MISSING+1. .and. sd%ch2mch4(k)<=-2.1) .or. sd%ch2mch4(k)>=4.1) &
                .or. id%cloud_cover >= 4.0)) .or. &
              ! Just like 2nd rule, except now IR (ch4) is between +20C and +5C, AND ch2-ch4 > 10C - CLOUDY.
              ! "Add on" to find warmer cloud tops.
