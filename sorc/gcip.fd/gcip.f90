@@ -57,8 +57,8 @@ program GCIP
 
   integer :: nx, ny, nz, nfiner, iret
 
-real, allocatable :: realData2D(:,:) ! used for output data into binary file
-real, allocatable :: realData3D(:,:, :) ! used for output data into binary file
+!real, allocatable :: realData2D(:,:) ! used for output data into binary file
+!real, allocatable :: realData3D(:,:, :) ! used for output data into binary file
 
   call parse_args(iruntime, configFile, modelFile, satFiles, &
                 metarFile, shipFile, radarFile, pirepFile, &
@@ -152,15 +152,15 @@ real, allocatable :: realData3D(:,:, :) ! used for output data into binary file
 
   nfiner = cfg%sat%nfiner
 
-if(iret == 0) then
-call writeBIN2D(nx*nfiner, ny*nfiner, "ch2.sample", inputs%sat%ch2)
-call writeBIN2D(nx*nfiner, ny*nfiner, "vis.sample", inputs%sat%vis)
-call writeBIN2D(nx*nfiner, ny*nfiner, "ch4.sample", inputs%sat%ch4)
-call writeBIN2D(nx*nfiner, ny*nfiner, "ch2mch4.sample", inputs%sat%ch2mch4)
-call writeBIN2D(nx*nfiner, ny*nfiner, "sunz.sample", inputs%sat%sunz)
-call writeBIN2D(nx*nfiner, ny*nfiner, "ch2_ref.sample", inputs%sat%ch2_ref)
-call writeBIN2D(nx*nfiner, ny*nfiner, "satice.sample", inputs%sat%satice)
-endif
+!if(iret == 0) then
+!call writeBIN2D(nx*nfiner, ny*nfiner, "ch2.sample", inputs%sat%ch2)
+!call writeBIN2D(nx*nfiner, ny*nfiner, "vis.sample", inputs%sat%vis)
+!call writeBIN2D(nx*nfiner, ny*nfiner, "ch4.sample", inputs%sat%ch4)
+!call writeBIN2D(nx*nfiner, ny*nfiner, "ch2mch4.sample", inputs%sat%ch2mch4)
+!call writeBIN2D(nx*nfiner, ny*nfiner, "sunz.sample", inputs%sat%sunz)
+!call writeBIN2D(nx*nfiner, ny*nfiner, "ch2_ref.sample", inputs%sat%ch2_ref)
+!call writeBIN2D(nx*nfiner, ny*nfiner, "satice.sample", inputs%sat%satice)
+!endif
 
   !================================================!
   ! pirep            default: MISSING
