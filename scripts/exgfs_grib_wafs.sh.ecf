@@ -18,6 +18,7 @@ echo "JWAFS_00/06/12/18 GFS postprocessing"
 echo "------------------------------------------------"
 echo "History: OCT 2004 - First implementation of this new script."
 echo "         Aug 2015 - Modified for Phase II"
+echo "         Dec 2015 - Modified for input model data in Grib2"
 echo " "
 #####################################################################
 set +x
@@ -48,7 +49,10 @@ set -x
 icnt=1
 while [ $icnt -lt 1000 ]
 do
-  if [ -s $COMIN/${RUN}.${cycle}.pgrbf$fcsthrs ]
+#  if [ -s $COMIN/${RUN}.${cycle}.pgrbf$fcsthrs ]
+# file name and forecast hour of GFS model data in Grib2 are 3 digits
+  fcsthrs000="$(printf "%03d" $fcsthrs)"
+  if [ -s $COMIN/${RUN}.${cycle}.pgrb2.1p00.f$fcsthrs000 ]
   then
      break
   fi

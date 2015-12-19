@@ -69,7 +69,10 @@ for hour in $fcsthrs_list
 do 
    if test ! -f pgrbf${hour}
    then
-      cpfs $COMIN/${RUN}.${cycle}.pgrbf${hour} pgrbf${hour}
+#      cpfs $COMIN/${RUN}.${cycle}.pgrbf${hour} pgrbf${hour}
+#      file name and forecast hour of GFS model data in Grib2 are 3 digits
+      hour000="$(printf "%03d" $hour)"
+      $CNVGRIB -g21 $COMIN/${RUN}.${cycle}.pgrb2.1p00.f$hour000 pgrbf${hour}
    fi
 
    for gid in 37 38 39 40 41 42 43 44;
