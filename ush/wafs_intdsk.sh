@@ -93,8 +93,9 @@ do
       chmod 775 $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${hour}
       if [ "$SENDDBN" = "YES" ]
       then
-         $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_INT $job $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${hour}
-         $DBNROOT/bin/dbn_alert MODEL GFS_WAFSG  $job $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${hour}
+# turn off GRIB1 alert per requests from Carissa and Steven -  2015/12/22
+#         $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_INT $job $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${hour}
+#         $DBNROOT/bin/dbn_alert MODEL GFS_WAFSG  $job $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${hour}
 
          if [ $SENDDBN_GB2 = YES ]
          then
