@@ -94,8 +94,9 @@ do
       if [ "$SENDDBN" = "YES" ]
       then
 # turn off GRIB1 alert per requests from Carissa and Steven -  2015/12/22
-#         $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_INT $job $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${hour}
-#         $DBNROOT/bin/dbn_alert MODEL GFS_WAFSG  $job $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${hour}
+# turn back on GRIB1 alert per requests from Carissa - 2016/01/27
+         $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_INT $job $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${hour}
+         $DBNROOT/bin/dbn_alert MODEL GFS_WAFSG  $job $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${hour}
 
          if [ $SENDDBN_GB2 = YES ]
          then
