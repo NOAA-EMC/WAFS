@@ -41,22 +41,6 @@ cd $DATA
 # Define Script/Exec and Variables
 #####################################
 
-#export cyc=${cyc:-00}
-#export cycle=${cycle:-t${cyc}z}
-#export jlogfile=${jlogfile:-jlogfile}
-#export envir=${envir:-prod}
-
-#export GRBIDX=/nwprod/util/exec/grbindex
-#export WGRIB2=/nwprod/util/exec/wgrib2
-#export CNVGRIB=/nwprod/util/exec/cnvgrib
-#export EXECutil=${EXECutil:-/nwprod/util/exec}
-#export PARMutil=${PARMutil:-/nwprod/util/parm}
-#export SENDCOM=${SENDCOM:-NO}
-#export SENDDBN=${SENDDBN:-NO}
-#export RUN=${RUN:-gfs}
-#export NET=${NET:-gfs}
-#export COMIN=${COMIN:-/com/$NET/$envir/$NET.$PDY}
-
 echo " ------------------------------------------"
 echo " BEGIN MAKING ${NET} WAFS PRODUCTS"
 echo " ------------------------------------------"
@@ -69,10 +53,24 @@ for hour in $fcsthrs_list
 do 
    if test ! -f pgrbf${hour}
    then
-#      cpfs $COMIN/${RUN}.${cycle}.pgrbf${hour} pgrbf${hour}
+#      cp $COMIN/${RUN}.${cycle}.pgrbf${hour} pgrbf${hour}
+
 #      file name and forecast hour of GFS model data in Grib2 are 3 digits
-      hour000="$(printf "%03d" $hour)"
-      $CNVGRIB -g21 $COMIN/${RUN}.${cycle}.pgrb2.1p00.f$hour000 pgrbf${hour}
+#      export fhr3=$hour
+#      if test $fhr3 -lt 100
+#      then
+#         export fhr3="0$fhr3"
+#      fi
+       fhr3="$(printf "%03d" $(( 10#$hour )) )"
+
+#      To solve Bugzilla #408: remove the dependency of grib1 files in gfs wafs job in next GFS upgrade
+#      Reason: It's not efficent if simply converting from grib2 to grib1 (costs 6 seconds with 415 records)
+#      Solution: Need to grep 'selected fields on selected levels' before CNVGRIB (costs 1 second with 92 records)
+       ln -s $COMIN/${RUN}.${cycle}.pgrb2.1p00.f$fhr3  pgrb2f${hour}
+       $WGRIB2 pgrb2f${hour} | grep -F -f $PARMgfs/grib_wafs.grb2to1.list | $WGRIB2 -i pgrb2f${hour} -grib pgrb2f${hour}.tmp
+       export IOBUF_PARAMS='*:size=32M:count=4:verbose'
+       $CNVGRIB -g21 pgrb2f${hour}.tmp  pgrbf${hour}
+       unset IOBUF_PARAMS
    fi
 
    for gid in 37 38 39 40 41 42 43 44;
@@ -86,9 +84,9 @@ do
       $CNVGRIB -g12 -p40 wafs${NET}${gid}.t${cyc}z.gribf${hour} wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2
       $WGRIB2 wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2 -s >wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2.idx
  
-      cpfs wafs${NET}${gid}.t${cyc}z.gribf${hour}   $COMOUT
-      cpfs wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2 $COMOUT
-      cpfs wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2.idx $COMOUT
+      cp wafs${NET}${gid}.t${cyc}z.gribf${hour}   $COMOUT
+      cp wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2 $COMOUT
+      cp wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2.idx $COMOUT
 
       chmod 775 $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${hour}
       if [ "$SENDDBN" = "YES" ]
@@ -98,7 +96,8 @@ do
          $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_INT $job $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${hour}
          $DBNROOT/bin/dbn_alert MODEL GFS_WAFSG  $job $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${hour}
 
-         if [ $SENDDBN_GB2 = YES ]
+#         if [ $SENDDBN_GB2 = YES ]
+         if [ $SENDDBN = YES ]
          then
 
          $DBNROOT/bin/dbn_alert MODEL GFS_WAFSG_GB2 $job $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${hour}.grib2
@@ -108,7 +107,7 @@ do
 
       fi
    done
-   rm tmpfile pgrbf${hour}
+#   rm tmpfile pgrbf${hour} pgrb2f${hour} pgrb2f${hour}.tmp
 done
 
 msg="wafs_intdsk completed normally"

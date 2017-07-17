@@ -28,29 +28,13 @@ if test $num -ge 2
 then
    echo " Appropriate number of arguments were passed"
    set -x
-#   export EXECutil=${EXECutil:-/nwprod/util/exec} 
-#   export PARMutil=${PARMutil:-/nwprod/util/parm} 
-#   export envir=${envir:-prod} 
-#   export jlogfile=${jlogfile:-jlogfile} 
-#   export NET=${NET:-gfs} 
-#   export RUN=${RUN:-gfs} 
-#   export cyc=${cyc:-00} 
-#   export cycle=${cycle:-t${cyc}z} 
-#   export SENDCOM=${SENDCOM:-NO}
-#   export SENDDBN=${SENDDBN:-NO}
    if [ -z "$DATA" ]
    then
       export DATA=`pwd`
       cd $DATA
-#      /nwprod/util/ush/setup.sh
-#      /nwprod/util/ush/setpdy.sh
       setpdy.sh
       . PDY
    fi
-#   export COMIN=${COMIN:-/com/$NET/$envir/$NET.$PDY} 
-#   export PCOM=${PCOM:-/pcom/$NET} 
-#   export job=${job:-interactive} 
-#   export pgmout=${pgmout:-OUTPUT.$$}
 else
    echo ""
    echo "Usage: mkwfsgbl.sh \$hour [a|b]"
@@ -73,17 +57,31 @@ do
 
    if test ! -f pgrbf${hour}
    then
-#      cpfs $COMIN/${RUN}.${cycle}.pgrbf${hour} pgrbf${hour}
+#       cp $COMIN/${RUN}.${cycle}.pgrbf${hour} pgrbf${hour}
+
 #      file name and forecast hour of GFS model data in Grib2 are 3 digits
-      hour000="$(printf "%03d" $hour)"
-      $CNVGRIB -g21 $COMIN/${RUN}.${cycle}.pgrb2.1p00.f$hour000 pgrbf${hour}
+#      export fhr3=$hour
+#      if test $fhr3 -lt 100
+#      then
+#         export fhr3="0$fhr3"
+#      fi
+       fhr3="$(printf "%03d" $(( 10#$hour )) )"
+
+#      To solve Bugzilla #408: remove the dependency of grib1 files in gfs wafs job in next GFS upgrade
+#      Reason: It's not efficent if simply converting from grib2 to grib1 (costs 6 seconds with 415 records)
+#      Solution: Need to grep 'selected fields on selected levels' before CNVGRIB (costs 1 second with 92 records)
+       ln -s $COMIN/${RUN}.${cycle}.pgrb2.1p00.f$fhr3  pgrb2f${hour}
+       $WGRIB2 pgrb2f${hour} | grep -F -f $PARMgfs/grib_wafs.grb2to1.list | $WGRIB2 -i pgrb2f${hour} -grib pgrb2f${hour}.tmp
+       export IOBUF_PARAMS='*:size=32M:count=4:verbose'
+       $CNVGRIB -g21 pgrb2f${hour}.tmp  pgrbf${hour}
+       unset IOBUF_PARAMS
    fi
 
    #
    # BAG - Put in fix on 20070925 to force the percision of U and V winds
    #       to default to 1 through the use of the wafs.namelist file.
    #
-   $COPYGB -g3 -i0 -N$PARMgfs_wafs/wafs.namelist -x pgrbf${hour} tmp
+   $COPYGB -g3 -i0 -N$PARMgfs/wafs.namelist -x pgrbf${hour} tmp
    mv tmp pgrbf${hour}
    $GRBINDEX pgrbf${hour} pgrbif${hour}
 
@@ -112,7 +110,7 @@ do
    export FORT53="com.wafs${hour}${sets}"
 
    startmsg
-   $EXECutil/makewafs < $PARMgfs_wafs/grib_wfs${NET}${hour}${sets} >>$pgmout 2>errfile
+   $EXECgfs/makewafs < $PARMgfs/grib_wfs${NET}${hour}${sets} >>$pgmout 2>errfile
    export err=$?;err_chk
 
 
@@ -122,8 +120,8 @@ do
 
    if test "$SENDCOM" = 'YES'
    then
-      cpfs xtrn.wfs${NET}${hour}${sets} $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$job
-      cpfs com.wafs${hour}${sets} $PCOM/com.wafs${cyc}${hour}${sets}.$job
+      cp xtrn.wfs${NET}${hour}${sets} $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$job
+      cp com.wafs${hour}${sets} $PCOM/com.wafs${cyc}${hour}${sets}.$job
 
       if test "$SENDDBN_NTC" = 'YES'
       then

@@ -21,7 +21,7 @@ cd $DATA
 
 # retrieve UK products
 
-cpfs $COMINuk/EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 .
+cp $COMINuk/EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 .
 #Chuang: remove CAT data from UK unblended for testing
 #$WGRIB2 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 |grep -v CAT|\
 #$WGRIB2 -i EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 -grib test.grib2
@@ -30,11 +30,11 @@ cpfs $COMINuk/EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 .
 
 # pick up US data
 
-cpfs ${COMINus}/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 .
+cp ${COMINus}/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 .
 
 # run blending code
 startmsg
-$EXECgfs_wafs/blending grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 \
+$EXECgfs/blending grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 \
 blended_${PDY}${cyc}f${ffhr}.grib2 > f${ffhr}.out
 
 err1=$?
@@ -50,8 +50,8 @@ then
    if [ $SEND_US_WAFS = "YES" -a $SEND_AWC_ALERT = "NO" ] ; then
       msg="No UK WAFS GRIB2 file or WAFS blending program. Send alert message to AWC ......"
       postmsg "$jlogfile" "$msg"
-      $USHutil/make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs_wafs/wafs_admin_msg $PCOM/wifs_admin_msg
-      $USHutil/make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs_wafs/wafs_admin_msg $PCOM/iscs_admin_msg
+      make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_admin_msg $PCOM/wifs_admin_msg
+      make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_admin_msg $PCOM/iscs_admin_msg
       if [ $SENDDBN_NTC = "YES" ] ; then
            $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/wifs_admin_msg
            $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/iscs_admin_msg
@@ -66,7 +66,8 @@ then
  echo "and $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2.idx "
  echo "and $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 "
 
- if [ $SENDDBN_GB2 = "YES" -a $SEND_US_WAFS = "YES" ] ; then
+# if [ $SENDDBN_GB2 = "YES" -a $SEND_US_WAFS = "YES" ] ; then
+ if [ $SENDDBN = "YES" -a $SEND_US_WAFS = "YES" ] ; then
    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2
    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_WIDX $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2.idx
  fi
@@ -229,7 +230,7 @@ else
 fi
 
 if [ $SENDCOM = YES ]; then
- cpfs blended_${PDY}${cyc}f${ffhr}.grib2 $COMOUT/WAFS_blended_${PDY}${cyc}f${ffhr}.grib2
+ cp blended_${PDY}${cyc}f${ffhr}.grib2 $COMOUT/WAFS_blended_${PDY}${cyc}f${ffhr}.grib2
 #cp *${ukffhr}*KWBC_${uktime}00.grib2 $COMOUT/
 fi
 
@@ -260,13 +261,13 @@ export FORT11=blended_${PDY}${cyc}f${ffhr}.grib2
 export FORT31=" "
 export FORT51=grib2.t${cyc}z.WAFS_blended_f${ffhr}
 
-$TOCGRIB2 <  $PARMgfs_wafs/grib2_blended_wafs_wifs_f${ffhr}.45 >> $pgmout 2> errfile
+$TOCGRIB2 <  $PARMgfs/grib2_blended_wafs_wifs_f${ffhr}.45 >> $pgmout 2> errfile
 
 err=$?;export err ;err_chk
 echo " error from tocgrib=",$err
 
 if [ $SENDCOM = YES ]; then
- cpfs  grib2.t${cyc}z.WAFS_blended_f${ffhr}  $PCOM/grib2.t${cyc}z.WAFS_blended_f${ffhr}
+ cp  grib2.t${cyc}z.WAFS_blended_f${ffhr}  $PCOM/grib2.t${cyc}z.WAFS_blended_f${ffhr}
 fi
 
 if [ $SENDDBN_NTC = "YES" ] ; then
@@ -277,6 +278,7 @@ if [ $SENDDBN_NTC = "YES" ] ; then
     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.t${cyc}z.WAFS_blended_f${ffhr}
 fi
 
-if [ $SENDDBN_GB2 = "YES" ] ; then
+#if [ $SENDDBN_GB2 = "YES" ] ; then
+if [ $SENDDBN = "YES" ] ; then
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_BL_GB2 $job $COMOUT/WAFS_blended_${PDY}${cyc}f${ffhr}.grib2
 fi 

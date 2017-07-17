@@ -10,22 +10,19 @@ set -x
 ############################################
 # Override some ecFlow environment variables
 ############################################
-export RUN_ENVIR=${RUN_ENVIR:-prod}
+export RUN_ENVIR=${RUN_ENVIR:-nco}
 
 export NWROOTp1=${NWROOTp1:-/nwprod}
 
 if [ ${envir} != "prod" ]; then
-  export jlogfile=${jlogfile:-$COMROOT/logs/${envir}/jlogfile}
-  export DBNROOT=$NWROOTp1/spa_util/fakedbn
   export RUN_PLOT=NO
 fi
 export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${jobid}}
-export DBNROOT=${DNBROOT:-/iodprod/dbnet_siphon}
 
 export DATAROOT=${DATAROOT:-/tmpnwprd1}
 
 # keep the working directory or not
-export KEEPDATA=${KEEPDATA:-YES}
+export KEEPDATA=${KEEPDATA:-NO}
 
 ############################################
 # Working Directory
@@ -43,8 +40,10 @@ export pgmout=OUTPUT.$$
 ############################################
 # Load the UTILITIES module
 ############################################
-module load prod_util
-module load grib_util
+#### module load prod_util
+#### module load grib_util
+#### module use /nwpara2/modulefiles
+#### module load util_shared/v1.0.3
 
 ###########################################
 # Run setpdy and initialize PDY variables
@@ -61,7 +60,7 @@ setpdy.sh
 export SENDCOM=${SENDCOM:-YES}
 export SENDECF=${SENDECF:-YES}
 export SENDDBN=${SENDDBN:-YES}  # need to set to NO for testing
-export SENDDBN_GB2=${SENDDBN_GB2:-YES}  # need to set to NO for testing
+#export SENDDBN_GB2=${SENDDBN_GB2:-YES}  # need to set to NO for testing
 export SENDDBN_NTC=${SENDDBN_NTC:-YES}  # need to set to NO for testing
 export RERUN=${RERUN:-NO}
 
@@ -72,17 +71,16 @@ export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 
 ############################################
-# Specify Execution Areas
+# Specify HOME Directory
 ############################################
-export HOMEgfs_wafs=${HOMEgfs_wafs:-$NWROOT/gfs_wafs.${gfs_wafs_ver}}
-export EXECgfs_wafs=$HOMEgfs_wafs/exec
-export FIXgfs_wafs=$HOMEgfs_wafs/fix
-export PARMgfs_wafs=$HOMEgfs_wafs/parm
-export USHgfs_wafs=$HOMEgfs_wafs/ush
-export SCRIPTSgfs_wafs=$HOMEgfs_wafs/scripts
-
-export HOMEutil=${HOMEutil:-$NWROOTp1/util.${util_ver}}
-export USHutil=$HOMEutil/ush
+#export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
+export gfs_ver=${gfs_ver:-v13.0.0}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export EXECgfs=$HOMEgfs/exec
+export FIXgfs=$HOMEgfs/fix
+export PARMgfs=$HOMEgfs/parm
+export USHgfs=$HOMEgfs/ush
+export SCRIPTSgfs=$HOMEgfs/scripts
 
 ################################################
 # Set up the INPUT and OUTPUT directories
@@ -90,11 +88,7 @@ export USHutil=$HOMEutil/ush
 export COMINus=${COMINus:-$PCOMROOT/wafs}
 export COMINuk=${COMINuk:-$DCOMROOT/us007003/$PDY/wgrbbul/ukmet_wafs}
 
-if [ $envir = "prod" ] ; then
-  export PCOM=${PCOM:-$PCOMROOT/wafs}
-else
-  export PCOM=${PCOM:-$PCOMROOT/${envir}/wafs}
-fi
+export PCOM=${PCOM:-$PCOMROOT/wafs}
 
 export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
 
@@ -162,7 +156,7 @@ fi
 ############################################
 # Execute the script.
 ############################################
-${SCRIPTSgfs_wafs}/exwafs_blending.sh.ecf
+${SCRIPTSgfs}/exwafs_blending.sh.ecf
 export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY."
@@ -172,7 +166,7 @@ postmsg "$jlogfile" "$msg"
 # This part is for developers usage only 
 # It is turned off for operational run
 ###############################################
-if [ $RUN_ENVIR != prod -a $RUN_PLOT = YES ]
+if [ $RUN_ENVIR != nco -a $RUN_PLOT = YES ]
 then
   /global/save/Hui-Ya.Chuang/WAFC/scripts/plot_wafs.sh $PDY $cyc
 fi
