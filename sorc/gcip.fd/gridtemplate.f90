@@ -53,6 +53,8 @@ module GridTemplate
   real, allocatable :: lat(:), lon(:) ! for GFS Guassian, in degree
   real :: dx, dy                      ! for RAP/NAM Lambert Conformal, in km
 
+  real, allocatable :: alat(:) ! expanded version of lat
+
 contains
 
   !----------------------------------------------------------------------------
@@ -96,6 +98,11 @@ contains
        ! deallocate mesh
        deallocate(mesh)
     end if
+
+    allocate(alat(0:ny+1))
+    alat(1:ny) = lat(1:ny)
+    alat(0)=180.-alat(1)
+    alat(ny+1)=-alat(0)
 
     return
   end subroutine initNearbyGridPoints
@@ -147,7 +154,14 @@ contains
     iopt = -1     ! COMPUTE GRID COORDS OF SELECTED EARTH COORDS
     !iopt = 1     ! COMPUTE EARTH COORDS OF SELECTED GRID COORDS
     !iopt = 0     ! COMPUTE EARTH COORDS OF ALL THE GRID POINTS
-    call GDSWIZ(kgds,iopt,npts,fill,x0,y0,lon0,lat0,ret,lrot,crot,srot)
+
+    ! call GDSWIZ modified version to avoid calling SPLAT, 
+    ! scalar value argument is used.
+    if (kgds(1) == 4) then
+       call m_gdswiz04(kgds,iopt,npts,fill,x0,y0,lon0,lat0,ret,lrot,crot,srot)
+    else
+       call GDSWIZ(kgds,iopt,npts,fill,x0,y0,lon0,lat0,ret,lrot,crot,srot)
+    endif
 
     ! with radious==0.0, only add one grid point nearest to (lat0, lon0)
     if( radius < 0.0001) then
@@ -219,6 +233,143 @@ contains
 
     return
   end subroutine getNearbyGridPoints
+
+
+  !----------------------------------------------------------------------------
+  ! DESCRIPTION:
+  !> Mimic gdswiz04.f from IPLIB, to skip SPLAT call for each observation.
+  !> This subroutine only calcuate scalar value, not an array
+  !> This subroutine depends on lat(:) initialized by initNearbyGridPoints()
+  !
+  !----------------------------------------------------------------------------
+  subroutine m_gdswiz04(kgds,iopt,npts,fill,xpts,ypts,rlon,rlat,nret,lrot,crot,srot)
+    implicit none
+
+    integer, intent(in) :: kgds(200)
+    integer, intent(in) :: iopt, npts
+    real, intent(in) :: fill
+    real :: xpts,ypts! input if iopt>=0; output if iopt<0
+    real :: rlon,rlat! output if iopt>=0; input if iopt<0
+    real, intent(out) :: nret
+    integer, intent(in) :: lrot
+    real, intent(out) :: crot,srot
+
+    integer :: im,jm,jg,iscan,jscan,nscan
+    real :: rlat1,rlat2,rlon1,rlon2,dlon
+    integer :: jh,j1,j2
+    real :: hi,xmin,xmax,ymin,ymax
+
+    integer :: j,n,ja
+    real :: wb,rlata,rlatb,yptsa,yptsb
+
+    if(npts > 1) then
+       write(*,*) "m_gdswiz04() only calculates scalar value, not an array"
+
+       if(iopt>=0) then
+          rlon=fill
+          rlat=fill
+       endif
+       if(iopt<=0) then
+          xpts=fill
+          ypts=fill
+       endif
+
+       return
+    endif
+    
+
+    if(kgds(1) == 4) then
+       im=kgds(2)
+       jm=kgds(3)
+       rlat1=kgds(4)*1.e-3
+       rlon1=kgds(5)*1.e-3
+       rlat2=kgds(7)*1.e-3
+       rlon2=kgds(8)*1.e-3
+       jg=kgds(10)*2
+       iscan=mod(kgds(11)/128,2)
+       jscan=mod(kgds(11)/64,2)
+       nscan=mod(kgds(11)/32,2)
+       hi=(-1.)**iscan
+       jh=(-1)**jscan
+       dlon=hi*(mod(hi*(rlon2-rlon1)-1+3600,360.)+1)/(im-1)
+       j1=1
+       do while(j1<jg .and. rlat1<(alat(j1)+alat(j1+1))/2)
+          j1=j1+1
+       enddo
+       j2=j1+jh*(jm-1)
+       xmin=0
+       xmax=im+1
+       if(im == nint(360./abs(dlon))) xmax=im+2
+       ymin=0.5
+       ymax=jm+0.5
+
+       nret=0
+
+       ! translate grid coordinates to earth coordinates
+       if(iopt == 0 .or. iopt == 1) then
+          if(xpts >= xmin .and. xpts <= xmax.and. &
+             ypts >= ymin .and. ypts <= ymax) then
+             rlon=mod(rlon1+dlon*(xpts-1)+3600,360.)
+             j=min(int(ypts),jm)
+             rlata=alat(j1+jh*(j-1))
+             rlatb=alat(j1+jh*j)
+             wb=ypts-j
+             rlat=rlata+wb*(rlatb-rlata)
+             nret=nret+1
+             if(lrot == 1) then
+                crot=1
+                srot=0
+             endif
+          else
+             rlon=fill
+             rlat=fill
+          endif
+
+       ! translate earth coordinates to grid coordinates
+       elseif(iopt == -1) then
+          xpts=fill
+          ypts=fill
+          if(abs(rlon)<=360 .and. abs(rlat) <= 90) then
+             xpts=1+hi*mod(hi*(rlon-rlon1)+3600,360.)/dlon
+             ja=min(int((jg+1)/180.*(90-rlat)),jg)
+             if(rlat>alat(ja)) ja=max(ja-2,0)
+             if(rlat<alat(ja+1)) ja=min(ja+2,jg)
+             if(rlat>alat(ja)) ja=ja-1
+             if(rlat<alat(ja+1)) ja=ja+1
+             yptsa=1+jh*(ja-j1)
+             yptsb=1+jh*(ja+1-j1)
+             wb=(alat(ja)-rlat)/(alat(ja)-alat(ja+1))
+             ypts=yptsa+wb*(yptsb-yptsa)
+             if(xpts>=xmin.and.xpts<=xmax .and. &
+                ypts>=ymin.and.ypts<=ymax) then
+                nret=nret+1
+                if(lrot == 1) then
+                   crot=1
+                   srot=0
+                endif
+             else
+                xpts=fill
+                ypts=fill
+             endif
+          endif
+
+       endif
+
+    ! projection unrecognized
+    else
+       if(iopt>=0) then
+          rlon=fill
+          rlat=fill
+       endif
+       if(iopt<=0) then
+          xpts=fill
+          ypts=fill
+       endif
+    endif
+
+    return
+
+  end subroutine m_gdswiz04
 
   !----------------------------------------------------------------------------
   ! DESCRIPTION:
@@ -307,6 +458,7 @@ contains
   subroutine doneNearbyGridPoints()
     if(allocated(lat)) deallocate(lat)
     if(allocated(lon)) deallocate(lon)
+    if(allocated(alat)) deallocate(alat)
   end subroutine doneNearbyGridPoints
 
 

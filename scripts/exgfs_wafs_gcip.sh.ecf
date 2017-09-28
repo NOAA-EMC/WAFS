@@ -36,6 +36,8 @@ configFile=gcip.config
 ffhr=$SHOUR
 while test $ffhr -le $EHOUR ; do
 
+echo 'before preparing data' `date`
+
   # valid time. no worry, it won't be across to another date
   vhour=$(( $ffhr + $cyc ))
   vhour=`printf "%02d" $vhour`
@@ -56,7 +58,6 @@ while test $ffhr -le $EHOUR ; do
     icnt=1
     while [ $icnt -lt $SLEEP_LOOP_MAX ] ; do
 	if [ -s $masterFile ] ; then
-	    sleep 5
 	    break
 	fi
 	sleep $SLEEP_INT
@@ -70,12 +71,12 @@ while test $ffhr -le $EHOUR ; do
     modelFile=model.grb$IGRIB
     if [ $IGRIB = 1 ] ; then
        # Grib 1 master model file processing
-       cp $masterFile $modelFile.tmp
+       cpfs $masterFile $modelFile.tmp
        $CNVGRIB -g21 $modelFile.tmp $modelFile
        rm $modelFile.tmp
     elif [ $IGRIB = 2 ] ; then
        # Grib 2 master model file processing
-       cp $masterFile $modelFile
+       cpfs $masterFile $modelFile
     fi
 
     # metar / ships / lightning / pireps
@@ -135,9 +136,8 @@ while test $ffhr -le $EHOUR ; do
 	  fi
 	done
 
-	cp $COMINsat/$satFile .
+	cpfs $COMINsat/$satFile .
       fi
-      wait 30
       if [[ -s $satFile ]] ; then
 	  satFiles="$satFiles $satFile"
       else
@@ -157,7 +157,6 @@ while test $ffhr -le $EHOUR ; do
     icnt=1
     while [ $icnt -lt $SLEEP_LOOP_MAX ] ; do
 	if [ -s $sourceRadar ] ; then
-	    sleep 5
 	    break
 	fi
 	sleep $SLEEP_INT
@@ -171,7 +170,7 @@ while test $ffhr -le $EHOUR ; do
 
     radarFile=radar.grb$IGRIB
     if [ -s $sourceRadar ] ; then
-      cp $sourceRadar $radarFile
+      cpfs $sourceRadar $radarFile
     fi
 
   fi # RUN model name
@@ -214,6 +213,8 @@ while test $ffhr -le $EHOUR ; do
 #######################################################
 # Run GCIP
 
+echo 'after preparing data' `date`
+
   export pgm=gcip
 
   cpreq $FIXgfs/gcip_near_ir_refl.table near_ir_refl.table
@@ -228,7 +229,7 @@ while test $ffhr -le $EHOUR ; do
     # Post Files to COM
     ##############################
     if [ $SENDCOM = "YES" ] ; then
-      cp $outputfile $COMOUT/$outputfile
+      cpfs $outputfile $COMOUT/$outputfile
       if [ $SENDDBN = "YES" ] ; then
 	# $DBNROOT/bin/dbn_alert GFS_WAFS GCIP $job $COMOUT/$outputfile
 	$DBNROOT/bin/dbn_alert MODEL GFS_WAFS_GCIP $job $COMOUT/$outputfile
