@@ -35,13 +35,15 @@ do
   # master file in grib1 or grib2
   # grib2 has the priority, run grib1 version only if grib2 fails
   master1=$COMIN/${RUN}.${cycle}.master.grbf${fcsthrs}
-  master2=$COMIN/${RUN}.${cycle}.master.grb2f${fcsthrs}
-  master2i=$COMIN/${RUN}.${cycle}.master.grb2if${fcsthrs}
+  # file name and forecast hour of GFS model data in Grib2 are 3 digits
+  export fcsthrs000="$(printf "%03d" $(( 10#$fcsthrs )) )"
+  master2=$COMIN/${RUN}.${cycle}.master.grb2f${fcsthrs000}
+  master2i=$COMIN/${RUN}.${cycle}.master.grb2if${fcsthrs000}
 
   icnt=1
   while [ $icnt -lt 1000 ]
   do
-    if [ -s $master2 ]
+    if [ -s $master2i ]
     then
       sleep 5
       break
@@ -78,13 +80,13 @@ do
   echo " "
   set -x
 
-  export pgm=awc_wafavn
+  export pgm=wafs_awc_wafavn
 
   if [[ -z $master2 ]] ; then 
      # ===================  process master file grib1  ===================
      # 1) new WAFS fields
-     cpreq $FIXgfs/awc_wafavn.grb1.cfg waf.cfg
-     cp $master1  masterfilef${fcsthrs}
+     cpreq $PARMgfs/wafs_awc_wafavn.grb1.cfg waf.cfg
+     cpreq $master1  masterfilef${fcsthrs}
 
      startmsg
      $EXECgfs/$pgm -g 1 -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb  >> $pgmout  2> errfile
@@ -93,11 +95,11 @@ do
      $COPYGB  -g45 -i2 -x  tmpfile_icaof${fcsthrs} tmpfile_icao_grb45f${fcsthrs}
 
      # 2) traditional WAFS fields
-     $WGRIB masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.grb1.list | grep "kpds6=6:" | \
+     $WGRIB masterfilef${fcsthrs} | grep -F -f $FIXgfs/wafs_gfsmaster.grb1.list | grep "kpds6=6:" | \
                      $WGRIB -i -grib -o tmpfile_gfsf${fcsthrs}.maxwind masterfilef${fcsthrs}
      # interpolate by '2 neighbor' for max wind fields (max U V wind and its height)
      $COPYGB  -g45 -i2 -x  tmpfile_gfsf${fcsthrs}.maxwind  tmpfile_gfs_grb45f${fcsthrs}.maxwind
-     $WGRIB masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.grb1.list | grep -v "kpds6=6:" | \
+     $WGRIB masterfilef${fcsthrs} | grep -F -f $FIXgfs/wafs_gfsmaster.grb1.list | grep -v "kpds6=6:" | \
                      $WGRIB -i -grib -o tmpfile_gfsf${fcsthrs}.nomaxwind masterfilef${fcsthrs}
      # interpolate by '0 bilinear' for other fields
      $COPYGB  -g45 -i0 -x  tmpfile_gfsf${fcsthrs}.nomaxwind  tmpfile_gfs_grb45f${fcsthrs}.nomaxwind
@@ -109,11 +111,11 @@ do
      cat tmpfile_gfs_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs} > gfs.t${cyc}z.wafs_grb45f${fcsthrs}
 
      # $CNVGRIB -g12 -p40 -nv  gfs.t${cyc}z.wafs_grb45f${fcsthrs}  gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
-     $EXECgfs/cnvgrib2_wafs -g12 -p40 -mastertable_ver_6 -nv  gfs.t${cyc}z.wafs_grb45f${fcsthrs}  gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+     $EXECgfs/wafs_cnvgrib2 -g12 -p40 -mastertable_ver_6 -nv  gfs.t${cyc}z.wafs_grb45f${fcsthrs}  gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
   else
      # ===================  process master file grib2  ===================
      # 1) new WAFS fields
-     cpreq $FIXgfs/awc_wafavn.grb2.cfg waf.cfg
+     cpreq $PARMgfs/wafs_awc_wafavn.grb2.cfg waf.cfg
 
      # For high resolution maste file, run time of awc_wafavn is 20 seconds for 1440 x 721, 
      # 3 minutes for new 3072 x 1536 master file for each forecast.
@@ -122,17 +124,17 @@ do
 #    npts=`wgrib2  -npts $master2 | head -n1 | cut -d'=' -f2`
      npts=`$WGRIB2 -npts $master2 | head -n1 | cut -d'=' -f2`
      if [ $npts -gt 1038240 ] ; then
-       # required fields searching criteria, according to type(pdt_t) parameters from sorc/awc_wafavn.fd/waf_grib2.f90 
+       # required fields searching criteria, according to type(pdt_t) parameters from sorc/wafs_awc_wafavn.fd/waf_grib2.f90 
        criteria=":PRES:surface:|:PRES:convective|:CPRAT:|:HGT:.* mb:|:TMP:.* mb:|:UGRD:.* mb:|VGRD:.* mb:|:RH:.* mb:|:CLWMR:.* mb:|:ICIP:.* mb:"
        $WGRIB2 $master2 | egrep "$criteria"| $WGRIB2 -i $master2 -grib masterfilef${fcsthrs}.new
        $WGRIB2 masterfilef${fcsthrs}.new -new_grid_interpolation bilinear -new_grid latlon 0:1440:0.25 90:721:-0.25 masterfilef${fcsthrs}
        rm masterfilef${fcsthrs}.new
      else
-       cp $master2  masterfilef${fcsthrs}
+       cpreq $master2  masterfilef${fcsthrs}
      fi
 
      startmsg
-     $APRUN $EXECgfs/$pgm -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb  >> $pgmout  2> errfile
+     $MPIRUN $EXECgfs/$pgm -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb  >> $pgmout  2> errfile
      export err=$?; err_chk
 
 # To avoid interpolation of missing value (-0.1 or -1.0, etc), use neighbor interpolation instead of bilinear interpolation
@@ -141,11 +143,11 @@ do
                       -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_icao_grb45f${fcsthrs}
 # after grid conversion by wgrib2, even with neighbor interpolation, values may still be mislead by noises, epescially 
 # the ref_value is not zero according to DST template 5.XX. Solution: rewrite and round those special meaning values
-     $APRUN $EXECgfs/setmissing tmpfile_icao_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs}.setmissing
+     $MPIRUN $EXECgfs/wafs_setmissing tmpfile_icao_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs}.setmissing
      mv tmpfile_icao_grb45f${fcsthrs}.setmissing tmpfile_icao_grb45f${fcsthrs}
 
      # 2) traditional WAFS fields
-     $WGRIB2 $master2 | grep -F -f $PARMgfs/wafs_gfsmaster.grb2.list | $WGRIB2 -i $master2 -grib tmpfile_gfsf${fcsthrs}
+     $WGRIB2 $master2 | grep -F -f $FIXgfs/wafs_gfsmaster.grb2.list | $WGRIB2 -i $master2 -grib tmpfile_gfsf${fcsthrs}
 # U V will have the same grid messange number by using -ncep_uv.
 #     $WGRIB2 tmpfile_gfsf${fcsthrs} \
 #                      -new_grid_winds earth -set_grib_type jpeg \
@@ -180,7 +182,7 @@ do
   export FORT31=" "
   export FORT51=grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
 
-  $TOCGRIB2 <  $PARMgfs/grib2_gfs_wafsf${fcsthrs}.45 >> $pgmout 2> errfile
+  $TOCGRIB2 <  $FIXgfs/grib2_gfs_wafsf${fcsthrs}.45 >> $pgmout 2> errfile
 
   err=$?;export err ;err_chk
   echo " error from tocgrib=",$err
@@ -194,7 +196,7 @@ do
   export FORT31=" "
   export FORT51=grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
  
-  $TOCGRIB2 <  $PARMgfs/grib2_gfs_wafs_wifs_f${fcsthrs}.45 >> $pgmout 2> errfile
+  $TOCGRIB2 <  $FIXgfs/grib2_gfs_wafs_wifs_f${fcsthrs}.45 >> $pgmout 2> errfile
 
   err=$?;export err ;err_chk
   echo " error from tocgrib=",$err
@@ -251,5 +253,7 @@ set -x
 
 msg="HAS COMPLETED NORMALLY!"
 postmsg "$jlogfile" "$msg"
+
+exit 0
 
 ############## END OF SCRIPT #######################

@@ -26,75 +26,69 @@ echo "History: 2015 - First implementation of this new script."
 echo " "
 #####################################################################
 
-cd $DATA
-
 set -xa
+
+# Set up working dir for parallel runs based on ffhr
+ffhr=$1
+DATA=$DATA/$ffhr
+mkdir -p $DATA
+cd $DATA
+# Overwrite TMPDIR for dumpjb
+export TMPDIR=$DATA
+
 SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
 
 configFile=gcip.config
 
-ffhr=$SHOUR
-while test $ffhr -le $EHOUR ; do
-
 echo 'before preparing data' `date`
 
-  # valid time. no worry, it won't be across to another date
-  vhour=$(( $ffhr + $cyc ))
-  vhour=`printf "%02d" $vhour`
+# valid time. no worry, it won't be across to another date
+vhour=$(( $ffhr + $cyc ))
+vhour="$(printf "%02d" $(( 10#$vhour )) )"
 
 ########################################################
 # Preparing data
 
-  if [ $RUN = "gfs" ] ; then
+if [ $RUN = "gfs" ] ; then
 
-    # Change IGRIB accordingly
-    cpreq $FIXgfs/gcip_gfs.cfg $configFile
-    sed -i "s|grib\ =\ .*|grib\ =\ $IGRIB|" $configFile
+  # model data
+  masterFile=$COMINgfs/gfs.t${cyc}z.master.grb2f$ffhr
 
-    # model data
-    masterFile=$COMINgfs/gfs.t${cyc}z.master.grb2f$ffhr
+  # check the availability of model file
+  icnt=1
+  while [ $icnt -lt $SLEEP_LOOP_MAX ] ; do
+      if [ -s $masterFile ] ; then
+	  break
+      fi
+      sleep $SLEEP_INT
+      icnt=$((icnt + 1))
+      if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
+          msg="ABORTING after $SLEEP_TIME seconds of waiting for gfs master file!"
+          err_exit $msg
+      fi
+  done
 
-    # check the availability of model file
-    icnt=1
-    while [ $icnt -lt $SLEEP_LOOP_MAX ] ; do
-	if [ -s $masterFile ] ; then
-	    break
-	fi
-	sleep $SLEEP_INT
-	icnt=$((icnt + 1))
-	if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
-            msg="ABORTING after $SLEEP_TIME seconds of waiting for gfs master file!"
-            err_exit $msg
-	fi
-    done
+  cpreq $PARMgfs/wafs_gcip_gfs.cfg $configFile
 
-    modelFile=model.grb$IGRIB
-    if [ $IGRIB = 1 ] ; then
-       # Grib 1 master model file processing
-       cpfs $masterFile $modelFile.tmp
-       $CNVGRIB -g21 $modelFile.tmp $modelFile
-       rm $modelFile.tmp
-    elif [ $IGRIB = 2 ] ; then
-       # Grib 2 master model file processing
-       cpfs $masterFile $modelFile
-    fi
+  modelFile=modelfile.grb
+  ln -sf $masterFile $modelFile
 
-    # metar / ships / lightning / pireps
-    # dumped data files' suffix is ".ibm"
-    obsfiles="metar ships ltngsr pirep"
-    for obsfile in $obsfiles ; do 
+  # metar / ships / lightning / pireps
+  # dumped data files' suffix is ".ibm"
+  obsfiles="metar ships ltngsr pirep"
+  for obsfile in $obsfiles ; do 
 #      ksh $USHobsproc_dump/dumpjb ${PDY}${vhour} 1.5 $obsfile >/dev/null
-      ksh $USHobsproc_dump/dumpjb ${PDY}${vhour} 1.5 $obsfile 
-    done
-    metarFile=metar.ibm
-    shipFile=ships.ibm
-    lightningFile=ltngsr.ibm
-    pirepFile=pirep.ibm
+      ksh $DUMPJB ${PDY}${vhour} 1.5 $obsfile 
+  done
+  metarFile=metar.ibm
+  shipFile=ships.ibm
+  lightningFile=ltngsr.ibm
+  pirepFile=pirep.ibm
 
-    satFiles=""
-    channels="VIS SIR LIR SSR"
-    # If one channel is missing, satFiles will be empty
-    for channel in $channels ; do
+  satFiles=""
+  channels="VIS SIR LIR SSR"
+  # If one channel is missing, satFiles will be empty
+  for channel in $channels ; do
       satFile=GLOBCOMP$channel.${PDY}${vhour}
       if [[ $COMINsat == *ftp:* ]] ; then
 	  curl -O $COMINsat/$satFile
@@ -104,7 +98,6 @@ echo 'before preparing data' `date`
 	icnt=1
 	while [ $icnt -lt $SLEEP_LOOP_MAX ] ; do
 	  if [ -s $COMINsat/$satFile ] ; then
-	    sleep 5
 	    break
 	  fi
 	  sleep $SLEEP_INT
@@ -129,14 +122,14 @@ echo 'before preparing data' `date`
             echo "   $COMINsat/$satFile " >> mailmsg
             echo >> mailmsg
             echo "$job will gracfully exited" >> mailmsg
-            cat mailmsg > ${RUN}.t${cyc}z.gcip.emailbody
-            cat ${RUN}.t${cyc}z.gcip.emailbody | mail.py -s "$subject" $maillist -v
+            cat mailmsg > $COMOUT/${RUN}.t${cyc}z.gcip.emailbody
+            cat $COMOUT/${RUN}.t${cyc}z.gcip.emailbody | mail.py -s "$subject" $maillist -v
 
             exit $rc
 	  fi
 	done
 
-	cpfs $COMINsat/$satFile .
+	cp $COMINsat/$satFile .
       fi
       if [[ -s $satFile ]] ; then
 	  satFiles="$satFiles $satFile"
@@ -144,14 +137,10 @@ echo 'before preparing data' `date`
 	  satFiles=""
 	  break
       fi
-    done
+  done
 
     # radar data
-    if [ $IGRIB = 1 ] ; then
-	sourceRadar=$COMINradar/refd3d.t${vhour}z.grbf00
-    elif [ $IGRIB = 2 ] ; then
-	sourceRadar=$COMINradar/refd3d.t${vhour}z.grb2f00
-    fi
+    sourceRadar=$COMINradar/refd3d.t${vhour}z.grb2f00
 
     # check the availability of radar data file
     icnt=1
@@ -168,9 +157,9 @@ echo 'before preparing data' `date`
 	fi
     done
 
-    radarFile=radar.grb$IGRIB
+    radarFile=radarFile.grb
     if [ -s $sourceRadar ] ; then
-      cpfs $sourceRadar $radarFile
+      cp $sourceRadar $radarFile
     fi
 
   fi # RUN model name
@@ -178,75 +167,64 @@ echo 'before preparing data' `date`
 ########################################################
 # Composite gcip command options
 
-  if [ $IGRIB = 1 ] ; then
-      outputfile=gfs.t${vhour}z.gcip.f00.grib
-  elif [ $IGRIB = 2 ] ; then
-      outputfile=gfs.t${vhour}z.gcip.f00.grib2
-  fi
+outputfile=gfs.t${vhour}z.gcip.f00.grib2
 
-  cmdoptions="-t ${PDY}${vhour} -c $configFile -model $modelFile"
-  if [[ -s $metarFile ]] ; then
-      cmdoptions="$cmdoptions -metar $metarFile"
-  else
-      err_exit "There are no METAR observations."
-  fi
-  if [[ -s $shipFile ]] ; then
-      cmdoptions="$cmdoptions -ship $shipFile"
-  fi
-  # empty if a channel data is missing
-  if [[ -n $satFiles ]] ; then
-      cmdoptions="$cmdoptions -sat $satFiles"
-  else
-      err_exit "Satellite data are not available or completed."
-  fi
-  if [[ -s $lightningFile ]] ; then
-      cmdoptions="$cmdoptions -lightning $lightningFile"
-  fi
-  if [[ -s $pirepFile ]] ; then
-      cmdoptions="$cmdoptions -pirep $pirepFile"
-  fi
-  if [[ -s $radarFile ]] ; then
-      cmdoptions="$cmdoptions -radar $radarFile"
-  fi
-  cmdoptions="$cmdoptions -o $outputfile"
+cmdoptions="-t ${PDY}${vhour} -c $configFile -model $modelFile"
+if [[ -s $metarFile ]] ; then
+    cmdoptions="$cmdoptions -metar $metarFile"
+else
+    err_exit "There are no METAR observations."
+fi
+if [[ -s $shipFile ]] ; then
+    cmdoptions="$cmdoptions -ship $shipFile"
+fi
+# empty if a channel data is missing
+if [[ -n $satFiles ]] ; then
+    cmdoptions="$cmdoptions -sat $satFiles"
+else
+    err_exit "Satellite data are not available or completed."
+fi
+if [[ -s $lightningFile ]] ; then
+    cmdoptions="$cmdoptions -lightning $lightningFile"
+fi
+if [[ -s $pirepFile ]] ; then
+    cmdoptions="$cmdoptions -pirep $pirepFile"
+fi
+if [[ -s $radarFile ]] ; then
+    cmdoptions="$cmdoptions -radar $radarFile"
+fi
+cmdoptions="$cmdoptions -o $outputfile"
 
 #######################################################
 # Run GCIP
 
 echo 'after preparing data' `date`
 
-  export pgm=gcip
+export pgm=wafs_gcip
 
-  cpreq $FIXgfs/gcip_near_ir_refl.table near_ir_refl.table
+cpreq $FIXgfs/gcip_near_ir_refl.table near_ir_refl.table
 
-  startmsg
-  $APRUN $EXECgfs/$pgm >> $pgmout $cmdoptions 2> errfile
-  export err=$?; err_chk
+startmsg
+$EXECgfs/$pgm >> $pgmout $cmdoptions 2> errfile &
+wait
+export err=$?; err_chk
 
 
-  if [[ -s $outputfile ]] ; then
+if [[ -s $outputfile ]] ; then
     ############################## 
     # Post Files to COM
     ##############################
     if [ $SENDCOM = "YES" ] ; then
-      cpfs $outputfile $COMOUT/$outputfile
+      cp $outputfile $COMOUT/$outputfile
       if [ $SENDDBN = "YES" ] ; then
 	# $DBNROOT/bin/dbn_alert GFS_WAFS GCIP $job $COMOUT/$outputfile
 	$DBNROOT/bin/dbn_alert MODEL GFS_WAFS_GCIP $job $COMOUT/$outputfile
       fi
     fi
-  else
+else
     err_exit "Output $outputfile was not generated"
-  fi
+fi
 
-
-  ffhr=`expr $ffhr + $FHINC`
-  if test $ffhr -lt 10
-  then
-     ffhr=0${ffhr}
-  fi
-  
-done
 
 ################################################################################
 # GOOD RUN
@@ -257,6 +235,7 @@ echo "**************JOB EXGFS_WAFS_GCIP.SH.ECF COMPLETED NORMALLY ON THE IBM"
 set -x
 ################################################################################
 
+exit 0
 
 ############## END OF SCRIPT #######################
 

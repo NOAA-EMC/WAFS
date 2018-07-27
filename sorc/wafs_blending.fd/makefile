@@ -17,7 +17,7 @@ OBJST=  write_ndfd_grib2.o
 #INC = /nwprod/lib/incmod/g2_4
 #LIBS = -L/nwprod/lib -lg2_4 -lw3nco_v2.0.3_4 -lbacio_4 -ljasper -lpng -lz
 
-CMD =	blending	
+CMD =	wafs_blending	
 #PROFLIB =	-lprof
 
 # To perform the default compilation, use the first line

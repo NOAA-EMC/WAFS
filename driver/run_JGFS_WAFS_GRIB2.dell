@@ -1,0 +1,163 @@
+#!/bin/sh
+
+#BSUB -J gfs_wafs_grib2
+#BSUB -cwd /gpfs/dell3/ptmp/Yali.Mao
+#BSUB -oo /gpfs/dell3/ptmp/Yali.Mao/gfs_wafs_grib2.o%J
+#BSUB -eo /gpfs/dell3/ptmp/Yali.Mao/gfs_wafs_grib2.o%J
+##BSUB -L /bin/sh
+#BSUB -q debug
+#BSUB -W 00:30
+#BSUB -P GFS-T2O
+#BSUB -n 1
+#BSUB -R span[ptile=1]
+#BSUB -R affinity[core(1):distribute=balance]
+
+set -xa
+
+# specify computation resource
+export NODES=1
+export ntasks=1
+export ptile=1
+export threads=1
+export MP_LABELIO=yes
+export OMP_NUM_THREADS=$threads
+export MPIRUN=mpirun
+
+############################################
+# Loading module
+############################################
+module purge
+module load EnvVars/1.0.2
+module load ips/18.0.1.163
+module load impi/18.0.1
+module load lsf/10.1
+
+module load prod_util/1.1.0
+module load grib_util/1.0.6
+module load prod_envir/1.0.2
+
+module list
+
+############################################
+# required exports!
+############################################
+### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
+export envir=para
+
+export cyc=${cyc:-00}
+
+# gfs_wafs_grib2 for generating global WAFS on grid 45
+export job=gfs_wafs_grib2_${cyc}
+
+############################################
+# set NET RUN
+############################################
+### NET: gfs/para/parallel-test/nam/rap/ dump/ens/nawips/nesdis/
+export NET=gfs
+export RUN=gfs
+
+
+############################################
+# Specify versions
+############################################
+export gfs_ver=v4.0.0
+
+
+############################################
+# user defined
+############################################
+export pid=${pid:-$$}
+export jobid=${job}.${pid}
+
+#export PDY=`$NDATE -24 | cut -c 1-8`
+export PDY=`cut -c 7-14 $COMROOT/date/t00z`
+export PDY=20180725
+
+USER=`whoami`
+
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC
+# KEEPDATA=NO--Remove temporary working
+############################################
+export SENDCOM=YES
+export SENDDBN=NO
+export SENDDBN_NTC=NO
+export KEEPDATA=YES
+ 
+############################################
+# Define ROOT directories
+############################################
+export COMROOT=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1
+export COMROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput
+#export NWROOTp1=/nwprod
+export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/git
+export DATAROOT=/gpfs/dell3/ptmp/${USER}
+
+############################################
+# Define DATA, COMOUT and COMIN
+############################################
+export COMIN=$COMROOT/gfs.$PDY/$cyc
+export COMOUT=/gpfs/dell3/ptmp/${USER}/wafs_fv3.$PDY/$cyc
+export COMOUT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/dataprod/gfs.$PDY/$cyc
+
+export jlogfile=/$DATA/jlogfile.${jobid}
+
+################################
+# Set up the HOME directory
+################################
+export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_branch}
+
+############################################
+# run the job
+#############################################
+export SHOUR=06
+export EHOUR=36
+export FHINC=03
+
+sh $HOMEgfs/jobs/JGFS_WAFS_GRIB2
+
+exit
+
+#############################################
+# compare the output (optional)
+#############################################
+if [ $USER = 'Yali.Mao' ] ; then
+
+  # the standard data to be compared to
+  stdout=/com2/${NET}/$envir/${RUN}.${PDY}
+  stdout=/gpfs/hps/nco/ops/com/gfs/para/gfs.$PDY
+  if [ $envir = prod ]; then
+    stdpcom=/pcom/wafs
+  else
+    stdpcom=/pcom/${envir}/wafs
+  fi
+
+  ffhr=$SHOUR
+
+  cd $COMOUT
+
+  while test $ffhr -le $EHOUR ; do
+    cmp $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2 $stdout/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2
+
+    cmp $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr} $stdout/gfs.t${cyc}z.wafs_grb45f${ffhr}
+
+    cmp $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.nouswafs.grib2 $stdout/gfs.t${cyc}z.wafs_grb45f${ffhr}.nouswafs.grib2
+
+    # $PCOM data on develop machine may be out of date, so skip the comparison
+
+    #cmp $PCOM/grib2.t${cyc}z.wafs_grbf${ffhr}.45 $stdpcom/grib2.t${cyc}z.wafs_grbf${ffhr}.45
+    #cmp $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 $stdpcom/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45
+  
+
+    ffhr=`expr $ffhr + $FHINC`
+    if test $ffhr -lt 10
+    then
+      ffhr=0${ffhr}
+    fi
+
+  done
+
+fi
+exit

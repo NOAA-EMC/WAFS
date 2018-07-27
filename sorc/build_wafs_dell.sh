@@ -3,7 +3,7 @@ set -x
 
 ##################################################################
 # wafs using module compile standard
-# 02/01/2016 yali.ma@noaa.gov:    Create module load version
+# 06/12/2018 yali.ma@noaa.gov:    Create module load version
 ##################################################################
 
 module purge
@@ -14,9 +14,10 @@ module list
 
  curdir=`pwd`
  export INC="${G2_INC4}"
- export FC=ftn
+ export FC=ifort
 
- track="-O3 -g -traceback -ftrapuv -check all -fp-stack-check "
+# track="-O3 -g -traceback -ftrapuv -check all -fp-stack-check "
+# track="-O2 -g -traceback"
 
  export FFLAGSawc="-FR -I ${G2_INC4} -I ${IP_INC4} -g -O2 -convert big_endian -assume noold_ldout_format"
  export FFLAGSblnd="-O -I ${G2_INC4}"

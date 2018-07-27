@@ -34,7 +34,7 @@ cp ${COMINus}/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 .
 
 # run blending code
 startmsg
-$EXECgfs/blending grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 \
+$EXECgfs/wafs_blending grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 \
 blended_${PDY}${cyc}f${ffhr}.grib2 > f${ffhr}.out
 
 err1=$?
@@ -261,7 +261,7 @@ export FORT11=blended_${PDY}${cyc}f${ffhr}.grib2
 export FORT31=" "
 export FORT51=grib2.t${cyc}z.WAFS_blended_f${ffhr}
 
-$TOCGRIB2 <  $PARMgfs/grib2_blended_wafs_wifs_f${ffhr}.45 >> $pgmout 2> errfile
+$TOCGRIB2 <  $FIXgfs/grib2_blended_wafs_wifs_f${ffhr}.45 >> $pgmout 2> errfile
 
 err=$?;export err ;err_chk
 echo " error from tocgrib=",$err
