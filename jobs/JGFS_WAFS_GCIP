@@ -119,7 +119,7 @@ export SLEEP_INT=10
 ############################################
 # Execute the script, parallel run for 000 003
 ############################################
-export MPIRUN=${MPIRUN:-"mpirun cfp"}
+export MPIRUN=${MPIRUN:-"mpirun -n 2 cfp"}
 
 # GCIP runs f000 f003 for each cycle, 4 times/day,
 # to make the output valid every 3 hours 

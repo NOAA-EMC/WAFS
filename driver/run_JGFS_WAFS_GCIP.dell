@@ -25,7 +25,7 @@ export ptile=1
 export threads=1
 export MP_LABELIO=yes
 export OMP_NUM_THREADS=$threads
-export MPIRUN="mpirun cfp"
+export MPIRUN="mpirun -n 2 cfp"
 
 ############################################
 # Loading module
@@ -80,7 +80,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20180725
+export PDY=20180919
 
 USER=`whoami`
 
