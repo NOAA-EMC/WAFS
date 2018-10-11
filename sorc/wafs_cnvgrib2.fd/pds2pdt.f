@@ -57,6 +57,8 @@ C$$$
         real :: rinc(5)
         logical :: ecmwf
 
+        coordlist(1) = 0. ! assign a value to avoid compiling warning
+
         iret=0
         numcoord=0
         ecmwf=.false.

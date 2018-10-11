@@ -58,6 +58,8 @@ C$$$
         integer :: idat(8),jdat(8)
         real :: rinc(5)
 
+        coordlist(1) = 0. ! assign a value to avoid compiling warning
+
         iret=0
         numcoord=0
         if (kens(2).eq.1.or.kens(2).eq.2.or.kens(2).eq.3) then
