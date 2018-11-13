@@ -8,26 +8,13 @@ date
 export PS4='$SECONDS + ' 
 set -xa
 
-############################################
-# Override some ecFlow environment variables
-############################################
-# for satellite data
-export DCOMROOT=${DCOMROOT:-/gpfs/gp1/nco/ops/dcom}
-# for radar data
-export COMROOTp1=${COMROOTp1:-/gpfs/gp1/nco/ops/com}
-
-export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${jobid}}
-
-export DATAROOT=${DATAROOT:-/tmpnwprd1}
-
 # keep the working directory or not
 export KEEPDATA=${KEEPDATA:-NO}
 
 ############################################
 # Working Directory
 ############################################
-export DATA=${DATA:-${DATAROOT:?}/$jobid}
-[ -d $DATA ] && rm -rf $DATA
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
 
@@ -48,15 +35,6 @@ export pgmout=OUTPUT.$$
 export cycle=t${cyc}z 
 setpdy.sh
 . ./PDY
-
-############################################
-# SENDCOM=YES--Copy output file to /com
-# SENDECF=YES--Allow to talk back to ECF
-# SENDDBN=YES--Alert output file to TOC
-############################################
-export SENDCOM=${SENDCOM:-YES}
-export SENDECF=${SENDECF:-NO}
-export SENDDBN=${SENDDBN:-NO}
 
 ############################################
 # Set up the NET and RUN

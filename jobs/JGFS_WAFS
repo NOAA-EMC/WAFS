@@ -7,21 +7,12 @@ date
 export PS4='$SECONDS + ' 
 set -xa
 
-############################################
-# Override some ecFlow environment variables
-############################################
-export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${jobid}}
-
-export DATAROOT=${DATAROOT:-/tmpnwprd1}
-
-# keep the working directory or not
 export KEEPDATA=${KEEPDATA:-NO}
 
 ############################################
 # Working Directory
 ############################################
-export DATA=${DATA:-${DATAROOT:?}/$jobid}
-[ -d $DATA ] && rm -rf $DATA
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
 
@@ -43,16 +34,6 @@ export cycle=t${cyc}z
 setpdy.sh
 . ./PDY
 
-############################################
-# SENDCOM=YES--Copy output file to /com
-# SENDECF=YES--Allow to talk back to ECF
-# SENDDBN=YES--Alert output file to TOC, set to NO for testing
-############################################
-export SENDCOM=${SENDCOM:-YES}
-export SENDECF=${SENDECF:-YES}
-export SENDDBN=${SENDDBN:-YES}  # need to set to NO for testing
-#export SENDDBN_GB2=${SENDDBN_GB2:-YES}  # need to set to NO for testing
-export SENDDBN_NTC=${SENDDBN_NTC:-YES}  # need to set to NO for testing
 export RERUN=${RERUN:-NO}
 
 ############################################
