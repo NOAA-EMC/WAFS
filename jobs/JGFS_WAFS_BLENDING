@@ -7,9 +7,6 @@ date
 export PS4='$SECONDS + ' 
 set -x
 
-if [ ${envir} != "prod" ]; then
-  export RUN_PLOT=NO
-fi
 # keep the working directory or not
 export KEEPDATA=${KEEPDATA:-NO}
 
@@ -138,15 +135,6 @@ export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY."
 postmsg "$jlogfile" "$msg"
-
-###############################################
-# This part is for developers usage only 
-# It is turned off for operational run
-###############################################
-if [ $RUN_PLOT = YES ]
-then
-  /global/save/Hui-Ya.Chuang/WAFC/scripts/plot_wafs.sh $PDY $cyc
-fi
 
 ############################################
 # print exec output
