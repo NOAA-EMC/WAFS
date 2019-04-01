@@ -218,7 +218,8 @@ if [[ -s $outputfile ]] ; then
       cp $outputfile $COMOUT/$outputfile
       if [ $SENDDBN = "YES" ] ; then
 	# $DBNROOT/bin/dbn_alert GFS_WAFS GCIP $job $COMOUT/$outputfile
-	$DBNROOT/bin/dbn_alert MODEL GFS_WAFS_GCIP $job $COMOUT/$outputfile
+#alert removed in v15.0	$DBNROOT/bin/dbn_alert MODEL GFS_WAFS_GCIP $job $COMOUT/$outputfile
+	  :
       fi
     fi
 else
