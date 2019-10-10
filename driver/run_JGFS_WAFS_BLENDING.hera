@@ -1,40 +1,36 @@
 #!/bin/sh
 
-#BSUB -J gfs_wafs_blending
-#BSUB -cwd /gpfs/dell3/ptmp/Yali.Mao
-#BSUB -oo /gpfs/dell3/ptmp/Yali.Mao/gfs_wafs_blending.o%J
-#BSUB -eo /gpfs/dell3/ptmp/Yali.Mao/gfs_wafs_blending.o%J
-##BSUB -L /bin/sh
-#BSUB -q debug
-#BSUB -W 00:30
-#BSUB -P GFS-T2O
-#BSUB -n 1
-#BSUB -R span[ptile=1]
-#BSUB -R affinity[core(1):distribute=balance]
+#SBATCH -J gfs_wafs_blending
+#SBATCH -o /scratch2/NCEPDEV/stmp3/Yali.Mao/gfs_wafs_blending.o%j
+#SBATCH -e /scratch2/NCEPDEV/stmp3/Yali.Mao/gfs_wafs_blending.o%j
+#SBATCH -t 00:30:00
+#SBATCH -N 1
+#SBATCH -q batch
+#SBATCH -A ovp
 
 set -xa
 
 # specify computation resource
-export NODES=1
-export ntasks=1
-export ptile=1
 export threads=1
 export MP_LABELIO=yes
 export OMP_NUM_THREADS=$threads
-export MPIRUN=mpirun
+export MPIRUN=srun
 
 ############################################
 # Loading module
 ############################################
 module purge
-module load EnvVars/1.0.2
-module load ips/18.0.1.163
-module load impi/18.0.1
-module load lsf/10.1
+$MODULESHOME/init/sh
 
+module use /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
+module load EnvVars/1.0.2
+module load intel/18.0.5.274
+module load impi/2018.0.4
+#module load lsf/10.1
+#module load CFP/2.0.1
+
+module load grib_util/1.1.1
 module load prod_util/1.1.0
-module load grib_util/1.0.6
-module load prod_envir/1.0.3
 
 module list
 
@@ -42,9 +38,9 @@ module list
 # required exports!
 ############################################
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
-export envir=para
+export envir=prod
 
-export cyc=${cyc:-00}
+export cyc=${cyc:-12}
 
 # gfs_wafs_blending for blending icing turbulence of US and UK
 export job=gfs_wafs_blending_${cyc}
@@ -71,7 +67,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20180725
+export PDY=20191002
 
 USER=`whoami`
 
@@ -90,8 +86,8 @@ export KEEPDATA=YES
 # Define ROOT directories
 ############################################
 echo $COMROOT
-export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/git
-export DATAROOT=/gpfs/dell3/ptmp/${USER}
+export NWROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/git
+export DATAROOT=/scratch2/NCEPDEV/stmp3/${USER}
 
 # for UK data
 #if [[ `hostname` =~ "^l" ]] ; then ! LUNA/TIDE
@@ -100,19 +96,21 @@ export DATAROOT=/gpfs/dell3/ptmp/${USER}
 #  export DCOMROOT=/gpfs/gp1/nco/ops/dcom
 #fi
 # For canned data:
-#export DCOMROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput/dcom
+export DCOMROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/candata/dcom
 
 
 ############################################
 # Define DATA PCOM, COMOUT and COMIN
 ############################################
-export COMIN=/gpfs/dell3/ptmp/${USER}/wafs_fv3.$PDY/$cyc
-export COMOUT=/gpfs/dell3/ptmp/${USER}/wafs_fv3.$PDY/$cyc
-export COMIN=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/dataprod/gfs.$PDY/$cyc
-export COMOUT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/dataprod/gfs.$PDY/$cyc
+export COMROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/candata
+export NWROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/git
+export DATAROOT=/scratch2/NCEPDEV/stmp3/${USER}
+
+export COMIN=$COMROOT/gfs.$PDY/$cyc
+export COMOUT=/scratch2/NCEPDEV/ovp/Yali.Mao/candata/cancom/gfs.$PDY/$cyc
 export PCOM=$COMOUT/wmo
 
-export COMINus=$COMIN/wmo
+export COMINus=$COMOUT/wmo
 export COMINuk=${COMINuk:-$DCOMROOT/prod/$PDY/wgrbbul/ukmet_wafs}
 
 export jlogfile=/$DATA/jlogfile.${jobid}
@@ -120,7 +118,7 @@ export jlogfile=/$DATA/jlogfile.${jobid}
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_branch}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
 
 ############################################
 # run the job

@@ -66,33 +66,37 @@
 !
 !     Determine second unit of time range
 !
-      iutpos2= ipos2(ipdtn)
-      selectcase( ipdtmpl(iutpos2) )
-         case (0)
-            tunit2="minute"
-            iunit2=1
-         case (1)
-            tunit2="hour"
-            iunit2=1
-         case (2)
-            tunit2="day"
-            iunit2=1
-         case (3)
-            tunit2="month"
-            iuni2t2=1
-         case (4)
-            tunit2="year"
-            iunit2=1
-         case (10)
-            tunit2="hour"
-            iunit2=3
-         case (11)
-            tunit2="hour"
-            iunit2=6
-         case default
-            tunit2="hour"
-            iunit2=1
-      end select
+      if(ipdtn > 0) then
+         iutpos2= ipos2(ipdtn)
+         if(iutpos2 >0) then
+            selectcase( ipdtmpl(iutpos2) )
+            case (0)
+               tunit2="minute"
+               iunit2=1
+            case (1)
+               tunit2="hour"
+               iunit2=1
+            case (2)
+               tunit2="day"
+               iunit2=1
+            case (3)
+               tunit2="month"
+               iuni2t2=1
+            case (4)
+               tunit2="year"
+               iunit2=1
+            case (10)
+               tunit2="hour"
+               iunit2=3
+            case (11)
+               tunit2="hour"
+               iunit2=6
+            case default
+               tunit2="hour"
+               iunit2=1
+            end select
+         end if
+      end if
 !
       write(reftime,fmt='(i4,3i2.2,":",i2.2,":",i2.2)')
      &        (listsec1(j),j=6,11)

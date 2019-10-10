@@ -68,7 +68,7 @@ if [ $SENDCOM = YES ] ; then
 fi
 
 export COMINus=${COMINus:-$COMIN/wmo}
-export COMINuk=${COMINuk:-$DCOMROOT/us007003/$PDY/wgrbbul/ukmet_wafs}
+export COMINuk=${COMINuk:-$DCOMROOT/prod/$PDY/wgrbbul/ukmet_wafs}
 
 ############################################
 # print current environment

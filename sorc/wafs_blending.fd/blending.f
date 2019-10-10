@@ -53,8 +53,8 @@ C
 !      integer :: ideflist(500)
       character(len=60) :: gfile1,gfile2,gfile3,typeproc
       character(len=8) :: pabbrev
-      character(len=20) :: labbrev
-      character(len=80) :: tabbrev
+      character(len=40) :: labbrev
+      character(len=100) :: tabbrev
       INTEGER(4) NARG,IARGC,temparg
       integer :: currlen=0
       integer :: jids(20),jpdt(20),jgdt(20)
@@ -221,7 +221,7 @@ C  GET ARGUMENTS
 	 jpdt(9)=gfld%ipdtmpl(9)  ! forecast hour
 	 jpdt(10)=gfld%ipdtmpl(10) ! level ID
 	 jpdt(12)=gfld%ipdtmpl(12)  ! level value
-	 jpdt(16)=gfld%ipdtmpl(16) ! spatial statistical processing
+	 if(gfld%ipdtlen>=16) jpdt(16)=gfld%ipdtmpl(16) ! spatial statistical processing
 	 print*,'jpdtn,jpdt= ',jpdtn,jpdt(1:10)
 	 jgdtn=gfld%igdtnum
 	 JGDT=-9999
@@ -389,7 +389,7 @@ C  GET ARGUMENTS
 	 nparm(icount)=gfld%ipdtmpl(2)
 	 nlevtype(icount)=gfld%ipdtmpl(10)
 	 nlev(icount)=gfld%ipdtmpl(12)
-	 nspatial(icount)=gfld%ipdtmpl(16)
+	 if(gfld%ipdtlen>=16) nspatial(icount)=gfld%ipdtmpl(16)
 	 ifcsthr(icount)=gfld%ipdtmpl(9) 
 	 
 ! write averged data to new grib file
