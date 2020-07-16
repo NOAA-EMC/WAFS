@@ -41,6 +41,7 @@ export RERUN=${RERUN:-NO}
 ############################################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
+export COMPONENT=${COMPONENT:-atmos}
 
 ############################################
 # Specify HOME Directory
@@ -56,8 +57,8 @@ export SCRIPTSgfs=$HOMEgfs/scripts
 ################################################
 # Set up the input/output directory
 ################################################
-export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY/$cyc}
-export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/$cyc}
+export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
 export PCOM=${PCOM:-$COMOUT/wmo}
 
 if [ $SENDCOM = YES ] ; then

@@ -41,6 +41,7 @@ setpdy.sh
 ############################################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
+export COMPONENT=${COMPONENT:-atmos}
 
 ############################################
 # Specify HOME Directory
@@ -64,7 +65,7 @@ export TMPDIR=$DATA  # will be overwritten in exgfs script for parallel runs on 
 # Set up the input/output directory
 ################################################
 # model data
-export COMINgfs=${COMINgfs:-$COMROOT/${NET}/${envir}/$RUN.$PDY/$cyc}
+export COMINgfs=${COMINgfs:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
 
 # satellite data
 #ftp://satepsanone.nesdis.noaa.gov/2day/gmosaic/
@@ -80,7 +81,7 @@ export COMINradar=${COMINradar:-$COMROOTp1/hourly/prod/radar.$PDY}
 #
 
 # COMOUT
-export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/$cyc}
+export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
 
 mkdir -p $COMOUT
 
