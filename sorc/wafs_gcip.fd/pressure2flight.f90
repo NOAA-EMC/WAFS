@@ -14,7 +14,7 @@ module Pressure2Flight
 
   use Kinds
 
-  use Icing, only : mapSev2Cat, SLD_SPECIAL_VALUE
+  use Icing, only : SLD_SPECIAL_VALUE
 
   IMPLICIT NONE
   private
@@ -42,8 +42,9 @@ contains
 ! *
 ! * Notes: 
 ! *
-  subroutine runPressure2Flight(kgds, height, outdat, outdat_FL, iret)
+  subroutine runPressure2Flight(kgds, ctype, height, outdat, outdat_FL, iret)
     integer, intent(in) :: kgds(:)
+    character(3),intent(in) :: ctype
     real, intent(in) :: height(:,:,:)
     type(icing_output_t), target, intent(in):: outdat
     type(icing_output_t), target, intent(inout):: outdat_FL
@@ -62,12 +63,17 @@ contains
     nx = kgds(2)
     ny = kgds(3)
     nz = size(height, dim=3)
-    nzFL = NUM_FLIGHT_LEVELs
+    if(ctype == "FLT") then
+       nzFL = NUM_FLIGHT_LEVELs
+    else ! model pressure levels, will convert to ICAO standard levels
+       nzFL=size(outdat%levels)
+    endif
 
     allocate(outdat_FL%levels(nzFL), stat=iret)
     allocate(outdat_FL%severity(nx, ny, nzFL), stat=iret)
     allocate(outdat_FL%probability(nx, ny, nzFL), stat=iret)
     allocate(outdat_FL%sld(nx, ny, nzFL), stat=iret)
+    ! By default, MISSING is for flight-level icing products.
     outdat_FL%levels = MISSING
     outdat_FL%severity = MISSING
     outdat_FL%probability = MISSING
@@ -83,9 +89,12 @@ contains
     iceSeverity => outdat%severity
 
     do k = 1, nzFL
-       ! By default, MISSING is for flight-level icing products.
-       flightLevels(k) = (START_FLIGHT_LEVEL + &
+       if(ctype == "FLT") then
+          flightLevels(k) = (START_FLIGHT_LEVEL + &
                (k-1) * FLIGHT_LEVEL_DZ) * FEET_TO_METERS
+       else
+          flightLevels(k)=P2H(outdat%levels(k)/100.,.true.)
+       end if
     end do
 
     ! now perform the interpolation on icing
@@ -189,15 +198,11 @@ contains
         
         if (sldPotential_FL(i, j, k) > 1.0)   sldPotential_FL(i, j, k) = 1.0
 
-        !===================================================================
-        !--------------------------
-        ! Severity Category
-!        if  (m_isDataValid(iceSeverity_FL, i, j, k)) &
-        iceSeverity_FL(i, j, k) = mapSev2Cat(iceSeverity_FL(i, j, k))
-
       end do ! do k = 1, Press2Flight_Params%num_flight_levels
     end do ! do i = 1, grid%nx
     end do ! do j = 1, grid%ny
+
+    if(ctype == "PRS") flightLevels = outdat%levels
 
     return
   end subroutine runPressure2Flight
@@ -256,4 +261,65 @@ contains
     return
 
   end function m_interp
+
+
+!**********************************************************************
+! function: P2H
+! *
+! * Description: convert standard atmoshperic pressure levels (mbar) to height(meter)
+! *
+
+  real FUNCTION P2H(p,wafs)
+    implicit none
+    real, intent(in) :: p
+    ! re-label pressure levels. by matching referenced level to ICAO standard level
+    logical,intent(in) :: wafs
+!   To convert pressure levels (hPa) to geopotantial heights
+!   Uses ICAO standard atmosphere parameters as defined here:
+!   https://www.nen.nl/pdfpreview/preview_29424.pdf
+    real, parameter :: lapse = 0.0065
+    real, parameter :: surf_temp = 288.15
+    real, parameter :: gravity = 9.80665
+    real, parameter :: moles_dry_air = 0.02896442
+    real, parameter :: gas_const = 8.31432
+    real, parameter :: surf_pres = 1013.25
+    real, parameter :: power_const = (gravity * moles_dry_air) &
+                                       / (gas_const * lapse)
+
+    !ICAO standard pressure levels matched to levels referenced in Annex 3, Appendix 2
+    real :: pps(2,18)
+    real :: pp
+    integer :: j
+    pps(1:2,1)  = (/ 850., 843.1 /)
+    pps(1:2,2)  = (/ 800., 812.0 /)
+    pps(1:2,3)  = (/ 750., 752.6 /)
+    pps(1:2,4)  = (/ 700., 696.8 /)
+    pps(1:2,5)  = (/ 600., 595.2 /)
+    pps(1:2,6)  = (/ 500., 506.0 /)
+    pps(1:2,7)  = (/ 450., 446.5 /)
+    pps(1:2,8)  = (/ 400., 392.7 /)
+    pps(1:2,9)  = (/ 350., 344.3 /)
+    pps(1:2,10) = (/ 300., 300.9 /)
+    pps(1:2,11) = (/ 275., 274.5 /)
+    pps(1:2,12) = (/ 250., 250.0 /)
+    pps(1:2,13) = (/ 225., 227.3 /)
+    pps(1:2,14) = (/ 200., 196.8 /)
+    pps(1:2,15) = (/ 175., 178.7 /)
+    pps(1:2,16) = (/ 150., 147.5 /)
+    pps(1:2,17) = (/ 125., 127.7 /)
+    pps(1:2,18) = (/ 100., 100.4 /)
+
+    pp = p
+    if(wafs) then
+       do j =1, 18
+          if(pps(1,j) == p) then
+             pp = pps(2,j)
+             exit
+          end if
+       end do
+    end if
+
+    P2H = (surf_temp/lapse)*(1-(pp/surf_pres)**(1/power_const))
+  END FUNCTION P2H
+
 end module Pressure2Flight

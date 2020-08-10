@@ -32,9 +32,8 @@ module load impi/2018.0.4
 
 module load grib_util/1.1.1
 module load prod_util/1.1.0
-#module load prod_envir/1.0.2
 
-module load g2tmpl/1.5.0
+module load g2tmpl/1.6.0
 
 # to get HOMEobsproc_shared_bufr_dumplist
 module load bufr_dumplist/2.0.0
@@ -67,7 +66,7 @@ export RUN=gfs
 ############################################
 # Specify versions
 ############################################
-export gfs_ver=v4.0.0
+export gfs_ver=v16.0.0
 
 ############################################
 # user defined
@@ -77,7 +76,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20191002
+export PDY=20191230
 
 USER=`whoami`
 
@@ -96,9 +95,9 @@ export KEEPDATA=YES
 ############################################
 # Define ROOT directories
 ############################################
-export COMROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/candata
+export COMROOT=/scratch1/NCEPDEV/global/Yali.Mao/candata
 #export NWROOTp1=/nwprod
-export NWROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/git
+export NWROOT=/scratch1/NCEPDEV/global/Yali.Mao/git
 export DATAROOT=/scratch2/NCEPDEV/stmp3/Yali.Mao
 
 # for satellite data
@@ -107,25 +106,25 @@ export DATAROOT=/scratch2/NCEPDEV/stmp3/Yali.Mao
 #export COMROOTp1=/gpfs/gp1/nco/ops/com
 
 # For canned data:
-export DCOMROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/candata/dcom
-export COMROOTp1=/scratch2/NCEPDEV/ovp/Yali.Mao/candata
+export DCOMROOT=/scratch1/NCEPDEV/global/Yali.Mao/candata/dcom
+export COMROOTp1=/scratch1/NCEPDEV/global/Yali.Mao/candata
 
 
 ############################################
 # Define DATA COMOUT and COMIN
 ############################################
 export COMOUT=/scratch2/NCEPDEV/stmp3/Yali.Mao
-export COMOUT=/scratch2/NCEPDEV/ovp/Yali.Mao/candata/cancom/gfs.$PDY/$cyc
+export COMOUT=/scratch2/NCEPDEV/stmp3/Yali.Mao/wafs_down/gfs.$PDY/$cyc
 
-export COMINgfs=$COMROOT/gfs.$PDY/$cyc
-export COMINradar=${COMINradar:-$COMROOTp1/radar}
+export COMINgfs=$COMROOT/cancom/gfs.$PDY/$cyc
+export COMINradar=${COMINradar:-$COMROOTp1/radar/$PDY}
 
 export jlogfile=/$DATA/jlogfile.${jobid}
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_fork}
 
 ############################################
 # run the job

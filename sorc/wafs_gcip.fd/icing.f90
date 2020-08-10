@@ -21,10 +21,6 @@ module Icing
 ! * private and public declaration
 ! *
 
-!  private
-  ! public methods
-!  public run_icing
-
   real, parameter :: SLD_SPECIAL_VALUE = -0.1 ! for finalizing icing output
 
   real, parameter :: COS_MAX_DAY_ANGLE   = 0.339  ! Cosine(70deg). For daytime, -70deg < sun_angle < +70deg.
@@ -111,40 +107,6 @@ module Icing
   end type interp_data_t 
 
 contains
-
-!**********************************************************************
-! * function:    mapSev2Cat()
-! *
-! * Description: map severity values to severity categories
-! * 
-! * Returns:     category value
-! *
-  ! 0 = none (0, 0.08) 
-  ! 4 = trace [0.08, 0.21]
-  ! 1 = light (0.21, 0.37]
-  ! 2 = moderate (0.37, 0.67]
-  ! 3 (no value yet, July 2015)
-  ! 5 = heavy (0.67, 1]
-  !http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-207.shtml
-!*
-  real function mapSev2Cat(data)
-    real, intent(in) :: data
-
-    if (data < 0.08) then
-       mapSev2Cat = 0.0
-    elseif (data <= 0.21) then
-       mapSev2Cat = 4.
-    else if(data <= 0.37) then
-       mapSev2Cat = 1.0
-    else if(data <= 0.67) then
-       mapSev2Cat = 2.0
-    else
-       mapSev2Cat = 5.0
-    endif
-
-    return
-  end function mapSev2Cat
-
 
 !**********************************************************************
 ! * subroutine: 

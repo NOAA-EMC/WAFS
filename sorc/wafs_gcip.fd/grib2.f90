@@ -488,7 +488,7 @@ contains
     ! Use PDT 4.0, different from WAFS icing, which uses PDT 4.15 for mean/max
     pot_gparms = pdt45_t(0, 19, 20,  -1, 0, 40, 0, 2, 7, -0.01, .false.)
     sld_gparms = pdt45_t(0, 19, 23,  -1, 0, 40, 0, 2, 7, -0.01, .false.)
-    sev_gparms = pdt45_t(0, 19, 234, -1, 0, 40, 0, 2, 7, -0.01, .false.)
+    sev_gparms = pdt45_t(0, 19, 37, -1, 0, 40, 0, 2, 7, -0.01, .false.)
     ! check output vertical levels: flight level or pressure level
     if( icingData%ctype == 'FLT') then
        pot_gparms%ilev = 102 ! altitude above MSL

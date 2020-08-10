@@ -9,7 +9,7 @@ puts stderr "This module initializes the environment\n"
 }
 module-whatis " WAFS"
 
-set ver v5.0.0
+set ver v6.0.0
 
 # Loading Intel Compiler Suite
 module load ips/18.0.1.163

@@ -4,7 +4,7 @@
 #SBATCH -o /scratch2/NCEPDEV/stmp3/Yali.Mao/gfs_wafs_grib2.o%j
 #SBATCH -e /scratch2/NCEPDEV/stmp3/Yali.Mao/gfs_wafs_grib2.o%j
 #SBATCH -t 00:30:00
-#SBATCH -N 1
+#SBATCH -N 7
 #SBATCH -q batch
 #SBATCH -A ovp
 
@@ -14,7 +14,7 @@ set -xa
 export threads=1
 export MP_LABELIO=yes
 export OMP_NUM_THREADS=$threads
-export MPIRUN=srun
+export MPIRUN="srun"
 
 ############################################
 # Loading module
@@ -40,7 +40,7 @@ module list
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
 export envir=prod
 
-export cyc=${cyc:-12}
+export cyc=${cyc:-00}
 
 # gfs_wafs_grib2 for generating global WAFS on grid 45
 export job=gfs_wafs_grib2_${cyc}
@@ -56,7 +56,7 @@ export RUN=gfs
 ############################################
 # Specify versions
 ############################################
-export gfs_ver=v4.0.0
+export gfs_ver=v16.0.0
 
 
 ############################################
@@ -67,7 +67,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20191002
+export PDY=20200302
 
 USER=`whoami`
 
@@ -85,22 +85,26 @@ export KEEPDATA=YES
 ############################################
 # Define ROOT directories
 ############################################
-export COMROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/candata
-export NWROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/git
+export COMROOT=/scratch2/NCEPDEV/stmp3/Yali.Mao/com_post
+export COMROOT=/scratch1/NCEPDEV/global/Yali.Mao/candata/cancom
+export NWROOT=/scratch1/NCEPDEV/global/Yali.Mao/git
 export DATAROOT=/scratch2/NCEPDEV/stmp3/${USER}
 
 ############################################
 # Define DATA, COMOUT and COMIN
 ############################################
 export COMIN=$COMROOT/gfs.$PDY/$cyc
-export COMOUT=/scratch2/NCEPDEV/ovp/Yali.Mao/candata/cancom/gfs.$PDY/$cyc
+export COMOUT=/scratch1/NCEPDEV/global/Yali.Mao/candata/cancom/gfs.$PDY/$cyc
+
+export COMIN=/scratch2/NCEPDEV/stmp3/Yali.Mao/com_post/gfs.$PDY/$cyc
+export COMOUT=/scratch2/NCEPDEV/stmp3/Yali.Mao/wafs_down/gfs.$PDY/$cyc
 
 export jlogfile=/$DATA/jlogfile.${jobid}
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_fork}
 
 ############################################
 # run the job

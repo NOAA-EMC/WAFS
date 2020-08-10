@@ -287,15 +287,28 @@ real, allocatable :: realData3D(:,:, :) ! used for output data into binary file
   if(allocated(inputs%pirep))  deallocate(inputs%pirep)
   if(allocated(inputs%lightning))  deallocate(inputs%lightning)
 
-  outdat%ctype="PRS"
-  if(igrib == 1) then
-     call writeIcing(output_file, outdat, iret, kpds, kgds)
-  elseif(igrib == 2) then
-     call writeIcing(output_file, outdat, iret, gfld=gfld)
-  end if
-  write(*,*) "writing iret=", iret
+  ! cfg%p2f%outputFLT:
+  ! 0 - model pressure level
+  ! 1 - flight level
+  ! 2 - ICAO standard pressure levels
 
   if(cfg%p2f%outputFLT == 0) then
+     outdat%ctype="PRS"
+
+     do j = 1,ny
+     do i = 1, nx
+        do k = 1, nz
+           outdat%severity(i, j, k) = mapSev2Cat(outdat%severity(i, j, k))
+        end do
+     end do
+     end do
+
+     if(igrib == 1) then
+        call writeIcing(output_file, outdat, iret, kpds, kgds)
+     elseif(igrib == 2) then
+        call writeIcing(output_file, outdat, iret, gfld=gfld)
+     end if
+     write(*,*) "writing iret=", iret
      !================================================!
      ! do clean-up of pressure-level outdat
      !================================================!
@@ -306,13 +319,23 @@ real, allocatable :: realData3D(:,:, :) ! used for output data into binary file
      
   else
 
-     !================================================!
-     ! pressure2flight, category embedded
-     !================================================!
      write(*,*) LF, "*****************************************"
-     write(*,*) "Running pressure2flight ..."
+     if(cfg%p2f%outputFLT == 1) then
+        !================================================!
+        ! pressure2flight
+        !================================================!
+        write(*,*) "Running pressure2flight ..."
+        outdat_FL%ctype="FLT"
+     else
+        !================================================!
+        ! pressure 2 ICAO standard levels
+        !================================================!
+        write(*,*) "Running pressure2flight ..."
+        outdat_FL%ctype="PRS"
+     end if
+        
      ! category embedded
-     call runPressure2Flight(kgds, inputs%model%h, outdat, outdat_FL, iret)
+     call runPressure2Flight(kgds, outdat_FL%ctype, inputs%model%h, outdat, outdat_FL, iret)
 
      !================================================!
      ! do clean-up of pressure-level outdat
@@ -323,15 +346,22 @@ real, allocatable :: realData3D(:,:, :) ! used for output data into binary file
      deallocate(inputs%model%p)
 
 
+     do j = 1,ny
+     do i = 1, nx
+        do k = 1, nz
+           outdat_FL%severity(i, j, k) = mapSev2Cat(outdat_FL%severity(i, j, k))
+        end do
+     end do
+     end do
+
      !================================================!
      ! write cip outputs to GRIB file
      !================================================!
      write(*,*) LF, "*****************************************"
-     outdat_FL%ctype="FLT"
      if(igrib == 1) then
-        call writeIcing(trim(output_file) // ".FLT", outdat_FL, iret, kpds, kgds)
+        call writeIcing(trim(output_file), outdat_FL, iret, kpds, kgds)
      elseif(igrib == 2) then
-        call writeIcing(trim(output_file) // ".FLT", outdat_FL, iret, gfld=gfld)
+        call writeIcing(trim(output_file), outdat_FL, iret, gfld=gfld)
      end if
 
      call cleanupOutput(outdat_FL)
@@ -549,4 +579,3 @@ subroutine cleanupOutput(outdat)
 
   return
 end subroutine cleanupOutput
-

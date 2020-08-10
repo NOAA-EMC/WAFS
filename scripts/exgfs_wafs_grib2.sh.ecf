@@ -8,12 +8,15 @@
 #             are pushed via dbnet to TOC to WAFS (ICSC).  
 #             This is a joint project of WAFC London and WAFC Washington.
 #
-#             We are processing WFAS grib2 for fcsthrs from 06 - 36 
+#             We are processing WAFS grib2 for fcsthrs from 06 - 36 
 #             with 3-hour time increment.
 #
 # History:  08/20/2014
 #              - ingest master file in grib2 (or grib1 if grib2 fails)
 #              - output of icng tcld cat cb are in grib2
+#           02/21/2020
+#              - Prepare unblended icing severity and GTG tubulence
+#                for blending at 0.25 degree
 #####################################################################
 echo "-----------------------------------------------------"
 echo "JGFS_WAFS_GRIB2 at 00Z/06Z/12Z/18Z GFS postprocessing"
@@ -32,40 +35,35 @@ do
 ##########################################################
 # Wait for the availability of the gfs master pgrib file
 ##########################################################
-  # master file in grib1 or grib2
-  # grib2 has the priority, run grib1 version only if grib2 fails
-  master1=$COMIN/${RUN}.${cycle}.master.grbf${fcsthrs}
   # file name and forecast hour of GFS model data in Grib2 are 3 digits
   export fcsthrs000="$(printf "%03d" $(( 10#$fcsthrs )) )"
+
+  # 2D data
   master2=$COMIN/${RUN}.${cycle}.master.grb2f${fcsthrs000}
   master2i=$COMIN/${RUN}.${cycle}.master.grb2if${fcsthrs000}
+  # 3D data
+  wafs2=$COMIN/${RUN}.${cycle}.wafs.grb2f${fcsthrs000}
+  wafs2i=$COMIN/${RUN}.${cycle}.wafs.grb2if${fcsthrs000}
 
   icnt=1
   while [ $icnt -lt 1000 ]
   do
-    if [ -s $master2i ]
-    then
-      sleep 5
+    if [[ -s $master2i && -s $wafs2i ]] ; then
       break
     fi
 
     sleep 10
     icnt=$((icnt + 1))
     if [ $icnt -ge 180 ] ;    then
-      # if master in grib2 fails, check master in grib1, no waiting
-      if [ -s $master1 ] ; then
-         master2=""
-      else
-        msg="ABORTING after 30 min of waiting for the gfs master file!"
+        msg="ABORTING after 30 min of waiting for the gfs master and wafs file!"
         err_exit $msg
-      fi
     fi
   done
 
-########################################
+  ########################################
   msg="HAS BEGUN!"
   postmsg "$jlogfile" "$msg"
-########################################
+  ########################################
 
   echo " ------------------------------------------"
   echo " BEGIN MAKING GFS WAFS GRIB2 PRODUCTS"
@@ -82,88 +80,96 @@ do
 
   export pgm=wafs_awc_wafavn
 
-  if [[ -z $master2 ]] ; then 
-     # ===================  process master file grib1  ===================
-     # 1) new WAFS fields
-     cpreq $PARMgfs/wafs_awc_wafavn.grb1.cfg waf.cfg
-     cpreq $master1  masterfilef${fcsthrs}
+  # ===================  process master file grib2  ===================
+  # 1) new WAFS fields
+  cp $PARMgfs/wafs_awc_wafavn.grb2.cfg waf.cfg
 
-     startmsg
-     $EXECgfs/$pgm -g 1 -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb  >> $pgmout  2> errfile
-     export err=$?; err_chk
+  date
+  ################# START #######################
+  ##### Use MPMD to speed up the processing #####
+  ###############################################
+  USHREGRID=$USHgfs/wafs_grib2.regrid.sh
 
-     $COPYGB  -g45 -i2 -x  tmpfile_icaof${fcsthrs} tmpfile_icao_grb45f${fcsthrs}
+  # 2D fields WAFS output, directly from master file
+  criteria0=":ICAHT:tropopause:|:TMP:tropopause:|:ICAHT:max.*wind:|:UGRD:max.*wind:|:VGRD:max.*wind:"
+  # 2D inputs for WAFS from master file, reference to type(pdt_t) parameters sorc/wafs_awc_wafavn.fd/waf_grib2.f90
+  criteria1=":PRES:surface:|:PRES:convective|:CPRAT:.*hour.\{1\}ave"
+  # 3D inputs from WAFS file at high resolution on ICAO standard pressures
+  criteria2=":HGT:|:TMP:"
+  criteria3=":UGRD:|:VGRD:"
+  criteria4=":RH:|:CLWMR:|:ICMR:"
+  criteria5=":RWMR:|:SNMR:|:GRLE:"
+  criteria6=":ICIP:|:EDPARM:"
+  criteria7=":CATEDR:|:MWTURB:"
 
-     # 2) traditional WAFS fields
-     $WGRIB masterfilef${fcsthrs} | grep -F -f $FIXgfs/wafs_gfsmaster.grb1.list | grep "kpds6=6:" | \
-                     $WGRIB -i -grib -o tmpfile_gfsf${fcsthrs}.maxwind masterfilef${fcsthrs}
-     # interpolate by '2 neighbor' for max wind fields (max U V wind and its height)
-     $COPYGB  -g45 -i2 -x  tmpfile_gfsf${fcsthrs}.maxwind  tmpfile_gfs_grb45f${fcsthrs}.maxwind
-     $WGRIB masterfilef${fcsthrs} | grep -F -f $FIXgfs/wafs_gfsmaster.grb1.list | grep -v "kpds6=6:" | \
-                     $WGRIB -i -grib -o tmpfile_gfsf${fcsthrs}.nomaxwind masterfilef${fcsthrs}
-     # interpolate by '0 bilinear' for other fields
-     $COPYGB  -g45 -i0 -x  tmpfile_gfsf${fcsthrs}.nomaxwind  tmpfile_gfs_grb45f${fcsthrs}.nomaxwind
-     # combine back together
-     cat tmpfile_gfs_grb45f${fcsthrs}.maxwind tmpfile_gfs_grb45f${fcsthrs}.nomaxwind > tmpfile_gfs_grb45f${fcsthrs}
-     rm tmpfile_gfs_grb45f${fcsthrs}.maxwind tmpfile_gfs_grb45f${fcsthrs}.nomaxwind
-
-     # 3) combine new and traditional WAFS fields
-     cat tmpfile_gfs_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs} > gfs.t${cyc}z.wafs_grb45f${fcsthrs}
-
-     # $CNVGRIB -g12 -p40 -nv  gfs.t${cyc}z.wafs_grb45f${fcsthrs}  gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
-     $EXECgfs/wafs_cnvgrib2 -g12 -p40 -mastertable_ver_6 -nv  gfs.t${cyc}z.wafs_grb45f${fcsthrs}  gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+  # For high resolution maste file, run time of awc_wafavn is 20 seconds for 1440 x 721, 
+  # 3 minutes for new 3072 x 1536 master file for each forecast.
+  # To reduce the time, will extract the required fields from master file and wafs files,
+  # then convert to 1440 x 721.
+  npts=`$WGRIB2 -npts $master2 | head -n1 | cut -d'=' -f2`
+  newgrid="latlon 0:1440:0.25 90:721:-0.25"
+  rm grib2.cmdfile
+  if [ $npts -gt 1038240 ] ; then
+      regrid_options="bilinear $newgrid"
   else
-     # ===================  process master file grib2  ===================
-     # 1) new WAFS fields
-     cpreq $PARMgfs/wafs_awc_wafavn.grb2.cfg waf.cfg
+      regrid_options=""
+  fi
 
-     # For high resolution maste file, run time of awc_wafavn is 20 seconds for 1440 x 721, 
-     # 3 minutes for new 3072 x 1536 master file for each forecast.
-     # To reduce the time, will grab the required files from new master file,
-     # then convert to 1440 x 721.
-#    npts=`wgrib2  -npts $master2 | head -n1 | cut -d'=' -f2`
-     npts=`$WGRIB2 -npts $master2 | head -n1 | cut -d'=' -f2`
-     if [ $npts -gt 1038240 ] ; then
-       # required fields searching criteria, according to type(pdt_t) parameters from sorc/wafs_awc_wafavn.fd/waf_grib2.f90 
-       criteria=":PRES:surface:|:PRES:convective|:CPRAT:|:HGT:.* mb:|:TMP:.* mb:|:UGRD:.* mb:|VGRD:.* mb:|:RH:.* mb:|:CLWMR:.* mb:|:ICIP:.* mb:"
-       $WGRIB2 $master2 | egrep "$criteria"| $WGRIB2 -i $master2 -grib masterfilef${fcsthrs}.new
-       $WGRIB2 masterfilef${fcsthrs}.new -new_grid_interpolation bilinear -new_grid latlon 0:1440:0.25 90:721:-0.25 masterfilef${fcsthrs}
-       rm masterfilef${fcsthrs}.new
-     else
-       cpreq $master2  masterfilef${fcsthrs}
-     fi
+  echo 0 $USHREGRID 0 $master2 $criteria0 $regrid_options >> grib2.cmdfile
+  echo 1 $USHREGRID 1 $master2 $criteria1 $regrid_options >> grib2.cmdfile
+  for i in 2 3 4 5 6 7; do
+      criteria=`eval echo '$'criteria$i`
+      echo $i $USHREGRID $i $wafs2 $criteria $regrid_options >> grib2.cmdfile
+  done
 
-     startmsg
-     $MPIRUN $EXECgfs/$pgm -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb  >> $pgmout  2> errfile
-     export err=$?; err_chk
+  if [ ! `echo $MPIRUN | cut -d " " -f1` = 'srun' ] ; then
+      # If not 'srun' MPMD, do not need CPU number at the beginning of each line of grib2.cmdfile
+      sed 's/[^ ]* //'  -i grib2.cmdfile
+      export MP_PGMMODEL=mpmd
+      MPMDRUN=$MPIRUN
+  else
+      MPMDRUN="$MPIRUN -l --multi-prog"
+  fi
+  $MPMDRUN -N 8 grib2.cmdfile
+
+  ###############################################
+  ##### Use MPMD to speed up the processing #####
+  ################### END #######################
+  date
+
+  rm masterfilef${fcsthrs}
+  for i in 0 1 2 3 4 5 6 7 ; do
+      cat regrid.tmp.$i >> masterfilef${fcsthrs}
+      rm regrid.tmp.$i
+  done
+
+  startmsg
+  $MPIRUN $EXECgfs/$pgm -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb  >> $pgmout  2> errfile
+  export err=$?; err_chk
 
 # To avoid interpolation of missing value (-0.1 or -1.0, etc), use neighbor interpolation instead of bilinear interpolation
-     $WGRIB2 tmpfile_icaof${fcsthrs} -set_grib_type same -new_grid_winds earth \
+  $WGRIB2 tmpfile_icaof${fcsthrs} -set_grib_type same -new_grid_winds earth \
                       -new_grid_interpolation bilinear -if ":(CBHE|CTP):" -new_grid_interpolation neighbor -fi \
                       -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_icao_grb45f${fcsthrs}
 # after grid conversion by wgrib2, even with neighbor interpolation, values may still be mislead by noises, epescially 
 # the ref_value is not zero according to DST template 5.XX. Solution: rewrite and round those special meaning values
-     $MPIRUN $EXECgfs/wafs_setmissing tmpfile_icao_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs}.setmissing
-     mv tmpfile_icao_grb45f${fcsthrs}.setmissing tmpfile_icao_grb45f${fcsthrs}
+  $MPIRUN $EXECgfs/wafs_setmissing tmpfile_icao_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs}.setmissing
+  mv tmpfile_icao_grb45f${fcsthrs}.setmissing tmpfile_icao_grb45f${fcsthrs}
 
-     # 2) traditional WAFS fields
-     $WGRIB2 $master2 | grep -F -f $FIXgfs/wafs_gfsmaster.grb2.list | $WGRIB2 -i $master2 -grib tmpfile_gfsf${fcsthrs}
+  # 2) traditional WAFS fields
+  $WGRIB2 masterfilef${fcsthrs} | grep -F -f $FIXgfs/wafs_gfsmaster.grb2.list | $WGRIB2 -i masterfilef${fcsthrs} -grib tmpfile_gfsf${fcsthrs}
 # U V will have the same grid messange number by using -ncep_uv.
-#     $WGRIB2 tmpfile_gfsf${fcsthrs} \
-#                      -new_grid_winds earth -set_grib_type jpeg \
-#                      -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
-#                      -new_grid latlon 0:288:1.25 90:145:-1.25 - -inv /dev/null | $WGRIB2 - -ncep_uv tmpfile_gfs_grb45f${fcsthrs}                       
 # U V will have the different grid messange number without -ncep_uv.
-     $WGRIB2 tmpfile_gfsf${fcsthrs} \
+  $WGRIB2 tmpfile_gfsf${fcsthrs} \
                       -new_grid_winds earth -set_grib_type jpeg \
                       -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
                       -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_gfs_grb45f${fcsthrs}
 
-     # 3) combine new and traditional WAFS fields
-     cat tmpfile_gfs_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs} > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+  # 3) combine new and traditional WAFS fields
+  cat tmpfile_gfs_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs} > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
 
-     $CNVGRIB -g21 gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 gfs.t${cyc}z.wafs_grb45f${fcsthrs}
-  fi
+  $CNVGRIB -g21 gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 gfs.t${cyc}z.wafs_grb45f${fcsthrs}
+ 
   $WGRIB2 -s gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx
   
 # Chuang: create a file in working dir without US unblended WAFS product for ftp server 

@@ -260,7 +260,8 @@ subroutine get_grib2(pdt, pres_level, iret, fld, nx, ny, gfld_def)
     call getgb2(glob_lu_in, 0, j, jdisc, jids, jpdtn, jpdt, &
                 jgdtn, jgdt, unpack, j, gfld, iret)
     if( iret /= 0) then
-       print *,'call get_grib2, iret=',iret, pdt,"on level=",pres_level 
+       print *,'call get_grib2, iret=',iret, pdt,"on level=",pres_level
+       return
     endif
 
     if(present(nx) .and. present(ny) .and. present(gfld_def)) then

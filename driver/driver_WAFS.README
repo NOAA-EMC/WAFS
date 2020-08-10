@@ -6,10 +6,16 @@ There are 4 WAFS jobs and their corresponding drivers
 JGFS_WAFS   <-> run_JGFS_WAFS.dell
 JGFS_WAFS_GRIB2		<-> run_JGFS_WAFS_GRIB2.dell
 JGFS_WAFS_BLENDING	<-> run_JGFS_WAFS_BLENDING.dell
-JGFS_WAFS_GCIP		    <-> run_JGFS_WAFS_GCIP.dell
+JGFS_WAFS_GCIP          <-> run_JGFS_WAFS_GCIP.dell
+JGFS_WAFS_GRIB2_0P25	<-> run_JGFS_WAFS_GRIB2_0P25.dell
+JGFS_WAFS_BLENDING_0P25	<-> run_JGFS_WAFS_BLENDING_0P25.dell
+
 
 JGFS_WAFS_BLENDING is a downstream of JGFS_WAFS_GRIB2 and
 should run after JGFS_WAFS_GRIB2
+
+JGFS_WAFS_BLENDING_0P25 is a downstream of JGFS_WAFS_GRIB2_0P25 and
+should run after JGFS_WAFS_GRIB2_0P25
 
 JGFS_WAFS_GCIP has satellite and radar data inputs, and METAR SHIP PIREPs 
 data which are dumped from DCOMROOT by using 'dumpjb'
@@ -18,7 +24,7 @@ Step 1:
 =====================
 After a user downloads/checkouts the project tag.
 1) cd sorc
-2) sh build_wafs_dell.sh
+2) sh build_wafs.sh
 
 Project location, defined by HOMEgfs
 export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/git

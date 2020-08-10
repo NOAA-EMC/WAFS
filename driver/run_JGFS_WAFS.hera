@@ -11,6 +11,8 @@
 # 8 means octants
 
 set -xa
+date
+echo start
 
 # specify computation resource
 export threads=1
@@ -43,7 +45,7 @@ module list
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
 export envir=prod
 
-export cyc=${cyc:-12}
+export cyc=${cyc:-00}
 # 00 06 12 30 33
 export fcsthrs=36
 
@@ -61,7 +63,7 @@ export RUN=gfs
 ############################################
 # Specify versions
 ############################################
-export gfs_ver=v4.0.0
+export gfs_ver=v16.0.0
 
 
 ############################################
@@ -72,7 +74,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20191002
+export PDY=20200302
 
 USER=`whoami`
 
@@ -90,28 +92,34 @@ export KEEPDATA=YES
 ############################################
 # Define ROOT directories
 ############################################
-export COMROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/candata
-export NWROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/git
+export COMROOT=/scratch1/NCEPDEV/global/Yali.Mao/candata/cancom
+export NWROOT=/scratch1/NCEPDEV/global/Yali.Mao/git
 export DATAROOT=/scratch2/NCEPDEV/stmp3/Yali.Mao
 
 ############################################
 # Define DATA, COMOUT and COMIN
 ############################################
 export COMIN=$COMROOT/gfs.$PDY/$cyc
+export COMOUT=/scratch1/NCEPDEV/global/Yali.Mao/candata/cancom/gfs.$PDY/$cyc
 export COMOUT=/scratch2/NCEPDEV/ovp/Yali.Mao/candata/cancom/gfs.$PDY/$cyc
+
+export COMIN=/scratch2/NCEPDEV/stmp3/Yali.Mao/com_post/gfs.$PDY/$cyc
+export COMOUT=/scratch2/NCEPDEV/stmp3/Yali.Mao/wafs_down/gfs.$PDY/$cyc
 
 export jlogfile=/$DATA/jlogfile.${jobid}
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_fork}
 
 #############################################
 # run the job
 #############################################
 sh $HOMEgfs/jobs/JGFS_WAFS
 
+date
+echo "wafs end"
 exit
 
 

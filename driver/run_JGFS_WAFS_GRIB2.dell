@@ -1,13 +1,13 @@
 #!/bin/sh
 
 #BSUB -J gfs_wafs_grib2
-#BSUB -cwd /gpfs/dell3/ptmp/Yali.Mao
-#BSUB -oo /gpfs/dell3/ptmp/Yali.Mao/gfs_wafs_grib2.o%J
-#BSUB -eo /gpfs/dell3/ptmp/Yali.Mao/gfs_wafs_grib2.o%J
+#BSUB -cwd /gpfs/dell3/ptmp/Hui-Ya.Chuang
+#BSUB -oo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_wafs_grib2.o%J
+#BSUB -eo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_wafs_grib2.o%J
 ##BSUB -L /bin/sh
 #BSUB -q debug
 #BSUB -W 00:30
-#BSUB -P GFS-T2O
+#BSUB -P GFS-DEV
 #BSUB -n 1
 #BSUB -R span[ptile=1]
 #BSUB -R affinity[core(1):distribute=balance]
@@ -27,14 +27,14 @@ export MPIRUN=mpirun
 # Loading module
 ############################################
 module purge
-module load EnvVars/1.0.2
+#module load EnvVars/1.0.2
 module load ips/18.0.1.163
 module load impi/18.0.1
 module load lsf/10.1
 
 module load prod_util/1.1.0
-module load grib_util/1.0.6
-module load prod_envir/1.0.2
+module load grib_util/1.1.0
+module load prod_envir/1.0.3
 
 module list
 
@@ -42,7 +42,7 @@ module list
 # required exports!
 ############################################
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
-export envir=para
+export envir=prod
 
 export cyc=${cyc:-00}
 
@@ -55,12 +55,12 @@ export job=gfs_wafs_grib2_${cyc}
 ### NET: gfs/para/parallel-test/nam/rap/ dump/ens/nawips/nesdis/
 export NET=gfs
 export RUN=gfs
-
+export COMPONENT=${COMPONENT:-atmos}
 
 ############################################
 # Specify versions
 ############################################
-export gfs_ver=v4.0.0
+export gfs_ver=v16.0.0
 
 
 ############################################
@@ -71,7 +71,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20180725
+export PDY=20200807
 
 USER=`whoami`
 
@@ -89,18 +89,15 @@ export KEEPDATA=YES
 ############################################
 # Define ROOT directories
 ############################################
-export COMROOT=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1
-export COMROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput
-#export NWROOTp1=/nwprod
-export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/git
-export DATAROOT=/gpfs/dell3/ptmp/${USER}
+export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Hui-Ya.Chuang/git
 
 ############################################
 # Define DATA, COMOUT and COMIN
 ############################################
-export COMIN=$COMROOT/gfs.$PDY/$cyc
-export COMOUT=/gpfs/dell3/ptmp/${USER}/wafs_fv3.$PDY/$cyc
-export COMOUT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/dataprod/gfs.$PDY/$cyc
+export COMIN=/gpfs/dell3/ptmp/${USER}/com_post/gfs.$PDY/$cyc/$COMPONENT
+export COMOUT=/gpfs/dell3/ptmp/${USER}/wafs_dwn/gfs.$PDY/$cyc/$COMPONENT
+
+export DATA=/gpfs/dell3/ptmp/${USER}/working_wafs/$jobid
 
 export jlogfile=/$DATA/jlogfile.${jobid}
 
@@ -123,7 +120,7 @@ exit
 #############################################
 # compare the output (optional)
 #############################################
-if [ $USER = 'Yali.Mao' ] ; then
+if [ $USER = 'Hui-Ya.Chuang' ] ; then
 
   # the standard data to be compared to
   stdout=/com2/${NET}/$envir/${RUN}.${PDY}

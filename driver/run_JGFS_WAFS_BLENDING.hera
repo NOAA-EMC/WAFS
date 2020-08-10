@@ -56,7 +56,7 @@ export RUN=gfs
 ############################################
 # Specify versions
 ############################################
-export gfs_ver=v4.0.0
+export gfs_ver=v16.0.0
 
 
 ############################################
@@ -67,7 +67,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20191002
+export PDY=20191230
 
 USER=`whoami`
 
@@ -86,8 +86,6 @@ export KEEPDATA=YES
 # Define ROOT directories
 ############################################
 echo $COMROOT
-export NWROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/git
-export DATAROOT=/scratch2/NCEPDEV/stmp3/${USER}
 
 # for UK data
 #if [[ `hostname` =~ "^l" ]] ; then ! LUNA/TIDE
@@ -96,18 +94,17 @@ export DATAROOT=/scratch2/NCEPDEV/stmp3/${USER}
 #  export DCOMROOT=/gpfs/gp1/nco/ops/dcom
 #fi
 # For canned data:
-export DCOMROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/candata/dcom
-
+export DCOMROOT=/scratch1/NCEPDEV/global/Yali.Mao/candata/dcom
 
 ############################################
 # Define DATA PCOM, COMOUT and COMIN
 ############################################
-export COMROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/candata
-export NWROOT=/scratch2/NCEPDEV/ovp/Yali.Mao/git
+export COMROOT=/scratch1/NCEPDEV/global/Yali.Mao/candata/cancom
+export NWROOT=/scratch1/NCEPDEV/global/Yali.Mao/git
 export DATAROOT=/scratch2/NCEPDEV/stmp3/${USER}
 
 export COMIN=$COMROOT/gfs.$PDY/$cyc
-export COMOUT=/scratch2/NCEPDEV/ovp/Yali.Mao/candata/cancom/gfs.$PDY/$cyc
+export COMOUT=/scratch1/NCEPDEV/global/Yali.Mao/candata/cancom/gfs.$PDY/$cyc
 export PCOM=$COMOUT/wmo
 
 export COMINus=$COMOUT/wmo
@@ -118,7 +115,7 @@ export jlogfile=/$DATA/jlogfile.${jobid}
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_fork}
 
 ############################################
 # run the job
