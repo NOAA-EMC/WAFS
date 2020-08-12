@@ -126,11 +126,11 @@ do
       # If not 'srun' MPMD, do not need CPU number at the beginning of each line of grib2.cmdfile
       sed 's/[^ ]* //'  -i grib2.cmdfile
       export MP_PGMMODEL=mpmd
-      MPMDRUN=$MPIRUN
+      MPMDRUN="$MPIRUN -n 8 cfp"
   else
-      MPMDRUN="$MPIRUN -l --multi-prog"
+      MPMDRUN="$MPIRUN -l --multi-prog -N 8"
   fi
-  $MPMDRUN -N 8 grib2.cmdfile
+  $MPMDRUN grib2.cmdfile
 
   ###############################################
   ##### Use MPMD to speed up the processing #####
