@@ -43,10 +43,10 @@ module list
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
 export envir=prod
 
-export cyc=${cyc:-00}
+export cyc=${cyc:-12}
 
 # gfs_wafs_blending for blending icing turbulence of US and UK
-export job=gfs_wafs_blending_${cyc}
+export job=gfs_wafs_blending_0p25_${cyc}
 
 ############################################
 # set NET RUN
@@ -70,7 +70,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20200807
+export PDY=20200513
 
 USER=`whoami`
 
@@ -89,7 +89,7 @@ export KEEPDATA=YES
 # Define ROOT directories
 ############################################
 echo $COMROOT
-export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Hui-Ya.Chuang/git
+export NWROOT=/gpfs/dell2/emc/verification/save/Hui-Ya.Chuang
 export DATAROOT=/gpfs/dell3/ptmp/${USER}
 
 # for UK data
@@ -101,6 +101,7 @@ export DATAROOT=/gpfs/dell3/ptmp/${USER}
 # For canned data:
 #export DCOMROOT=/gpfs/dell2/emc/modeling/noscrub/Hui-Ya.Chuang/2018impl/datainput/dcom
 
+export DCOMROOT=/gpfs/dell3/ptmp/Hui-Ya.Chuang/dcom
 
 ############################################
 # Define DATA PCOM, COMOUT and COMIN
@@ -109,7 +110,7 @@ export COMIN=/gpfs/dell3/ptmp/${USER}/wafs_dwn/gfs.$PDY/$cyc/$COMPONENT
 export COMOUT=/gpfs/dell3/ptmp/${USER}/wafs_dwn/gfs.$PDY/$cyc/$COMPONENT
 export PCOM=$COMOUT/wmo
 
-export COMINus=$COMIN/wmo
+export COMINus=$COMIN
 export COMINuk=${COMINuk:-$DCOMROOT/prod/$PDY/wgrbbul/ukmet_wafs}
 
 export DATA=/gpfs/dell3/ptmp/${USER}/working_wafs/$jobid

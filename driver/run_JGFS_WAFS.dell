@@ -73,7 +73,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20200807
+export PDY=20200810
 
 USER=`whoami`
 
@@ -91,7 +91,7 @@ export KEEPDATA=YES
 ############################################
 # Define ROOT directories
 ############################################
-export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Hui-Ya.Chuang/git
+export NWROOT=/gpfs/dell2/emc/verification/save/Hui-Ya.Chuang
 
 ############################################
 # Define DATA, COMOUT and COMIN

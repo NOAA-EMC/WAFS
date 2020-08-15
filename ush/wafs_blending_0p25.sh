@@ -28,11 +28,11 @@ if [ $SEND_US_WAFS = "NO" ] ; then
 
   # pick up US data
 
-  cp ${COMINus}/gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2 .
+  cp ${COMINus}/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 .
 
   # run blending code
   startmsg
-  $EXECgfs/wafs_blending_0p25 gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2 \
+  $EXECgfs/wafs_blending_0p25 gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 \
                               EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 \
                               0p25_blended_${PDY}${cyc}f${ffhr}.grib2 > f${ffhr}.out
 

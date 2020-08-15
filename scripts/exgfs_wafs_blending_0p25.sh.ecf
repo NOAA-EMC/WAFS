@@ -31,16 +31,16 @@ do
      export ic=1
      while [ $ic -le $SLEEP_LOOP_MAX ]
      do 
-       if [ -s ${COMINus}/gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2 ] ; then
+       if [ -s ${COMINus}/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 ] ; then
           break
        else
 	  ic=`expr $ic + 1` 
 	  sleep $SLEEP_INT 
        fi 
        if [ $ic -eq $SLEEP_LOOP_MAX ] ; then
-          msg="US WAFS GRIB2 file "  $COMINus/gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2 "not found after waiting over $SLEEP_TIME seconds"
+          msg="US WAFS GRIB2 file "  $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 "not found after waiting over $SLEEP_TIME seconds"
           postmsg "$jlogfile" "$msg"
-	  echo "US WAFS GRIB2 file " $COMINus/gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2 "not found after waiting ",$SLEEP_TIME, "exitting"
+	  echo "US WAFS GRIB2 file " $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 "not found after waiting ",$SLEEP_TIME, "exitting"
           export err=1; err_chk
        fi 
      done

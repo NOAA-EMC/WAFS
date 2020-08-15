@@ -4,7 +4,7 @@
 #SBATCH -o /work/noaa/stmp/ymao/stmp/gfs_wafs_grib2.o%j
 #SBATCH -e /work/noaa/stmp/ymao/stmp/gfs_wafs_grib2.o%j
 #SBATCH -t 00:30:00
-#SBATCH -N 8
+#SBATCH -N 7
 #SBATCH -q batch
 #SBATCH -A ovp
 
@@ -100,7 +100,7 @@ export jlogfile=/$DATA/jlogfile.${jobid}
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_fork}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
 
 ############################################
 # run the job

@@ -113,7 +113,7 @@ export jlogfile=/$DATA/jlogfile.${jobid}
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_fork}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
 
 ############################################
 # run the job

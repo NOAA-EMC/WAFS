@@ -60,7 +60,7 @@ if [ $SENDCOM = YES ] ; then
   mkdir -p $COMOUT $PCOM
 fi
 
-export COMINus=${COMINus:-$COMIN/wmo}
+export COMINus=${COMINus:-$COMIN}
 export COMINuk=${COMINuk:-$DCOMROOT/prod/$PDY/wgrbbul/ukmet_wafs}
 
 ############################################
