@@ -99,7 +99,7 @@ export COMOUT=/scratch1/NCEPDEV/global/Yali.Mao/candata/cancom/gfs.$PDY/$cyc
 export COMIN=/scratch2/NCEPDEV/stmp3/Yali.Mao/com_post/gfs.$PDY/$cyc
 export COMOUT=/scratch2/NCEPDEV/stmp3/Yali.Mao/wafs_down/gfs.$PDY/$cyc
 
-export jlogfile=/$DATA/jlogfile.${jobid}
+export jlogfile=$DATA/jlogfile.${jobid}
 
 ################################
 # Set up the HOME directory

@@ -124,7 +124,7 @@ export COMINradar=${COMINradar:-$COMROOT/hourly/prod/radar.$PDY}
 
 export DATA=/gpfs/dell3/ptmp/${USER}/working_wafs/$jobid
 
-export jlogfile=/$DATA/jlogfile.${jobid}
+export jlogfile=$DATA/jlogfile.${jobid}
 
 ################################
 # Set up the HOME directory

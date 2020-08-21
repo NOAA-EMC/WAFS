@@ -119,7 +119,7 @@ export COMOUT=/scratch2/NCEPDEV/stmp3/Yali.Mao/wafs_down/gfs.$PDY/$cyc
 export COMINgfs=$COMROOT/cancom/gfs.$PDY/$cyc
 export COMINradar=${COMINradar:-$COMROOTp1/radar/$PDY}
 
-export jlogfile=/$DATA/jlogfile.${jobid}
+export jlogfile=$DATA/jlogfile.${jobid}
 
 ################################
 # Set up the HOME directory

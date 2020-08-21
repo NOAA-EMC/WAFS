@@ -100,7 +100,7 @@ export COMOUT=/gpfs/dell3/ptmp/${USER}/wafs_dwn/gfs.$PDY/$cyc/$COMPONENT
 
 export DATA=/gpfs/dell3/ptmp/${USER}/working_wafs/$jobid
 
-export jlogfile=/$DATA/jlogfile.${jobid}
+export jlogfile=$DATA/jlogfile.${jobid}
 
 ################################
 # Set up the HOME directory

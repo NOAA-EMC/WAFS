@@ -99,14 +99,14 @@ export DCOMROOT=/work/noaa/stmp/ymao/dcom
 ############################################
 export COMIN=/work/noaa/stmp/ymao/gfsoutput/wafs_0p25/gfs.$PDY/$cyc/$COMPONENT
 
-export COMINus=$COMIN/wmo
+export COMINus=$COMIN
 export COMINuk=${COMINuk:-$DCOMROOT/prod/$PDY/wgrbbul/ukmet_wafs}
 
 export COMOUT=/work/noaa/stmp/ymao/gfsoutput/wafs_0p25/gfs.$PDY/$cyc/$COMPONENT
 
 export DATA=/work/noaa/stmp/$LOGNAME/stmp/working_wafs/$jobid
 
-export jlogfile=/$DATA/jlogfile.${jobid}
+export jlogfile=$DATA/jlogfile.${jobid}
 
 ################################
 # Set up the HOME directory

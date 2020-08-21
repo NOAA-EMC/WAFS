@@ -45,31 +45,27 @@ do
        fi 
      done
      
-# look for UK WAFS data
-     export ic=1
-     while [ $ic -le $SLEEP_LOOP_MAX ]
-     do
-       # Three(3) unblended UK files for each cycle+fhour: icing, turb, cb
-       ukfiles=`ls $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 | wc -l`
-       if [ $ukfiles -eq 3 ] ; then
-          break
-       else
-	  ic=`expr $ic + 1` 
-	  sleep $SLEEP_INT 
-       fi 
-       if [ $ic -eq $SLEEP_LOOP_MAX ] ; then
-          msg="UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found after waiting over $SLEEP_TIME seconds"
-          postmsg "$jlogfile" "$msg"
-	  echo "UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found after waiting ",$SLEEP_TIME, 
-	  echo "turning back on dbn alert for unblended US WAFS product"
-          export SEND_US_WAFS=YES 
+# look for UK WAFS data. Do not wait for UK data
 
-       fi 
-     done     
+     # Three(3) unblended UK files for each cycle+fhour: icing, turb, cb
+     ukfiles=`ls $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 | wc -l`
+     if [ ! $ukfiles -eq 3 ] ; then
+        msg="UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found"
+        postmsg "$jlogfile" "$msg"
+	echo "UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found"
+	echo "turning back on dbn alert for unblended US WAFS product"
+        export SEND_US_WAFS=YES 
+     fi 
+
      $USHgfs/wafs_blending_0p25.sh
 
      echo "$PDY$cyc$ffhr" > $COMOUT/${RUN}.t${cyc}z.control.wafsblending_0p25
 
+     if [ $ffhr -lt 24 ] ; then
+	 FHINC=01
+     else
+	 FHINC=03
+     fi
      ffhr=`expr $ffhr + $FHINC`
      if test $ffhr -lt 10
      then

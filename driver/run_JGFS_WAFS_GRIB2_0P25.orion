@@ -94,7 +94,7 @@ export COMOUT=/work/noaa/stmp/ymao/gfsoutput/wafs_0p25/gfs.$PDY/$cyc/$COMPONENT
 
 export DATA=/work/noaa/stmp/$LOGNAME/stmp/working_wafs/$jobid
 
-export jlogfile=/$DATA/jlogfile.${jobid}
+export jlogfile=$DATA/jlogfile.${jobid}
 
 ################################
 # Set up the HOME directory

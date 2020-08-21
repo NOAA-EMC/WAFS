@@ -74,8 +74,6 @@ env
 export SHOUR=${SHOUR:-06}
 export EHOUR=${EHOUR:-36}
 
-export FHINC=03
-
 ###############################################
 # Specify Timeout Behavior of WAFS blending
 #

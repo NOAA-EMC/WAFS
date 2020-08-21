@@ -164,6 +164,11 @@ do
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_0P25 $job $PCOM/gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2
   fi
 
+  if [ $ffhr -lt 24 ] ; then
+      FHINC=01
+  else
+      FHINC=03
+  fi
   ffhr=`expr $ffhr + $FHINC`
   if test $ffhr -lt 10
   then

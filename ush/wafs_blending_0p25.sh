@@ -67,7 +67,7 @@ if [ $SEND_US_WAFS = "YES" ] ; then
  #
    echo "altering the unblended US WAFS products - $COMOUT/gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2 "
    echo "and $COMOUT/gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2.idx "
-   echo "and $PCOM/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 "
+   echo "and $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 "
 
    if [ $SENDDBN = "YES" -a $SEND_US_WAFS = "YES" ] ; then
       $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2
@@ -75,7 +75,7 @@ if [ $SEND_US_WAFS = "YES" ] ; then
    fi
 
    if [ $SENDDBN_NTC = "YES" -a $SEND_US_WAFS = "YES" ] ; then
-      $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
+      $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
    fi
    export SEND_US_WAFS=NO
    exit
