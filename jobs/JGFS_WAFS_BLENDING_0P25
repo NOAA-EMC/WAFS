@@ -123,7 +123,7 @@ fi
 ############################################
 # Execute the script.
 ############################################
-${SCRIPTSgfs}/exgfs_wafs_blending_0p25.sh.ecf
+${SCRIPTSgfs}/exgfs_wafs_blending_0p25.sh
 export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY."

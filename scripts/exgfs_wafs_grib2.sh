@@ -1,6 +1,6 @@
 #!/bin/sh
 ######################################################################
-#  UTILITY SCRIPT NAME :  exgfs_wafs_grib2.sh.ecf
+#  UTILITY SCRIPT NAME :  exgfs_wafs_grib2.sh
 #         DATE WRITTEN :  07/15/2009
 #
 #  Abstract:  This utility script produces the WAFS GRIB2. The output 
@@ -258,9 +258,9 @@ done
 ################################################################################
 # GOOD RUN
 set +x
-echo "**************JOB EXGFS_WAFS_GRIB2.SH.ECF COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_WAFS_GRIB2.SH.ECF COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_WAFS_GRIB2.SH.ECF COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GRIB2.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GRIB2.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GRIB2.SH COMPLETED NORMALLY ON THE IBM"
 set -x
 ################################################################################
 

@@ -80,7 +80,7 @@ env
 # Execute the script.
 ############################################
 export MPIRUN=${MPIRUN:-mpirun}
-${SCRIPTSgfs}/exgfs_wafs_grib2.sh.ecf
+${SCRIPTSgfs}/exgfs_wafs_grib2.sh
 export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY!"

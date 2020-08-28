@@ -1,6 +1,6 @@
 #!/bin/sh
 ######################################################################
-#  UTILITY SCRIPT NAME :  exgfs_wafs_grib2_0p25.sh.ecf
+#  UTILITY SCRIPT NAME :  exgfs_wafs_grib2_0p25.sh
 #         DATE WRITTEN :  03/20/2020
 #
 #  Abstract:  This utility script produces the WAFS GRIB2 at 0.25 degree.
@@ -187,9 +187,9 @@ done
 ################################################################################
 # GOOD RUN
 set +x
-echo "**************JOB EXGFS_WAFS_GRIB2_0P25.SH.ECF COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_WAFS_GRIB2_0P25.SH.ECF COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_WAFS_GRIB2_0P25.SH.ECF COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GRIB2_0P25.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GRIB2_0P25.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GRIB2_0P25.SH COMPLETED NORMALLY ON THE IBM"
 set -x
 ################################################################################
 

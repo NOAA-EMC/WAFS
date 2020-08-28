@@ -1,6 +1,6 @@
 #!/bin/ksh
 ######################################################################
-#  UTILITY SCRIPT NAME :  exgfs_wafs_gcip.sh.ecf
+#  UTILITY SCRIPT NAME :  exgfs_wafs_gcip.sh
 #         DATE WRITTEN :  01/28/2015
 #
 #  Abstract:  This utility script produces the WAFS GCIP. 
@@ -230,9 +230,9 @@ fi
 ################################################################################
 # GOOD RUN
 set +x
-echo "**************JOB EXGFS_WAFS_GCIP.SH.ECF COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_WAFS_GCIP.SH.ECF COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_WAFS_GCIP.SH.ECF COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GCIP.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GCIP.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GCIP.SH COMPLETED NORMALLY ON THE IBM"
 set -x
 ################################################################################
 

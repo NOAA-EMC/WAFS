@@ -1,6 +1,6 @@
 #!/bin/sh
 ######################################################################
-#  UTILITY SCRIPT NAME :  exgfs_wafs_grib.sh.ecf
+#  UTILITY SCRIPT NAME :  exgfs_wafs_grib.sh
 #         DATE WRITTEN :  10/04/2004
 #
 #  Abstract:  This utility script produces the  WAFS GRIB
@@ -33,7 +33,7 @@ then
 #   export job=${job:-interactive}
 else
    echo ""
-   echo "Usage: exgfs_wafs_grib.sh.ecf  \$fcsthrs "
+   echo "Usage: exgfs_wafs_grib.sh  \$fcsthrs "
    echo ""
    exit 16
 fi
@@ -162,9 +162,9 @@ fi
 ################################################################################
 # GOOD RUN
 set +x
-echo "**************JOB EXGFS_WAFS_GRIB.SH.ECF COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_WAFS_GRIB.SH.ECF COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_WAFS_GRIB.SH.ECF COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
 set -x
 ################################################################################
 

@@ -74,7 +74,7 @@ env
 # Execute the script.
 ############################################
 
-${SCRIPTSgfs}/exgfs_wafs_grib.sh.ecf $fcsthrs
+${SCRIPTSgfs}/exgfs_wafs_grib.sh $fcsthrs
 export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY!"
