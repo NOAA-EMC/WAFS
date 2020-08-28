@@ -72,7 +72,9 @@ env
 # Set up the forecast hours
 ##############################################
 export SHOUR=${SHOUR:-06}
-export EHOUR=${EHOUR:-36}
+export EHOUR=${EHOUR:-120}
+
+export HOURLY=${HOURLY:-"YES"}
 
 ###############################################
 # Specify Timeout Behavior of WAFS blending

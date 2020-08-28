@@ -160,14 +160,21 @@ do
   # Distribute Data
   ######################
 
-  if [ $SENDDBN = "YES" ] ; then
-    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_0P25 $job $PCOM/gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2
-  fi
+  # Unblended US WAFS data is sent to NOMADS, not to WIFS
+#  if [ $SENDDBN = "YES" ] ; then
+#    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_0P25 $job $PCOM/gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2
+#  fi
 
-  if [ $ffhr -lt 24 ] ; then
-      FHINC=01
-  else
+  if [ $HOURLY = 'NO' ] ; then
       FHINC=03
+  else
+      if [ $ffhr -lt 24 ] ; then
+          FHINC=01
+      elif [ $ffhr -lt 48 ] ; then
+          FHINC=03
+      else
+          FHINC=06
+      fi
   fi
   ffhr=`expr $ffhr + $FHINC`
   if test $ffhr -lt 10

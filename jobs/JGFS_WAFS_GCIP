@@ -71,7 +71,7 @@ export COMINgfs=${COMINgfs:-$COMROOT/${NET}/${envir}/$RUN.$PDY/$cyc/$COMPONENT}
 #ftp://satepsanone.nesdis.noaa.gov/2day/gmosaic/
 # Have to change IP address to digital ones, which BSUB can identify
 #export COMINsat=${COMINsat:-ftp://140.90.213.161/2day/gmosaic}
-export COMINsat=${COMINsat:-$DCOMROOT/dev/$PDY/mcidas}
+export COMINsat=${COMINsat:-$DCOMROOT/prod/$PDY/mcidas}
 
 #  radar data
 export COMINradar=${COMINradar:-$COMROOT/hourly/prod/radar.$PDY}

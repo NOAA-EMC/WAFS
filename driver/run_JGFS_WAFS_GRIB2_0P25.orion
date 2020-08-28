@@ -106,7 +106,7 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
 #############################################
 export SHOUR=06
 export EHOUR=36
-export FHINC=03
+export HOURLY=NO
 
 sh $HOMEgfs/jobs/JGFS_WAFS_GRIB2_0P25
 
