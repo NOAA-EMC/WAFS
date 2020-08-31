@@ -129,14 +129,15 @@ do
   $WGRIB2 -s gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 > gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx
 
   ###### Step 6 TOCGIB2 ######
-  . prep_step
-  startmsg
-  export FORT11=gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
-  export FORT31=" "
-  export FORT51=gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2
-  $TOCGRIB2 <  $FIXgfs/grib2_gfs_wafs_wifs_f${ffhr}.0p25 >> $pgmout 2> errfile
-  err=$?;export err ;err_chk
-  echo " error from tocgrib2=",$err
+  # As in August 2020, no WMO header is needed for WAFS data at 1/4 deg
+  ## . prep_step
+  ## startmsg
+  ## export FORT11=gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
+  ## export FORT31=" "
+  ## export FORT51=gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2
+  ## $TOCGRIB2 <  $FIXgfs/grib2_gfs_wafs_wifs_f${ffhr}.0p25 >> $pgmout 2> errfile
+  ## err=$?;export err ;err_chk
+  ## echo " error from tocgrib2=",$err
 
   if [ $SENDCOM = "YES" ] ; then
 
@@ -153,7 +154,7 @@ do
    #############################
    # Post Files to PCOM
    ##############################
-     mv gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2 $PCOM/gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2
+     ## mv gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2 $PCOM/gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2
   fi
 
   ######################

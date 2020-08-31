@@ -205,18 +205,20 @@ do
 	 ##############################################################################################
 	 #
 	 # TOCGRIB2 Processing WAFS Blending GRIB2 (Icing, CB, GTG)
-	 . prep_step
-	 export pgm=$TOCGRIB2
-	 startmsg
 
-	 export FORT11=0p25_blended_${PDY}${cyc}f${ffhr}.grib2
-	 export FORT31=" "
-	 export FORT51=grib2.t${cyc}z.WAFS_0p25_blended_f${ffhr}
+	 # As in August 2020, no WMO header is needed for WAFS data at 1/4 deg
+	 ## . prep_step
+	 ## export pgm=$TOCGRIB2
+	 ## startmsg
 
-	 $TOCGRIB2 <  $FIXgfs/grib2_blended_wafs_wifs_f${ffhr}.0p25 >> $pgmout 2> errfile
+	 ## export FORT11=0p25_blended_${PDY}${cyc}f${ffhr}.grib2
+	 ## export FORT31=" "
+	 ## export FORT51=grib2.t${cyc}z.WAFS_0p25_blended_f${ffhr}
 
-	 err=$?;export err ;err_chk
-	 echo " error from tocgrib=",$err
+	 ## $TOCGRIB2 <  $FIXgfs/grib2_blended_wafs_wifs_f${ffhr}.0p25 >> $pgmout 2> errfile
+
+	 ## err=$?;export err ;err_chk
+	 ## echo " error from tocgrib=",$err
 
 	 ##############################################################################################
 	 #
@@ -224,12 +226,13 @@ do
 	 #
 	 if [ $SENDCOM = YES ]; then
 	     cp 0p25_blended_${PDY}${cyc}f${ffhr}.grib2 $COMOUT/WAFS_0p25_blended_${PDY}${cyc}f${ffhr}.grib2
-	     cp grib2.t${cyc}z.WAFS_0p25_blended_f${ffhr}  $PCOM/grib2.t${cyc}z.WAFS_0p25_blended_f${ffhr}
+	     ## cp grib2.t${cyc}z.WAFS_0p25_blended_f${ffhr}  $PCOM/grib2.t${cyc}z.WAFS_0p25_blended_f${ffhr}
 	 fi
 
 	 if [ $SENDDBN_NTC = "YES" ] ; then
 	     #   Distribute Data to NCEP FTP Server (WOC) and TOC
-	     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.t${cyc}z.WAFS_0p25_blended_f${ffhr}
+	     echo "No WMO header yet"
+	     ## $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.t${cyc}z.WAFS_0p25_blended_f${ffhr}
 	 fi
 
 	 if [ $SENDDBN = "YES" ] ; then
