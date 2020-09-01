@@ -168,6 +168,9 @@ do
 
   if [ $HOURLY = 'NO' ] ; then
       FHINC=03
+      if [ $ffhr -ge 48 ] ; then
+	  FHINC=06
+      fi
   else
       if [ $ffhr -lt 24 ] ; then
           FHINC=01
