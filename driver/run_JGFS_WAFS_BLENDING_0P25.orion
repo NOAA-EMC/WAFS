@@ -118,7 +118,7 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
 #############################################
 export SHOUR=06
 export EHOUR=36
-export HOURLY=NO
+export FHOUT_GFS=3
 
 sh $HOMEgfs/jobs/JGFS_WAFS_BLENDING_0P25
 

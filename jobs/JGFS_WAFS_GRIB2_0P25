@@ -71,7 +71,7 @@ env
 export SHOUR=${SHOUR:-06}
 export EHOUR=${EHOUR:-120}
 
-export HOURLY=${HOURLY:-"YES"}
+export FHOUT_GFS=${FHOUT_GFS:-1}
 
 ###############################################
 # Specify Timeout Behavior of WAFS blending

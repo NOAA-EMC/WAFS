@@ -246,7 +246,7 @@ do
 
      echo "$PDY$cyc$ffhr" > $COMOUT/${RUN}.t${cyc}z.control.wafsblending_0p25
 
-     if [ $HOURLY = 'NO' ] ; then
+     if [ $FHOUT_GFS -eq 3 ] ; then
 	 FHINC=03
 	 if [ $ffhr -ge 48 ] ; then
 	     FHINC=06

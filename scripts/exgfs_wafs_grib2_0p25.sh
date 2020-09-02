@@ -166,7 +166,7 @@ do
 #    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_0P25 $job $PCOM/gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2
 #  fi
 
-  if [ $HOURLY = 'NO' ] ; then
+  if [ $FHOUT_GFS -eq 3 ] ; then
       FHINC=03
       if [ $ffhr -ge 48 ] ; then
 	  FHINC=06
