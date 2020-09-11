@@ -35,6 +35,8 @@ module load prod_util/1.1.4
 module load grib_util/1.1.0
 module load prod_envir/1.1.0
 
+module load util_shared/1.1.2
+
 module list
 
 ############################################
@@ -43,7 +45,7 @@ module list
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
 export envir=prod
 
-export cyc=${cyc:-12}
+export cyc=${cyc:-18}
 
 # gfs_wafs_blending for blending icing turbulence of US and UK
 export job=gfs_wafs_blending_0p25_${cyc}
@@ -70,7 +72,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20200513
+export PDY=20200908
 
 USER=`whoami`
 
@@ -101,7 +103,7 @@ export DATAROOT=/gpfs/dell3/ptmp/${USER}
 # For canned data:
 #export DCOMROOT=/gpfs/dell2/emc/modeling/noscrub/Hui-Ya.Chuang/2018impl/datainput/dcom
 
-export DCOMROOT=/gpfs/dell3/ptmp/Hui-Ya.Chuang/dcom
+#export DCOMROOT=/gpfs/dell3/ptmp/Hui-Ya.Chuang/dcom
 
 ############################################
 # Define DATA PCOM, COMOUT and COMIN
@@ -111,7 +113,7 @@ export COMOUT=/gpfs/dell3/ptmp/${USER}/wafs_dwn/gfs.$PDY/$cyc/$COMPONENT
 export PCOM=$COMOUT/wmo
 
 export COMINus=$COMIN
-export COMINuk=${COMINuk:-$DCOMROOT/prod/$PDY/wgrbbul/ukmet_wafs}
+export COMINuk=${COMINuk:-$DCOMROOT/dev/$PDY/wgrbbul/ukmet_wafs}
 
 export DATA=/gpfs/dell3/ptmp/${USER}/working_wafs/$jobid
 
@@ -126,7 +128,7 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_branch}
 # run the job
 #############################################
 export SHOUR=06
-export EHOUR=36
+export EHOUR=120
 export FHOUT_GFS=3
 
 sh $HOMEgfs/jobs/JGFS_WAFS_BLENDING_0P25

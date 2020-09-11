@@ -98,6 +98,21 @@ then
   recvy_cyc=`echo $modelrecvy | cut -c9-10`
   recvy_shour=`echo $modelrecvy | cut -c11-`
 
+  if [ $FHOUT_GFS -eq 3 ] ; then
+      FHINC=03
+      if [ $recvy_shour -ge 48 ] ; then
+	  FHINC=06
+      fi
+  else
+      if [ $recvy_shour -lt 24 ] ; then
+	  FHINC=01
+      elif [ $recvy_shour -lt 48 ] ; then
+	  FHINC=03
+      else
+	  FHINC=06
+      fi
+  fi
+
   if test $RERUN = "NO"
   then
     if [ $recvy_shour -lt $EHOUR ]

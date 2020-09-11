@@ -134,6 +134,15 @@ do
 ##########################
 
      if [ $SEND_US_WAFS = "YES" ] ; then
+
+       # Temporary!!! Remove the 'if' condition after 2023 implementation!!!
+       # Before 2023 implementation, don't send alerts for products of hourly or after 36 forecast hour
+       # Reason? UK won't have those data available. So silently skip doing anything about it.
+       if [ $ffhr -eq 06 -o $ffhr -eq 09 -o $ffhr -eq 12 -o \
+	    $ffhr -eq 15 -o $ffhr -eq 18 -o $ffhr -eq 21 -o \
+            $ffhr -eq 24 -o $ffhr -eq 27 -o $ffhr -eq 30 -o \
+	    $ffhr -eq 33 -o $ffhr -eq 36 ] ; then
+
 	 ##############################################################################################
 	 #
 	 #  checking any US WAFS product was sent due to No UK WAFS GRIB2 file or WAFS blending program
@@ -165,8 +174,10 @@ do
 	 if [ $SENDDBN_NTC = "YES" ] ; then
 	     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
 	 fi
-	 export SEND_US_WAFS=NO
 
+       fi
+
+       export SEND_US_WAFS=NO
 
      elif [ $SEND_UK_WAFS = "YES" ] ; then
 	 ##############################################################################################
