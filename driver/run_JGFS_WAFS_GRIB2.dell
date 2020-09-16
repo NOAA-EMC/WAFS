@@ -83,14 +83,16 @@ USER=`whoami`
 # KEEPDATA=NO--Remove temporary working
 ############################################
 export SENDCOM=YES
-export SENDDBN=NO
-export SENDDBN_NTC=NO
+export SENDDBN=YES
+export SENDDBN_NTC=YES
 export KEEPDATA=YES
  
 ############################################
 # Define ROOT directories
 ############################################
 export NWROOT=/gpfs/dell2/emc/verification/save/Hui-Ya.Chuang
+
+export DBNROOT=${UTILROOT}/fakedbn
 
 ############################################
 # Define DATA, COMOUT and COMIN

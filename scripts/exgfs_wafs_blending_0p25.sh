@@ -71,6 +71,18 @@ do
        if [ $ukfiles -eq 3 ] ; then
            break
        fi
+
+       ###################################################################
+       ##### Temporary solution when UK data is in DCOM dev  - Y Mao #####
+       ##### Remove this part after UK data is in DCOM prod          #####
+       COMINuk_tmp=$DCOMROOT/dev/$PDY/wgrbbul/ukmet_wafs
+       ukfiles=`ls $COMINuk_tmp/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 | wc -l`
+       if [ $ukfiles -eq 3 ] ; then
+	   COMINuk=$COMINuk_tmp
+           break
+       fi
+       ###################################################################
+
        if [ $ic -eq $SLEEP_LOOP_MAX_UK ] ; then
           msg="UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found"
           postmsg "$jlogfile" "$msg"

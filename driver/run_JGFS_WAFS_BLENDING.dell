@@ -83,8 +83,8 @@ USER=`whoami`
 # KEEPDATA=NO--Remove temporary working
 ############################################
 export SENDCOM=YES
-export SENDDBN=NO
-export SENDDBN_NTC=NO
+export SENDDBN=YES
+export SENDDBN_NTC=YES
 export KEEPDATA=YES
  
 ############################################
@@ -93,6 +93,8 @@ export KEEPDATA=YES
 echo $COMROOT
 export NWROOT=/gpfs/dell2/emc/verification/save/Hui-Ya.Chuang
 export DATAROOT=/gpfs/dell3/ptmp/${USER}
+
+export DBNROOT=${UTILROOT}/fakedbn
 
 # for UK data
 #if [[ `hostname` =~ "^l" ]] ; then ! LUNA/TIDE
