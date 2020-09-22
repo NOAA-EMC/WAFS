@@ -71,7 +71,8 @@ if [ $RUN = "gfs" ] ; then
   cpreq $PARMgfs/wafs_gcip_gfs.cfg $configFile
 
   modelFile=modelfile.grb
-  ln -sf $masterFile $modelFile
+#  ln -sf $masterFile $modelFile
+  $WGRIB2 $masterFile | egrep ":HGT:|:VVEL:|:CLWMR:|:TMP:|:SPFH:|:RWMR:|:SNMR:|:GRLE:|:ICMR:|:RH:" | egrep "00 mb:|25 mb:|50 mb:|75 mb:|:HGT:surface" | $WGRIB2 -i $masterFile -grib $modelFile
 
   # metar / ships / lightning / pireps
   # dumped data files' suffix is ".ibm"

@@ -1208,6 +1208,8 @@ contains
     int_d%ctt(:) = CLOUD_TEMP_K_DEFAULT ! 300.0
 
     actual_top = best_guess_sat_top(k_TROP, sd, id)
+    actual_top = min(actual_top,k_TROP)
+
     loop_k: do k = actual_top, 0, -1
 
        ! Ten percentile bins in existing method. Determined from 70-element IR bins.
