@@ -1,9 +1,9 @@
 #!/bin/sh
 
-#BSUB -J gfs_wafs
+#BSUB -J gfs_atmos_wafs
 #BSUB -cwd /gpfs/dell3/ptmp/Hui-Ya.Chuang
-#BSUB -oo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_wafs.o%J
-#BSUB -eo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_wafs.o%J
+#BSUB -oo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_atmos_wafs.o%J
+#BSUB -eo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_atmos_wafs.o%J
 ##BSUB -L /bin/sh
 #BSUB -q debug
 #BSUB -W 00:30
@@ -49,8 +49,8 @@ export cyc=${cyc:-00}
 # 00 06 12 30 33
 export fcsthrs=36
 
-# gfs_wafs for octants (8 WAFS files)
-export job=gfs_wafs_f${fcsthrs}_${cyc}
+# gfs_atmos_wafs for octants (8 WAFS files)
+export job=gfs_atmos_wafs_f${fcsthrs}_${cyc}
 
 ############################################run
 # set NET RUN
@@ -113,7 +113,7 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_branch}
 #############################################
 # run the job
 #############################################
-sh $HOMEgfs/jobs/JGFS_WAFS
+sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS
 
 exit
 

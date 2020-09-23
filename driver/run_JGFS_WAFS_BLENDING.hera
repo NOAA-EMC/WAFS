@@ -1,8 +1,8 @@
 #!/bin/sh
 
-#SBATCH -J gfs_wafs_blending
-#SBATCH -o /scratch2/NCEPDEV/stmp3/Yali.Mao/gfs_wafs_blending.o%j
-#SBATCH -e /scratch2/NCEPDEV/stmp3/Yali.Mao/gfs_wafs_blending.o%j
+#SBATCH -J gfs_atmos_wafs_blending
+#SBATCH -o /scratch2/NCEPDEV/stmp3/Yali.Mao/gfs_atmos_wafs_blending.o%j
+#SBATCH -e /scratch2/NCEPDEV/stmp3/Yali.Mao/gfs_atmos_wafs_blending.o%j
 #SBATCH -t 00:30:00
 #SBATCH -N 1
 #SBATCH -q batch
@@ -42,8 +42,8 @@ export envir=prod
 
 export cyc=${cyc:-12}
 
-# gfs_wafs_blending for blending icing turbulence of US and UK
-export job=gfs_wafs_blending_${cyc}
+# gfs_atmos_wafs_blending for blending icing turbulence of US and UK
+export job=gfs_atmos_wafs_blending_${cyc}
 
 ############################################
 # set NET RUN
@@ -124,7 +124,7 @@ export SHOUR=06
 export EHOUR=36
 export FHINC=03
 
-sh $HOMEgfs/jobs/JGFS_WAFS_BLENDING
+sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_BLENDING
 
 exit
 

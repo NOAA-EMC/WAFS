@@ -1,8 +1,8 @@
 #!/bin/sh
 
-#BSUB -J gfs_wafs_blending_0p25
-#SBATCH -o /work/noaa/stmp/ymao/stmp/gfs_wafs_blending_0p25.o%j
-#SBATCH -e /work/noaa/stmp/ymao/stmp/gfs_wafs_blending_0p25.o%j
+#BSUB -J gfs_atmos_wafs_blending_0p25
+#SBATCH -o /work/noaa/stmp/ymao/stmp/gfs_atmos_wafs_blending_0p25.o%j
+#SBATCH -e /work/noaa/stmp/ymao/stmp/gfs_atmos_wafs_blending_0p25.o%j
 #SBATCH -t 00:30:00
 #SBATCH -N 1
 #SBATCH -q batch
@@ -41,8 +41,8 @@ export envir=prod
 export cyc=${cyc:-00}
 export cyc=12
 
-# gfs_wafs_blending for blending icing turbulence of US and UK
-export job=gfs_wafs_blending_0p25_${cyc}
+# gfs_atmos_wafs_blending for blending icing turbulence of US and UK
+export job=gfs_atmos_wafs_blending_0p25_${cyc}
 
 ############################################
 # set NET RUN
@@ -120,7 +120,7 @@ export SHOUR=06
 export EHOUR=36
 export FHOUT_GFS=3
 
-sh $HOMEgfs/jobs/JGFS_WAFS_BLENDING_0P25
+sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_BLENDING_0P25
 
 exit
 

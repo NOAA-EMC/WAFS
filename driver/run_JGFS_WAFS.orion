@@ -45,8 +45,8 @@ export cyc=${cyc:-00}
 # 00 06 12 30 33
 export fcsthrs=36
 
-# gfs_wafs for octants (8 WAFS files)
-export job=gfs_wafs_f${fcsthrs}_${cyc}
+# gfs_atmos_wafs for octants (8 WAFS files)
+export job=gfs_atmos_wafs_f${fcsthrs}_${cyc}
 
 ############################################
 # set NET RUN
@@ -109,7 +109,7 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
 #############################################
 # run the job
 #############################################
-sh $HOMEgfs/jobs/JGFS_WAFS
+sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS
 
 date
 exit

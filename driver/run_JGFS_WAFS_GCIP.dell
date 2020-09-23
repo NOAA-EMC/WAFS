@@ -1,9 +1,9 @@
 #!/bin/sh
 
-#BSUB -J gfs_wafs_gcip
+#BSUB -J gfs_atmos_wafs_gcip
 #BSUB -cwd /gpfs/dell3/ptmp/Hui-Ya.Chuang
-#BSUB -oo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_wafs_gcip.o%J
-#BSUB -eo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_wafs_gcip.o%J
+#BSUB -oo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_atmos_wafs_gcip.o%J
+#BSUB -eo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_atmos_wafs_gcip.o%J
 #####BSUB -L /bin/sh
 #BSUB -q debug
 #BSUB -W 00:30
@@ -56,8 +56,8 @@ export envir=prod
 
 export cyc=${cyc:-00}
 
-# gfs_wafs_gcip for generating global icing analysis for every 3 hours
-export job=gfs_wafs_gcip_${cyc}
+# gfs_atmos_wafs_gcip for generating global icing analysis for every 3 hours
+export job=gfs_atmos_wafs_gcip_${cyc}
 
 ############################################
 # set NET RUN
@@ -135,7 +135,7 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_branch}
 # run the job
 #############################################
 
-sh $HOMEgfs/jobs/JGFS_WAFS_GCIP
+sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_GCIP
 
 #############################################
 # compare the output (optional)

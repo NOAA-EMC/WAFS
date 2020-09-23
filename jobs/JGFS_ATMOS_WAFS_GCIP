@@ -103,11 +103,11 @@ export MPIRUN=${MPIRUN:-"mpirun -n 2 cfp"}
 # GCIP runs f000 f003 for each cycle, 4 times/day,
 # to make the output valid every 3 hours 
 if [ `echo $MPIRUN | cut -d " " -f1` = 'srun' ] ; then
-  echo 0 ${SCRIPTSgfs}/exgfs_wafs_gcip.sh 000 >> gcip.cmdfile
-  echo 1 ${SCRIPTSgfs}/exgfs_wafs_gcip.sh 003 >> gcip.cmdfile
+  echo 0 ${SCRIPTSgfs}/exgfs_atmos_wafs_gcip.sh 000 >> gcip.cmdfile
+  echo 1 ${SCRIPTSgfs}/exgfs_atmos_wafs_gcip.sh 003 >> gcip.cmdfile
 else
-  echo ${SCRIPTSgfs}/exgfs_wafs_gcip.sh 000 >> gcip.cmdfile
-  echo ${SCRIPTSgfs}/exgfs_wafs_gcip.sh 003 >> gcip.cmdfile
+  echo ${SCRIPTSgfs}/exgfs_atmos_wafs_gcip.sh 000 >> gcip.cmdfile
+  echo ${SCRIPTSgfs}/exgfs_atmos_wafs_gcip.sh 003 >> gcip.cmdfile
   export MP_PGMMODEL=mpmd
 fi
 

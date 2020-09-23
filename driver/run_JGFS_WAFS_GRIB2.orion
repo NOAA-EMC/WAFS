@@ -1,8 +1,8 @@
 #!/bin/sh
 
-#SBATCH -J gfs_wafs_grib2
-#SBATCH -o /work/noaa/stmp/ymao/stmp/gfs_wafs_grib2.o%j
-#SBATCH -e /work/noaa/stmp/ymao/stmp/gfs_wafs_grib2.o%j
+#SBATCH -J gfs_atmos_wafs_grib2
+#SBATCH -o /work/noaa/stmp/ymao/stmp/gfs_atmos_wafs_grib2.o%j
+#SBATCH -e /work/noaa/stmp/ymao/stmp/gfs_atmos_wafs_grib2.o%j
 #SBATCH -t 00:30:00
 #SBATCH -N 7
 #SBATCH -q batch
@@ -41,8 +41,8 @@ export envir=prod
 export cyc=${cyc:-00}
 export cyc=12
 
-# gfs_wafs_grib2 for generating global WAFS on grid 45
-export job=gfs_wafs_grib2_${cyc}
+# gfs_atmos_wafs_grib2 for generating global WAFS on grid 45
+export job=gfs_atmos_wafs_grib2_${cyc}
 
 ############################################
 # set NET RUN
@@ -109,7 +109,7 @@ export SHOUR=06
 export EHOUR=36
 export FHINC=03
 
-sh $HOMEgfs/jobs/JGFS_WAFS_GRIB2
+sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_GRIB2
 
 exit
 

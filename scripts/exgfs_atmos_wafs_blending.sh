@@ -2,7 +2,7 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         wafs_blending.sh.sms
+# Script name:         exgfs_atmos_wafs_blending.sh
 # Script description:  This scripts looks for US and UK WAFS Grib2 products,
 # wait for specified period of time, and then run $USHgfs/wafs_blending.sh
 # if both WAFS data are available.  Otherwise, the job aborts with error massage

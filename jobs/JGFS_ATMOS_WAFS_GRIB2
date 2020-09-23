@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ########################################
-# GFS WAFS GRIB 0P25 PRODUCT GENERATION
+# GFS AWIPS PRODUCT GENERATION
 ########################################
 
 date
@@ -22,6 +22,12 @@ cd $DATA
 # Output for executables
 ############################################
 export pgmout=OUTPUT.$$
+
+############################################
+# Load the UTILITIES module
+############################################
+#### module load prod_util
+#### module load grib_util
 
 ###########################################
 # Run setpdy and initialize PDY variables
@@ -51,6 +57,11 @@ export SCRIPTSgfs=$HOMEgfs/scripts
 ################################################
 # Set up the input/output directory
 ################################################
+#### if [ $envir = "prod" ] || [ $envir = "para" ] ; then
+####  export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY}
+#### else
+####   export COMIN=${COMIN:-$COMROOT/${NET}/prod/$RUN.$PDY}
+#### fi
 
 export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY/$cyc/$COMPONENT}
 export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/$cyc/$COMPONENT}
@@ -65,31 +76,11 @@ fi
 ############################################
 env
 
-##############################################
-# Set up the forecast hours
-##############################################
-export SHOUR=${SHOUR:-06}
-export EHOUR=${EHOUR:-120}
-
-export FHOUT_GFS=${FHOUT_GFS:-1}
-
-###############################################
-# Specify Timeout Behavior of WAFS blending
-#
-# SLEEP_TIME - Amount of time to wait for
-#              a input file before exiting
-# SLEEP_INT  - Amount of time to wait between
-#              checking for input files
-###############################################
-# export SLEEP_TIME=300   # changed to 60 to avoid hitting wall_clock when miss umket wafs files ... 
-export SLEEP_TIME=600
-export SLEEP_INT=10
-
 ############################################
 # Execute the script.
 ############################################
 export MPIRUN=${MPIRUN:-mpirun}
-${SCRIPTSgfs}/exgfs_wafs_grib2_0p25.sh
+${SCRIPTSgfs}/exgfs_atmos_wafs_grib2.sh
 export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY!"

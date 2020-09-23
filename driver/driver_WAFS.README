@@ -3,21 +3,21 @@ How to use the drivers for WAFS jobs
 *********************************************************************
 
 There are 4 WAFS jobs and their corresponding drivers
-JGFS_WAFS   <-> run_JGFS_WAFS.dell
-JGFS_WAFS_GRIB2		<-> run_JGFS_WAFS_GRIB2.dell
-JGFS_WAFS_BLENDING	<-> run_JGFS_WAFS_BLENDING.dell
-JGFS_WAFS_GCIP          <-> run_JGFS_WAFS_GCIP.dell
-JGFS_WAFS_GRIB2_0P25	<-> run_JGFS_WAFS_GRIB2_0P25.dell
-JGFS_WAFS_BLENDING_0P25	<-> run_JGFS_WAFS_BLENDING_0P25.dell
+JGFS_ATMOS_WAFS   <-> run_JGFS_ATMOS_WAFS.dell
+JGFS_ATMOS_WAFS_GRIB2		<-> run_JGFS_ATMOS_WAFS_GRIB2.dell
+JGFS_ATMOS_WAFS_BLENDING	<-> run_JGFS_ATMOS_WAFS_BLENDING.dell
+JGFS_ATMOS_WAFS_GCIP          <-> run_JGFS_ATMOS_WAFS_GCIP.dell
+JGFS_ATMOS_WAFS_GRIB2_0P25	<-> run_JGFS_ATMOS_WAFS_GRIB2_0P25.dell
+JGFS_ATMOS_WAFS_BLENDING_0P25	<-> run_JGFS_ATMOS_WAFS_BLENDING_0P25.dell
 
 
-JGFS_WAFS_BLENDING is a downstream of JGFS_WAFS_GRIB2 and
-should run after JGFS_WAFS_GRIB2
+JGFS_ATMOS_WAFS_BLENDING is a downstream of JGFS_ATMOS_WAFS_GRIB2 and
+should run after JGFS_ATMOS_WAFS_GRIB2
 
-JGFS_WAFS_BLENDING_0P25 is a downstream of JGFS_WAFS_GRIB2_0P25 and
-should run after JGFS_WAFS_GRIB2_0P25
+JGFS_ATMOS_WAFS_BLENDING_0P25 is a downstream of JGFS_ATMOS_WAFS_GRIB2_0P25 and
+should run after JGFS_ATMOS_WAFS_GRIB2_0P25
 
-JGFS_WAFS_GCIP has satellite and radar data inputs, and METAR SHIP PIREPs 
+JGFS_ATMOS_WAFS_GCIP has satellite and radar data inputs, and METAR SHIP PIREPs 
 data which are dumped from DCOMROOT by using 'dumpjb'
 
 Step 1:
@@ -42,14 +42,14 @@ So first set the specific data:
 export PDY=20180725
 export cyc=00
 
-1) For run_JGFS_WAFS.dell, run_JGFS_WAFS_GRIB2.dell,
+1) For run_JGFS_ATMOS_WAFS.dell, run_JGFS_ATMOS_WAFS_GRIB2.dell,
 It's optional for a user to modify the input data location, COMROOT or COMIN:
 export COMROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/datainput
 export COMIN=$COMROOT/gfs.$PDY/$cyc
 
-2) JGFS_WAFS_BLENDING has two inputs, UK and US.
-US data is a downstream product of JGFS_WAFS_GRIB2, so COMINus needs to point to
-$COMOUT/wmo of run_JGFS_WAFS_GRIB2.dell:
+2) JGFS_ATMOS_WAFS_BLENDING has two inputs, UK and US.
+US data is a downstream product of JGFS_ATMOS_WAFS_GRIB2, so COMINus needs to point to
+$COMOUT/wmo of run_JGFS_ATMOS_WAFS_GRIB2.dell:
 export COMINus=
 
 UK data is from DCOM, currently copied DCOM from Phase 1. For canned data, it's at:
@@ -59,7 +59,7 @@ export COMINuk=${COMINuk:-$DCOMROOT/us007003/$PDY/wgrbbul/ukmet_wafs}
 
 It's optional for a user to change either DCOMROOT or COMINuk to where the input UK data is.
 
-3) JGFS_WAFS_GCIP has 4 inputs: model data, bufr, satellite and radar 
+3) JGFS_ATMOS_WAFS_GCIP has 4 inputs: model data, bufr, satellite and radar 
 
 Canned model data location: 
 /gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput/gfs/prod/gfs.20180725/00

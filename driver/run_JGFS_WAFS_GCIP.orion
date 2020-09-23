@@ -1,8 +1,8 @@
 #!/bin/sh
 
-#SBATCH -J gfs_wafs_gcip
-#SBATCH -o /work/noaa/stmp/ymao/stmp/gfs_wafs_gcip.o%j
-#SBATCH -e /work/noaa/stmp/ymao/stmp/gfs_wafs_gcip.o%j
+#SBATCH -J gfs_atmos_wafs_gcip
+#SBATCH -o /work/noaa/stmp/ymao/stmp/gfs_atmos_wafs_gcip.o%j
+#SBATCH -e /work/noaa/stmp/ymao/stmp/gfs_atmos_wafs_gcip.o%j
 #SBATCH -t 00:30:00
 #SBATCH -N 2 --ntasks-per-node=1
 #SBATCH --mem=40g  # One task needs 20g memory
@@ -49,8 +49,8 @@ export envir=prod
 
 export cyc=${cyc:-00}
 
-# gfs_wafs_gcip for generating global icing analysis for every 3 hours
-export job=gfs_wafs_gcip_${cyc}
+# gfs_atmos_wafs_gcip for generating global icing analysis for every 3 hours
+export job=gfs_atmos_wafs_gcip_${cyc}
 
 ############################################
 # set NET RUN
@@ -128,7 +128,7 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
 # run the job
 #############################################
 
-sh $HOMEgfs/jobs/JGFS_WAFS_GCIP
+sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_GCIP
 
 #############################################
 # compare the output (optional)

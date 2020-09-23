@@ -1,6 +1,6 @@
 #!/bin/sh
 ######################################################################
-#  UTILITY SCRIPT NAME :  exgfs_wafs_grib.sh
+#  UTILITY SCRIPT NAME :  exgfs_atmos_wafs_grib.sh
 #         DATE WRITTEN :  10/04/2004
 #
 #  Abstract:  This utility script produces the  WAFS GRIB
@@ -33,7 +33,7 @@ then
 #   export job=${job:-interactive}
 else
    echo ""
-   echo "Usage: exgfs_wafs_grib.sh  \$fcsthrs "
+   echo "Usage: exgfs_atmos_wafs_grib.sh  \$fcsthrs "
    echo ""
    exit 16
 fi
@@ -43,7 +43,7 @@ cd $DATA
 set -x
 
 # To fix bugzilla 628 ( removing 'j' ahead of $job )
-export jobsuffix=gfs_wafs_f${fcsthrs}_$cyc
+export jobsuffix=gfs_atmos_wafs_f${fcsthrs}_$cyc
 
 ###############################################
 # Wait for the availability of the pgrib file
@@ -162,9 +162,9 @@ fi
 ################################################################################
 # GOOD RUN
 set +x
-echo "**************JOB EXGFS_WAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_WAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_WAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_ATMOS_WAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_ATMOS_WAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_ATMOS_WAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
 set -x
 ################################################################################
 

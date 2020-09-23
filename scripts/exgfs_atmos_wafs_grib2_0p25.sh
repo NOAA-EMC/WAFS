@@ -1,6 +1,6 @@
 #!/bin/sh
 ######################################################################
-#  UTILITY SCRIPT NAME :  exgfs_wafs_grib2_0p25.sh
+#  UTILITY SCRIPT NAME :  exgfs_atmos_wafs_grib2_0p25.sh
 #         DATE WRITTEN :  03/20/2020
 #
 #  Abstract:  This utility script produces the WAFS GRIB2 at 0.25 degree.
@@ -14,7 +14,7 @@
 # History:  
 #####################################################################
 echo "-----------------------------------------------------"
-echo "JGFS_WAFS_GRIB2_0P25 at 00Z/06Z/12Z/18Z GFS postprocessing"
+echo "JGFS_ATMOS_WAFS_GRIB2_0P25 at 00Z/06Z/12Z/18Z GFS postprocessing"
 echo "-----------------------------------------------------"
 echo "History: MARCH  2020 - First implementation of this new script."
 echo " "
@@ -191,9 +191,9 @@ done
 ################################################################################
 # GOOD RUN
 set +x
-echo "**************JOB EXGFS_WAFS_GRIB2_0P25.SH COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_WAFS_GRIB2_0P25.SH COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_WAFS_GRIB2_0P25.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_ATMOS_WAFS_GRIB2_0P25.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_ATMOS_WAFS_GRIB2_0P25.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_ATMOS_WAFS_GRIB2_0P25.SH COMPLETED NORMALLY ON THE IBM"
 set -x
 ################################################################################
 

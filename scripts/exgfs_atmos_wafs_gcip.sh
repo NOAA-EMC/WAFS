@@ -1,6 +1,6 @@
 #!/bin/ksh
 ######################################################################
-#  UTILITY SCRIPT NAME :  exgfs_wafs_gcip.sh
+#  UTILITY SCRIPT NAME :  exgfs_atmos_wafs_gcip.sh
 #         DATE WRITTEN :  01/28/2015
 #
 #  Abstract:  This utility script produces the WAFS GCIP. 
@@ -20,7 +20,7 @@
 #         - output of current icing potential
 #####################################################################
 echo "-----------------------------------------------------"
-echo "JGFS_WAFS_GCIP at 00Z/06Z/12Z/18Z GFS postprocessing"
+echo "JGFS_ATMOS_WAFS_GCIP at 00Z/06Z/12Z/18Z GFS postprocessing"
 echo "-----------------------------------------------------"
 echo "History: 2015 - First implementation of this new script."
 echo " "
@@ -231,9 +231,9 @@ fi
 ################################################################################
 # GOOD RUN
 set +x
-echo "**************JOB EXGFS_WAFS_GCIP.SH COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_WAFS_GCIP.SH COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_WAFS_GCIP.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_ATMOS_WAFS_GCIP.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_ATMOS_WAFS_GCIP.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_ATMOS_WAFS_GCIP.SH COMPLETED NORMALLY ON THE IBM"
 set -x
 ################################################################################
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 ########################################################
-# This job runs the code to blend US's and UK's WAFS products at 0.25 deg 
+# This job runs the code to blend US's and UK's WAFS products 
 ########################################################
 
 date
@@ -21,6 +21,14 @@ cd $DATA
 # Output for executables
 ############################################
 export pgmout=OUTPUT.$$
+
+############################################
+# Load the UTILITIES module
+############################################
+#### module load prod_util
+#### module load grib_util
+#### module use /nwpara2/modulefiles
+#### module load util_shared/v1.0.3
 
 ###########################################
 # Run setpdy and initialize PDY variables
@@ -60,7 +68,7 @@ if [ $SENDCOM = YES ] ; then
   mkdir -p $COMOUT $PCOM
 fi
 
-export COMINus=${COMINus:-$COMIN}
+export COMINus=${COMINus:-$COMIN/wmo}
 export COMINuk=${COMINuk:-$DCOMROOT/prod/$PDY/wgrbbul/ukmet_wafs}
 
 ############################################
@@ -71,10 +79,10 @@ env
 ##############################################
 # Set up the forecast hours
 ##############################################
-export SHOUR=${SHOUR:-06}
-export EHOUR=${EHOUR:-120}
+export SHOUR=06
+export EHOUR=36
 
-export FHOUT_GFS=${FHOUT_GFS:-1}
+export FHINC=03
 
 ###############################################
 # Specify Timeout Behavior of WAFS blending
@@ -91,27 +99,12 @@ export SLEEP_INT=10
 ####################################
 # Check if this is a restart
 ####################################
-if test -f $COMOUT/$RUN.t${cyc}z.control.wafsblending_0p25
+if test -f $COMOUT/$RUN.t${cyc}z.control.wafsblending
 then
-  modelrecvy=`cat < $COMOUT/${RUN}.t${cyc}z.control.wafsblending_0p25`
+  modelrecvy=`cat < $COMOUT/${RUN}.t${cyc}z.control.wafsblending`
   recvy_pdy=`echo $modelrecvy | cut -c1-8`
   recvy_cyc=`echo $modelrecvy | cut -c9-10`
   recvy_shour=`echo $modelrecvy | cut -c11-`
-
-  if [ $FHOUT_GFS -eq 3 ] ; then
-      FHINC=03
-      if [ $recvy_shour -ge 48 ] ; then
-	  FHINC=06
-      fi
-  else
-      if [ $recvy_shour -lt 24 ] ; then
-	  FHINC=01
-      elif [ $recvy_shour -lt 48 ] ; then
-	  FHINC=03
-      else
-	  FHINC=06
-      fi
-  fi
 
   if test $RERUN = "NO"
   then
@@ -138,7 +131,7 @@ fi
 ############################################
 # Execute the script.
 ############################################
-${SCRIPTSgfs}/exgfs_wafs_blending_0p25.sh
+${SCRIPTSgfs}/exgfs_atmos_wafs_blending.sh
 export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY."
