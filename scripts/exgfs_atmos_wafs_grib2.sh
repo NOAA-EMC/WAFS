@@ -107,7 +107,7 @@ do
     $WGRIB2 $wafs2 | egrep "$criteria" |  $WGRIB2 -i $wafs2 -grib wafs.fields
     cat master.fields wafs.fields > masterfilef${fcsthrs}.new
     rm master.fields wafs.fields
-    $WGRIB2  masterfilef${fcsthrs}.new -new_grid_interpolation bilinear -new_grid latlon 0:1440:0.25 90:721:-0.25 masterfilef${fcsthrs}
+    $WGRIB2  masterfilef${fcsthrs}.new -set master_table 6 -new_grid_interpolation bilinear -new_grid latlon 0:1440:0.25 90:721:-0.25 masterfilef${fcsthrs}
   else
 
     ################# START #######################

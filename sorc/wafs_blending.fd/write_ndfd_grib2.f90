@@ -103,7 +103,7 @@
        listsec1(1)=7       ! Id of orginating centre (Common Code Table C-1)
        listsec1(2)=4 !"EMC"! Id of orginating sub-centre (local table)/Table C of ON388
 ! Per Vuong, GFS master table is 6 for WAFS
-       listsec1(3)=2       ! GRIB Master Tables Version Number (Code Table 1.0)
+       listsec1(3)=6       ! GRIB Master Tables Version Number (Code Table 1.0)
        listsec1(4)=1 !per Brent! GRIB Local Tables Version Number (Code Table 1.1)
        listsec1(5)=isign   ! Significance of Reference Time (Code Table 1.2)
        listsec1(6)=y0      ! Reference Time - Year (4 digits)

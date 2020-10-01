@@ -15,6 +15,6 @@ else
     # Do interpolation for re-gridding
     shift ; shift ; shift ; shift
     newgrid=$@
-    $WGRIB2 regrid.fields.$iproc $options -new_grid_interpolation $interp -new_grid $newgrid regrid.tmp.$iproc
+    $WGRIB2 regrid.fields.$iproc $options -set master_table 6 -new_grid_interpolation $interp -new_grid $newgrid regrid.tmp.$iproc
     rm regrid.fields.$iproc
 fi
