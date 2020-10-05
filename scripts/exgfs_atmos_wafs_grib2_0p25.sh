@@ -72,8 +72,6 @@ do
   echo " "
   set -x
 
-  export pgm=wafs_grib2_0p25
-
   opt1=' -set_grib_type same -new_grid_winds earth '
   opt21=' -new_grid_interpolation bilinear  -if '
   opt22="(:ICESEV|parm=37):"
@@ -98,6 +96,9 @@ do
   ###### Step 4: Change to grib2 template 5.40 and relabel pressure levels to exact numbers  ######
   # Relabelling should be removed when UPP WAFS output on the exact pressure levels
   # (after WAFS products at 1.25 deg retire)
+  export pgm=wafs_grib2_0p25
+  . prep_step
+
   startmsg
   $MPIRUN $EXECgfs/$pgm tmp_wafs_grb2.0p25 tmp_0p25_exact.grb2 >> $pgmout 2> errfile
   export err=$?; err_chk
@@ -125,7 +126,7 @@ do
 
   ###### Step 5: Filter limited levels according to ICAO standard ######
   $WGRIB2 tmp_0p25_exact.grb2 | grep -F -f $FIXgfs/wafs_gfsmaster.grb2_0p25.list \
-          | $WGRIB2 -i tmp_0p25_exact.grb2 -grib gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
+          | $WGRIB2 -i tmp_0p25_exact.grb2 -set master_table 25 -grib gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
   $WGRIB2 -s gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 > gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx
 
   ###### Step 6 TOCGIB2 ######

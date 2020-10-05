@@ -128,6 +128,8 @@ do
 
 	 # run blending code
 	 export pgm=wafs_blending_0p25
+	 . prep_step
+
 	 startmsg
 	 $EXECgfs/$pgm gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 \
                               EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 \
