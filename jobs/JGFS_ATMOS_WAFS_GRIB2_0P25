@@ -69,7 +69,9 @@ env
 # Set up the forecast hours
 ##############################################
 export SHOUR=${SHOUR:-06}
-export EHOUR=${EHOUR:-120}
+# Will change to 120 for 2023 ICAO standard
+#export EHOUR=${EHOUR:-120}
+export EHOUR=${EHOUR:-36}
 
 export FHOUT_GFS=${FHOUT_GFS:-1}
 

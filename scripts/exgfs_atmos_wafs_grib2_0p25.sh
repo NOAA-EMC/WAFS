@@ -181,6 +181,8 @@ do
           FHINC=06
       fi
   fi
+  # temporarily set FHINC=03. Will remove this line for 2023 ICAO standard.
+  FHINC=03
   ffhr=`expr $ffhr + $FHINC`
   if test $ffhr -lt 10
   then

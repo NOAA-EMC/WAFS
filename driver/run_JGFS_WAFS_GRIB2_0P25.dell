@@ -110,7 +110,7 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_branch}
 # run the job
 #############################################
 export SHOUR=06
-export EHOUR=120
+export EHOUR=36
 export FHOUT_GFS=3
 
 sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_GRIB2_0P25
