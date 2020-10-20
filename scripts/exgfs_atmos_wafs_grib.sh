@@ -151,9 +151,6 @@ then
       sh $USHgfs/wafs_intdsk.sh  "36"
       export parmlist=$FIXgfs/grib_wafsgfs_intdskf00
       sh $USHgfs/wafs_intdsk.sh  "03 09 15 21 27 33"
-   elif test $fcsthrs -eq 120
-   then 
-      sh $USHgfs/wafs_intdsk.sh  "54 66 78 90 102 114 120"
    else
       sh $USHgfs/wafs_intdsk.sh  ${fcsthrs}
    fi
