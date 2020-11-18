@@ -146,8 +146,8 @@ do
    # Post Files to COM
    ##############################
 
-     mv gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2 $COMOUT/gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2
-     mv gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2.idx
+     mv gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2 $COMOUT/gfs.t${cyc}z.wafs_0p25.f${ffhr000}.grib2
+     mv gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_0p25.f${ffhr000}.grib2.idx
 
      mv gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
      mv gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx
@@ -162,10 +162,15 @@ do
   # Distribute Data
   ######################
 
-  # Unblended US WAFS data is sent to NOMADS, not to WIFS
-#  if [ $SENDDBN = "YES" ] ; then
-#    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_0P25 $job $PCOM/gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2
-#  fi
+  # Hazard WAFS data (ICESEV GTG from 100mb to 1000mb) is sent to NOMADS for US stakeholders
+  if [ $SENDDBN = "YES" ] ; then
+    $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_0p25.f${ffhr000}.grib2
+  fi
+
+  # Unblended US WAFS data is sent to NOMADS, not to WIFS, for UK to blend
+  if [ $SENDDBN = "YES" ] ; then
+    $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_UBL_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
+  fi
 
   if [ $FHOUT_GFS -eq 3 ] ; then
       FHINC=03

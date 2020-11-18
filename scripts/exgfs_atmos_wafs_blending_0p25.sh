@@ -181,13 +181,13 @@ do
 	 echo "and $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx "
 
 	 if [ $SENDDBN = "YES" ] ; then
-	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
-	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_WIDX $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx
+	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_UBL_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
+	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_UBL_GB2_WIDX $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx
 	 fi
 
-	 if [ $SENDDBN_NTC = "YES" ] ; then
-	     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
-	 fi
+#	 if [ $SENDDBN_NTC = "YES" ] ; then
+#	     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
+#	 fi
 
        fi
 
@@ -217,12 +217,12 @@ do
 	 echo "altering the unblended UK WAFS products - EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2"
 
 	 if [ $SENDDBN = "YES" ] ; then
-	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
+	     $DBNROOT/bin/dbn_alert MODEL EGRR_WAFS_0P25_UBL_GB2 $job EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
 	 fi
 
-	 if [ $SENDDBN_NTC = "YES" ] ; then
-	     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
-	 fi
+#	 if [ $SENDDBN_NTC = "YES" ] ; then
+#	     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
+#	 fi
 	 export SEND_UK_WAFS=NO
 
 
@@ -261,7 +261,7 @@ do
 	 fi
 
 	 if [ $SENDDBN = "YES" ] ; then
-	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_BL_GB2 $job $COMOUT/WAFS_0p25_blended_${PDY}${cyc}f${ffhr}.grib2
+	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_BL_GB2 $job $COMOUT/WAFS_0p25_blended_${PDY}${cyc}f${ffhr}.grib2
 	 fi 
      fi
 
