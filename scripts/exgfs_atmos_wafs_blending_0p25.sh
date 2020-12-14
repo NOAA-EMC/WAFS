@@ -217,7 +217,7 @@ do
 	 echo "altering the unblended UK WAFS products - EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2"
 
 	 if [ $SENDDBN = "YES" ] ; then
-	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_0P25_UBL_GB2 $job EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
+	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_UKMET_0P25_UBL_GB2 $job EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
 	 fi
 
 #	 if [ $SENDDBN_NTC = "YES" ] ; then
