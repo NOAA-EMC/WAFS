@@ -109,10 +109,10 @@ if [ $RUN = "gfs" ] ; then
             rc=1
             echo $msg >> $COMOUT/${RUN}.gcip.log
             
-            if [ $envir != prod ]; then
-              export maillist='ncep.list.spa-helpdesk@noaa.gov'
-            fi
-            export maillist=${maillist:-'ncep.list.spa-helpdesk@noaa.gov,ncep.list.sos@lstsrv.ncep.noaa.gov'}
+	    if [ $envir != prod ]; then
+		export maillist='nco.spa@noaa.gov'
+	    fi
+	    export maillist=${maillist:-'nco.spa@noaa.gov,ncep.sos@noaa.gov'}
 
             export subject="Missing GLOBCOMPVIS Satellite Data for $PDY t${cyc}z $job"
             echo "*************************************************************" > mailmsg

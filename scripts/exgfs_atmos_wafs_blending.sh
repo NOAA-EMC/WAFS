@@ -69,7 +69,7 @@ echo "start blending US and UK WAFS products for " $cyc " z cycle"
 #  checking any US WAFS product was sent due to No UK WAFS GRIB2 file or WAFS blending program
 #
           if [ $SEND_US_WAFS = "YES" -a $SEND_AWC_ALERT = "NO" ] ; then
-             msg="No UK WAFS GRIB2 file or WAFS blending program. Send alert message to AWC ......"
+             msg="Warning! No UK WAFS GRIB2 file for WAFS blending. Send alert message to AWC ......"
              postmsg "$jlogfile" "$msg"
              make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_admin_msg $PCOM/wifs_admin_msg
              make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_admin_msg $PCOM/iscs_admin_msg
@@ -77,6 +77,21 @@ echo "start blending US and UK WAFS products for " $cyc " z cycle"
                 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/wifs_admin_msg
                 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/iscs_admin_msg
              fi
+
+             if [ $envir != prod ]; then
+                 export maillist='nco.spa@noaa.gov'
+             fi
+             export maillist=${maillist:-'nco.spa@noaa.gov,ncep.sos@noaa.gov'}
+             export subject="WARNING! No UK WAFS GRIB2 file for WAFS blending, $PDY t${cyc}z $job"
+             echo "*************************************************************" > mailmsg
+             echo "*** WARNING! No UK WAFS GRIB2 file for WAFS blending      ***" >> mailmsg
+             echo "*************************************************************" >> mailmsg
+             echo >> mailmsg
+             echo "Send alert message to AWC ...... " >> mailmsg
+             echo >> mailmsg
+             cat mailmsg > $COMOUT/${RUN}.t${cyc}z.wafs_blend_usonly.emailbody
+             cat $COMOUT/${RUN}.t${cyc}z.wafs_blend_usonly.emailbody | mail.py -s "$subject" $maillist -v
+
              export SEND_AWC_ALERT=YES
           fi
 ##############################################################################################

@@ -87,7 +87,7 @@ export FHOUT_GFS=${FHOUT_GFS:-1}
 #              checking for input files
 ###############################################
 # export SLEEP_TIME=300   # changed to 60 to avoid hitting wall_clock when miss umket wafs files ... 
-export SLEEP_TIME=60
+export SLEEP_TIME=600
 export SLEEP_INT=10
 
 ####################################

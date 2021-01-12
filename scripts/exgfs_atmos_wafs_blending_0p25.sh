@@ -56,12 +56,7 @@ do
 # look for UK WAFS data.
 ##########################
 
-     # Do not wait for UK data if US data is available
-     if [ $SEND_UK_WAFS = 'YES' ] ; then
-	 SLEEP_LOOP_MAX_UK=$SLEEP_LOOP_MAX
-     else
-	 SLEEP_LOOP_MAX_UK=1
-     fi
+     SLEEP_LOOP_MAX_UK=$SLEEP_LOOP_MAX
      
      export ic=1
      while [ $ic -le $SLEEP_LOOP_MAX_UK ]
@@ -71,17 +66,6 @@ do
        if [ $ukfiles -eq 3 ] ; then
            break
        fi
-
-       ###################################################################
-       ##### Temporary solution when UK data is in DCOM dev  - Y Mao #####
-       ##### Remove this part after UK data is in DCOM prod          #####
-       COMINuk_tmp=$DCOMROOT/dev/$PDY/wgrbbul/ukmet_wafs
-       ukfiles=`ls $COMINuk_tmp/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 | wc -l`
-       if [ $ukfiles -eq 3 ] ; then
-	   COMINuk=$COMINuk_tmp
-           break
-       fi
-       ###################################################################
 
        if [ $ic -eq $SLEEP_LOOP_MAX_UK ] ; then
           msg="UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found"
@@ -163,7 +147,7 @@ do
 	 #  (Alert once for all forecast hours)
 	 #
 	 if [ $SEND_AWC_US_ALERT = "NO" ] ; then
-	     msg="No UK WAFS GRIB2 0P25 file or WAFS blending program. Send alert message to AWC ......"
+	     msg="WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending. Send alert message to AWC ......"
 	     postmsg "$jlogfile" "$msg"
 	     make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
 	     make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
@@ -171,6 +155,21 @@ do
 		 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/wifs_0p25_admin_msg
 		 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/iscs_0p25_admin_msg
 	     fi
+
+             if [ $envir != prod ]; then
+		 export maillist='nco.spa@noaa.gov'
+             fi
+             export maillist=${maillist:-'nco.spa@noaa.gov,ncep.sos@noaa.gov'}
+             export subject="WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending, $PDY t${cyc}z $job"
+             echo "*************************************************************" > mailmsg
+             echo "*** WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending ***" >> mailmsg
+             echo "*************************************************************" >> mailmsg
+             echo >> mailmsg
+             echo "Send alert message to AWC ...... " >> mailmsg
+             echo >> mailmsg
+             cat mailmsg > $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_usonly.emailbody
+             cat $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_usonly.emailbody | mail.py -s "$subject" $maillist -v
+
 	     export SEND_AWC_US_ALERT=YES
 	 fi
 	 ##############################################################################################
@@ -200,7 +199,7 @@ do
 	 #  (Alert once for all forecast hours)
 	 #
 	 if [ $SEND_AWC_UK_ALERT = "NO" ] ; then
-	     msg="No US WAFS GRIB2 0P25 file. Send alert message to AWC ......"
+	     msg="WARNING: No US WAFS GRIB2 0P25 file for WAFS blending. Send alert message to AWC ......"
 	     postmsg "$jlogfile" "$msg"
 	     make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
 	     make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
@@ -208,6 +207,21 @@ do
 		 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/wifs_0p25_admin_msg
 		 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/iscs_0p25_admin_msg
 	     fi
+
+             if [ $envir != prod ]; then
+                 export maillist='nco.spa@noaa.gov'
+             fi
+             export maillist=${maillist:-'nco.spa@noaa.gov,ncep.sos@noaa.gov'}
+             export subject="WARNING! No US WAFS GRIB2 0P25 file for WAFS blending, $PDY t${cyc}z $job"
+             echo "*************************************************************" > mailmsg
+             echo "*** WARNING! No US WAFS GRIB2 0P25 file for WAFS blending ***" >> mailmsg
+             echo "*************************************************************" >> mailmsg
+             echo >> mailmsg
+             echo "Send alert message to AWC ...... " >> mailmsg
+             echo >> mailmsg
+             cat mailmsg > $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_ukonly.emailbody
+             cat $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_ukonly.emailbody | mail.py -s "$subject" $maillist -v
+
 	     export SEND_AWC_UK_ALERT=YES
 	 fi
 	 ##############################################################################################
