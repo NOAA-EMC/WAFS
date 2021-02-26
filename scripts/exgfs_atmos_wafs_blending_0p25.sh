@@ -27,6 +27,8 @@ export SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
 echo "start blending US and UK WAFS products at 1/4 degree for " $cyc " z cycle"
 export ffhr=$SHOUR
 
+export ic_uk=1
+
 while test $ffhr -le $EHOUR
 do
 
@@ -41,7 +43,7 @@ do
           break
        fi
        if [ $ic -eq $SLEEP_LOOP_MAX ] ; then
-          msg="US WAFS GRIB2 file "  $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 "not found after waiting over $SLEEP_TIME seconds"
+          msg="US WAFS GRIB2 file  $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 not found after waiting over $SLEEP_TIME seconds"
           postmsg "$jlogfile" "$msg"
 	  echo "US WAFS GRIB2 file " $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 "not found after waiting ",$SLEEP_TIME, "exitting"
 	  SEND_UK_WAFS=YES
@@ -58,8 +60,8 @@ do
 
      SLEEP_LOOP_MAX_UK=$SLEEP_LOOP_MAX
      
-     export ic=1
-     while [ $ic -le $SLEEP_LOOP_MAX_UK ]
+    #  export ic=1
+     while [ $ic_uk -le $SLEEP_LOOP_MAX_UK ]
      do
        # Three(3) unblended UK files for each cycle+fhour: icing, turb, cb
        ukfiles=`ls $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 | wc -l`
@@ -67,14 +69,14 @@ do
            break
        fi
 
-       if [ $ic -eq $SLEEP_LOOP_MAX_UK ] ; then
-          msg="UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found"
+       if [ $ic_uk -eq $SLEEP_LOOP_MAX_UK ] ; then
+          msg="UK WAFS GRIB2 file  $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2  not found"
           postmsg "$jlogfile" "$msg"
 	  echo "UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found"
           export SEND_US_WAFS=YES
 	  break
        else
-          ic=`expr $ic + 1`
+          ic_uk=`expr $ic_uk + 1`
           sleep $SLEEP_INT
        fi
      done
