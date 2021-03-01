@@ -32,20 +32,6 @@ export MPIRUN="mpirun -n 2 cfp"
 ############################################
 module purge
 
-#module load ips/18.0.1.163
-#module load impi/18.0.1
-#module load lsf/10.1
-#module load CFP/2.0.1
-
-#module load prod_util/1.1.4
-#module load grib_util/1.1.0
-#module load prod_envir/1.1.0
-
-# to get HOMEobsproc_shared_bufr_dumplist
-#module load bufr_dumplist/2.0.0
-# to get HOMEobsproc_dump
-#module load dumpjb/5.1.0
-
 module use /usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles/stack
 module load hpc/1.1.0
 
@@ -57,17 +43,16 @@ module load hpc-impi/18.0.1
 module load prod_util/1.2.2
 module load grib_util/1.2.2
 
-##### hpc
 module load wgrib2/2.0.8
 export WGRIB2=$wgrib2_ROOT/bin/wgrib2
-##### non-hpc
-#module load grib_util/1.1.1
 
 # NCO Production Core Modules
 module load prod_envir/1.1.0
 
 # NCO Production Compiled Libraries and Tools
+# to get HOMEobsproc_dump
 module load dumpjb/5.1.0
+# to get HOMEobsproc_shared_bufr_dumplist
 module load bufr_dumplist/2.3.0
 
 # Third Party
@@ -98,7 +83,7 @@ export COMPONENT=${COMPONENT:-atmos}
 ############################################
 # Specify versions
 ############################################
-export gfs_ver=v16.0.0
+export gfs_ver=v17.0.0
 
 ############################################
 # user defined
@@ -129,6 +114,7 @@ export KEEPDATA=YES
 ############################################
 export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/git
 echo $DCOMROOT
+
 # for satellite data
 #export DCOMROOT=/gpfs/gp1/nco/ops/dcom
 # for radar data

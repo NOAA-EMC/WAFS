@@ -1,9 +1,9 @@
 #!/bin/sh
 
 #BSUB -J gfs_atmos_wafs
-#BSUB -cwd /gpfs/dell3/ptmp/Hui-Ya.Chuang
-#BSUB -oo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_atmos_wafs.o%J
-#BSUB -eo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_atmos_wafs.o%J
+#BSUB -cwd /gpfs/dell3/ptmp/Yali.Mao
+#BSUB -oo /gpfs/dell3/ptmp/Yali.Mao/gfs_atmos_wafs.o%J
+#BSUB -eo /gpfs/dell3/ptmp/Yali.Mao/gfs_atmos_wafs.o%J
 ##BSUB -L /bin/sh
 #BSUB -q debug
 #BSUB -W 00:30
@@ -29,13 +29,26 @@ export MPIRUN=mpirun
 # Loading module
 ############################################
 module purge
-#module load EnvVars/1.0.2
-module load ips/18.0.1.163
-module load lsf/10.1
 
-module load prod_util/1.1.4
-module load grib_util/1.1.0
+module use /usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles/stack
+module load hpc/1.1.0
+
+# Loading Intel Compiler Suite
+module load hpc-ips/18.0.1.163
+module load hpc-impi/18.0.1
+
+# hpc-stack modules
+module load prod_util/1.2.2
+module load grib_util/1.2.2
+
+module load wgrib2/2.0.8
+export WGRIB2=$wgrib2_ROOT/bin/wgrib2
+
+# NCO Production Core Modules
 module load prod_envir/1.1.0
+
+# Third Party
+module load lsf/10.1
 
 module list
 
@@ -63,7 +76,7 @@ export COMPONENT=${COMPONENT:-atmos}
 ############################################
 # Specify versions
 ############################################
-export gfs_ver=v16.0.0
+export gfs_ver=v17.0.0
 
 ############################################
 # user defined
@@ -73,7 +86,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20200810
+export PDY=20210226
 
 USER=`whoami`
 
@@ -91,14 +104,14 @@ export KEEPDATA=YES
 ############################################
 # Define ROOT directories
 ############################################
-export NWROOT=/gpfs/dell2/emc/verification/save/Hui-Ya.Chuang
+export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/git
 
 export DBNROOT=${UTILROOT}/fakedbn
 
 ############################################
 # Define DATA, COMOUT and COMIN
 ############################################
-export COMIN=/gpfs/dell3/ptmp/${USER}/com_post/gfs.$PDY/$cyc/$COMPONENT
+export COMIN=/gpfs/dell1/nco/ops/com/gfs/para/gfs.$PDY/$cyc/$COMPONENT
 export COMOUT=/gpfs/dell3/ptmp/${USER}/wafs_dwn/gfs.$PDY/$cyc/$COMPONENT
 
 export DATA=/gpfs/dell3/ptmp/${USER}/working_wafs/$jobid
@@ -108,7 +121,7 @@ export jlogfile=$DATA/jlogfile.${jobid}
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_branch}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
 
 #############################################
 # run the job
@@ -122,9 +135,9 @@ exit
 # compare the output (optional)
 #############################################
 
-DIFFGB="/gpfs/hps3/emc/global/noscrub/Hui-Ya.Chuang/git/save/bin/diffgb -x"
+DIFFGB="/gpfs/hps3/emc/global/noscrub/Yali.Mao/git/save/bin/diffgb -x"
 
-stdpcom=/gpfs/gp1/ptmp/Hui-Ya.Chuang/pcomop
+stdpcom=/gpfs/gp1/ptmp/Yali.Mao/pcomop
 files=`ls $PCOM/` 
 for file in $files ; do 
     $DIFFGB $PCOM/$file $stdpcom/$file > $file.diff
@@ -137,7 +150,7 @@ for file in $files ; do
     $DIFFGB $COMOUT/$file $stdcom/$file > $file.diff
 done
 
-if [ $USER = 'Hui-Ya.Chuang' ] ; then
+if [ $USER = 'Yali.Mao' ] ; then
   # the standard data to be compared to
   stdout=/com/${NET}/$envir/${RUN}.${PDY}
   stdout=/gpfs/hps/nco/ops/com/gfs/para/gfs.$PDY
