@@ -58,10 +58,10 @@ module load prod_util/1.2.2
 module load grib_util/1.2.2
 
 ##### hpc
-#module load wgrib2/2.0.8
-#export WGRIB2=wgrib2
+module load wgrib2/2.0.8
+export WGRIB2=$wgrib2_ROOT/bin/wgrib2
 ##### non-hpc
-module load grib_util/1.1.1
+#module load grib_util/1.1.1
 
 # NCO Production Core Modules
 module load prod_envir/1.1.0
