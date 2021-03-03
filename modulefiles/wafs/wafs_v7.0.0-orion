@@ -11,12 +11,12 @@ module-whatis " WAFS"
 
 set ver v7.0.0
 
-module use /usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles/stack
+module use /apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack
 module load hpc/1.1.0
 
 # Loading Intel Compiler Suite
-module load hpc-ips/18.0.1.163
-module load hpc-impi/18.0.1
+module load hpc-intel/2018.4
+module load hpc-impi/2018.4
 
 module load w3emc/2.7.3
 module load w3nco/2.4.1
