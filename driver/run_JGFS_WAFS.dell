@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#BSUB -J gfs_atmos_wafs
+#BSUB -J wafs_octants
 #BSUB -cwd /gpfs/dell3/ptmp/Yali.Mao
 #BSUB -oo /gpfs/dell3/ptmp/Yali.Mao/gfs_atmos_wafs.o%J
 #BSUB -eo /gpfs/dell3/ptmp/Yali.Mao/gfs_atmos_wafs.o%J

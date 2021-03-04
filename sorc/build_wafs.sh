@@ -10,18 +10,9 @@ module purge
 set -x
 mac=$(hostname | cut -c1-1)
 mac2=$(hostname | cut -c1-2)
-if [ $mac = f  ] ; then            # For Jet 
- machine=jet
- . /etc/profile
- . /etc/profile.d/modules.sh
-elif [ $mac = v -o $mac = m  ] ; then            # For Dell
+if [ $mac = v -o $mac = m  ] ; then            # For Dell
  machine=dell
  . $MODULESHOME/init/bash                 
-elif [ $mac = t -o $mac = e -o $mac = g ] ; then # For WCOSS
- machine=wcoss
- . /usrx/local/Modules/default/init/bash
-elif [ $mac = l -o $mac = s ] ; then             #    wcoss_c (i.e. luna and surge)
- export machine=cray-intel
 elif [ $mac2 = hf ] ; then                        # For Hera
  machine=hera
  . /etc/profile

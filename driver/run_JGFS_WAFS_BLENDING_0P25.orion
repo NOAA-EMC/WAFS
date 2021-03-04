@@ -95,8 +95,6 @@ export NWROOT=/work/noaa/stmp/ymao/git
 
 export DBNROOT=${UTILROOT}/fakedbn 
 
-export DATAROOT=
-
 # for UK data
 export DCOMROOT=/work/noaa/stmp/ymao/stmp/hpc_testdata/dcom
 # For canned data:

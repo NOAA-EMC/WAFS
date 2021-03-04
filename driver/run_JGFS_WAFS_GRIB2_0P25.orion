@@ -92,6 +92,8 @@ export KEEPDATA=YES
 ############################################
 export NWROOT=/work/noaa/stmp/ymao/git
 
+export DBNROOT=${UTILROOT}/fakedbn
+
 ############################################
 # Define DATA, COMOUT and COMIN
 ############################################

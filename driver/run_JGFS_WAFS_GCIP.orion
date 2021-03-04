@@ -37,8 +37,6 @@ export WGRIB2=$wgrib2_ROOT/bin/wgrib2
 # COMROOT must be set, otherwise setpdy.sh will fail
 export COMROOT=" "
 
-module load g2tmpl/1.6.0
-
 # to get HOMEobsproc_shared_bufr_dumplist
 module load bufr_dumplist/2.0.0
 # to get HOMEobsproc_dump
@@ -100,19 +98,10 @@ export KEEPDATA=YES
 # Define ROOT directories
 ############################################
 export COMROOT=/work/noaa/stmp/ymao/stmp/hpc_testdata/com
-#export NWROOTp1=/nwprod
 export NWROOT=/work/noaa/stmp/ymao/git
-export DATAROOT=
-
-# for satellite data
-#export DCOMROOT=/gpfs/gp1/nco/ops/dcom
-# for radar data
-#export COMROOTp1=/gpfs/gp1/nco/ops/com
 
 # For canned data:
 export DCOMROOT=/work/noaa/stmp/ymao/stmp/hpc_testdata/dcom
-export COMROOTp1=
-
 
 ############################################
 # Define DATA COMOUT and COMIN

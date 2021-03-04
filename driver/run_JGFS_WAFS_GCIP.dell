@@ -112,19 +112,11 @@ export KEEPDATA=YES
 ############################################
 # Define ROOT directories
 ############################################
+echo $COMROOT
 export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/git
-echo $DCOMROOT
-
-# for satellite data
-#export DCOMROOT=/gpfs/gp1/nco/ops/dcom
-# for radar data
-#export COMROOTp1=/gpfs/gp1/nco/ops/com
-export COMROOTp1=
 
 # For canned data:
-#export DCOMROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput/dcom
-#export COMROOTp1=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput/com1
-
+echo $DCOMROOT
 
 ############################################
 # Define DATA COMOUT and COMIN
