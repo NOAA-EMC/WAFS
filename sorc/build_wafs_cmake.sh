@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eux
+set -ex
 
 # detect machine
 mac=$(hostname | cut -c1-1)
