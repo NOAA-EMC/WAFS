@@ -31,10 +31,12 @@ if [ $machine = "dell" -o $machine = "hera" -o $machine = "orion" ]; then
   module load wafs/wafs_v7.0.0-${machine}
   module list
   set -x
+  INSTALL_PREFIX=${INSTALL_PREFIX:-"../../"}
+  CMAKE_OPTS+=" -DCMAKE_INSTALL_BINDIR=exec"
 fi
 
 [[ -d build  ]] && rm -rf build
 mkdir -p build && cd build
-cmake -DCMAKE_INSTALL_PREFIX=../../ -DCMAKE_INSTALL_BINDIR=exec ..
+cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX:-../} ${CMAKE_OPTS:-} ..
 make -j ${BUILD_JOBS:-4} VERBOSE=${BUILD_VERBOSE:-}
 make install
