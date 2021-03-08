@@ -7,17 +7,20 @@ mac2=$(hostname | cut -c1-2)
 if [ $mac = v -o $mac = m  ] ; then # For Dell
   machine=dell
   set +x
+  module purge
   . $MODULESHOME/init/bash
   set -x
 elif [ $mac2 = hf ] ; then          # For Hera
   machine=hera
   set +x
+  module purge
   . /etc/profile
   . /etc/profile.d/modules.sh
   set -x
 elif [ $mac = O ] ; then            # For Orion
   machine=orion
   set +x
+  module purge
   . /etc/profile
   set -x
 else
