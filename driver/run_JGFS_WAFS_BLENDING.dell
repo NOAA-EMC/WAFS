@@ -84,7 +84,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20210226
+export PDY=20210307
 
 USER=`whoami`
 

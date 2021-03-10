@@ -148,7 +148,7 @@ do
     done
   fi
 
-  export pgm=wafs_awc_wafavn
+  export pgm=wafs_awc_wafavn.x
   . prep_step
 
   startmsg
@@ -161,7 +161,7 @@ do
                       -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_icao_grb45f${fcsthrs}
 # after grid conversion by wgrib2, even with neighbor interpolation, values may still be mislead by noises, epescially 
 # the ref_value is not zero according to DST template 5.XX. Solution: rewrite and round those special meaning values
-  export pgm=wafs_setmissing
+  export pgm=wafs_setmissing.x
   . prep_step
   $MPIRUN $EXECgfs/wafs_setmissing tmpfile_icao_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs}.setmissing
   mv tmpfile_icao_grb45f${fcsthrs}.setmissing tmpfile_icao_grb45f${fcsthrs}

@@ -34,7 +34,7 @@ cp ${COMINus}/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 .
 
 # run blending code
 startmsg
-$EXECgfs/wafs_blending grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 \
+$EXECgfs/wafs_blending.x grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 \
 blended_${PDY}${cyc}f${ffhr}.grib2 > f${ffhr}.out
 
 err1=$?

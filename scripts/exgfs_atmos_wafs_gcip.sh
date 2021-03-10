@@ -201,7 +201,7 @@ cmdoptions="$cmdoptions -o $outputfile"
 
 echo 'after preparing data' `date`
 
-export pgm=wafs_gcip
+export pgm=wafs_gcip.x
 
 cpreq $FIXgfs/gcip_near_ir_refl.table near_ir_refl.table
 
