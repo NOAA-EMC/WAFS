@@ -167,10 +167,11 @@ do
   mv tmpfile_icao_grb45f${fcsthrs}.setmissing tmpfile_icao_grb45f${fcsthrs}
 
   # 2) traditional WAFS fields
-  $WGRIB2 masterfilef${fcsthrs} | grep -F -f $FIXgfs/wafs_gfsmaster.grb2.list | $WGRIB2 -i masterfilef${fcsthrs} -grib tmpfile_gfsf${fcsthrs}
+  $WGRIB2 $master2 | grep -F -f $FIXgfs/wafs_gfsmaster.grb2.list | $WGRIB2 -i $master2 -grib tmpfile_gfsf${fcsthrs}
 # U V will have the same grid messange number by using -ncep_uv.
 # U V will have the different grid messange number without -ncep_uv.
   $WGRIB2 tmpfile_gfsf${fcsthrs} \
+                      -set master_table 6 \
                       -new_grid_winds earth -set_grib_type jpeg \
                       -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
                       -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_gfs_grb45f${fcsthrs}

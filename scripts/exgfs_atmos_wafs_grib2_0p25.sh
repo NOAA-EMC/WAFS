@@ -80,14 +80,13 @@ do
   newgrid="latlon 0:1440:0.25 90:721:-0.25"
 
   ###### Step 1: Collect fields of EDPARM and ICESEV for blending, plus CAT WMT for US stakeholders, convert to 1/4 deg ######
-  criteria=":EDPARM:|:ICESEV:|parm=37:"
-  $WGRIB2 $wafs2 | egrep $criteria | egrep -v ":70 mb:" | $WGRIB2 -i $wafs2 -grib tmp_wafs1_grb2
-  $WGRIB2 tmp_wafs1_grb2 $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid $newgrid tmp_wafs_grb2.0p25.forblend
-  criteria=":CATEDR:|:MWTURB:"
-  $WGRIB2 $wafs2 | egrep $criteria | egrep -v ":70 mb:" | $WGRIB2 -i $wafs2 -grib tmp_wafs2_grb2
-  $WGRIB2 tmp_wafs2_grb2 $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid $newgrid gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2
-  cat tmp_wafs_grb2.0p25.forblend >> gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2
+  criteria1=":EDPARM:|:ICESEV:|parm=37:"
+  criteria2=":CATEDR:|:MWTURB:"
+  $WGRIB2 $wafs2 | egrep "${criteria1}|$criteria2" | egrep -v ":70 mb:" | $WGRIB2 -i $wafs2 -grib tmp_wafs1_grb2
+  $WGRIB2 tmp_wafs1_grb2 $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid $newgrid gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2
   $WGRIB2 -s gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2 > gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2.idx
+
+  $WGRIB2 gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2 | egrep -v $criteria2 | $WGRIB2 -i gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2 -grib tmp_wafs_grb2.0p25.forblend
 
   ###### Step 2: Collect CB fields, convert to 1/4 deg  ######
   criteria=":CBHE:|:ICAHT:"
