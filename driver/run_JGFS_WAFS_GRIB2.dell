@@ -72,7 +72,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20210226
+export PDY=20210419
 
 USER=`whoami`
 
@@ -97,7 +97,7 @@ export DBNROOT=${UTILROOT}/fakedbn
 ############################################
 # Define DATA, COMOUT and COMIN
 ############################################
-export COMIN=/gpfs/dell1/nco/ops/com/gfs/para/gfs.$PDY/$cyc/$COMPONENT
+export COMIN=/gpfs/dell1/nco/ops/com/gfs/prod/gfs.$PDY/$cyc/$COMPONENT
 export COMOUT=/gpfs/dell3/ptmp/${USER}/wafs_dwn/gfs.$PDY/$cyc/$COMPONENT
 
 export DATA=/gpfs/dell3/ptmp/${USER}/working_wafs/$jobid
