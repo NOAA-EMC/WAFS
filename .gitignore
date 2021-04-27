@@ -2,3 +2,8 @@ sorc/*/*.o
 sorc/*/*.mod
 
 exec/*
+
+build*/
+install*/
+
+*.sw[a-p]

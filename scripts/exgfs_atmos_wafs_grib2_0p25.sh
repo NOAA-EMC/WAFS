@@ -99,7 +99,7 @@ do
   ###### Step 4: Change to grib2 template 5.40 and relabel pressure levels to exact numbers  ######
   # Relabelling should be removed when UPP WAFS output on the exact pressure levels
   # (after WAFS products at 1.25 deg retire)
-  export pgm=wafs_grib2_0p25
+  export pgm=wafs_grib2_0p25.x
   . prep_step
 
   startmsg

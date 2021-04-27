@@ -7,7 +7,7 @@
 #SBATCH -N 2 --ntasks-per-node=1
 #SBATCH --mem=40g  # One task needs 20g memory
 #SBATCH -q batch
-#SBATCH -A ovp
+#SBATCH -A nems
 
 set -x
 
@@ -23,14 +23,19 @@ export MPIRUN="srun -l --multi-prog"
 module purge
 . $MODULESHOME/init/sh
 
-module load intel/2018.4
-module load impi/2018.4
+module use /apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack
+module load hpc/1.1.0
+module load hpc-intel/2018.4
+module load hpc-impi/2018.4
 
-module use -a /apps/contrib/NCEPLIBS/orion/modulefile
-module load grib_util/1.2.0
-module load prod_util/1.2.0
+module load grib_util/1.2.2 
+module load prod_util/1.2.2
 
-module load g2tmpl/1.6.0
+module load wgrib2/2.0.8
+export WGRIB2=$wgrib2_ROOT/bin/wgrib2
+
+# COMROOT must be set, otherwise setpdy.sh will fail
+export COMROOT=" "
 
 # to get HOMEobsproc_shared_bufr_dumplist
 module load bufr_dumplist/2.0.0
@@ -63,7 +68,7 @@ export COMPONENT=${COMPONENT:-atmos}
 ############################################
 # Specify versions
 ############################################
-export gfs_ver=v16.0.0
+export gfs_ver=v17.0.0
 
 ############################################
 # user defined
@@ -73,7 +78,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20200512
+export PDY=20210226
 
 USER=`whoami`
 
@@ -92,20 +97,11 @@ export KEEPDATA=YES
 ############################################
 # Define ROOT directories
 ############################################
-export COMROOT=/work/noaa/stmp/ymao/gfsoutput/com_post
-#export NWROOTp1=/nwprod
+export COMROOT=/work/noaa/stmp/ymao/stmp/hpc_testdata/com
 export NWROOT=/work/noaa/stmp/ymao/git
-export DATAROOT=
-
-# for satellite data
-#export DCOMROOT=/gpfs/gp1/nco/ops/dcom
-# for radar data
-#export COMROOTp1=/gpfs/gp1/nco/ops/com
 
 # For canned data:
-export DCOMROOT=/work/noaa/stmp/ymao/dcom
-export COMROOTp1=
-
+export DCOMROOT=/work/noaa/stmp/ymao/stmp/hpc_testdata/dcom
 
 ############################################
 # Define DATA COMOUT and COMIN
@@ -113,7 +109,7 @@ export COMROOTp1=
 export COMOUT=/work/noaa/stmp/ymao/gfsoutput/wafs_0p25/gfs.$PDY/$cyc/$COMPONENT
 
 export COMINgfs=$COMROOT/gfs.$PDY/$cyc/$COMPONENT
-export COMINradar=${COMINradar:-$COMROOTp1/radar/$PDY}
+export COMINradar=${COMINradar:-$COMROOT/hourly/prod/radar.$PDY}
 
 export DATA=/work/noaa/stmp/$LOGNAME/stmp/working_wafs/$jobid
 

@@ -111,7 +111,7 @@ do
    export FORT53="com.wafs${hour}${sets}"
 
    startmsg
-   $EXECgfs/wafs_makewafs < $FIXgfs/grib_wfs${NET}${hour}${sets} >>$pgmout 2>errfile
+   $EXECgfs/wafs_makewafs.x < $FIXgfs/grib_wfs${NET}${hour}${sets} >>$pgmout 2>errfile
    export err=$?;err_chk
 
 

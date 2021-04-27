@@ -72,7 +72,7 @@ if [ $RUN = "gfs" ] ; then
 
   modelFile=modelfile.grb
 #  ln -sf $masterFile $modelFile
-  $WGRIB2 $masterFile | egrep ":HGT:|:VVEL:|:CLWMR:|:TMP:|:SPFH:|:RWMR:|:SNMR:|:GRLE:|:ICMR:|:RH:" | egrep "00 mb:|25 mb:|50 mb:|75 mb:|:HGT:surface" | $WGRIB2 -i $masterFile -grib $modelFile
+  $WGRIB2 $masterFile | egrep ":HGT:|:VVEL:|:CLMR:|:TMP:|:SPFH:|:RWMR:|:SNMR:|:GRLE:|:ICMR:|:RH:" | egrep "00 mb:|25 mb:|50 mb:|75 mb:|:HGT:surface" | $WGRIB2 -i $masterFile -grib $modelFile
 
   # metar / ships / lightning / pireps
   # dumped data files' suffix is ".ibm"
@@ -201,7 +201,7 @@ cmdoptions="$cmdoptions -o $outputfile"
 
 echo 'after preparing data' `date`
 
-export pgm=wafs_gcip
+export pgm=wafs_gcip.x
 
 cpreq $FIXgfs/gcip_near_ir_refl.table near_ir_refl.table
 

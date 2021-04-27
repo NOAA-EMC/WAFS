@@ -113,7 +113,7 @@ do
 	 cp ${COMINus}/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 .
 
 	 # run blending code
-	 export pgm=wafs_blending_0p25
+	 export pgm=wafs_blending_0p25.x
 	 . prep_step
 
 	 startmsg

@@ -27,15 +27,26 @@ export MPIRUN=mpirun
 # Loading module
 ############################################
 module purge
-#module load EnvVars/1.0.2
-module load ips/18.0.1.163
-module load lsf/10.1
 
-module load prod_util/1.1.4
-module load grib_util/1.1.0
+module use /usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles/stack
+module load hpc/1.1.0
+
+# Loading Intel Compiler Suite
+module load hpc-ips/18.0.1.163
+module load hpc-impi/18.0.1
+
+# hpc-stack modules
+module load prod_util/1.2.2
+module load grib_util/1.2.2
+
+module load wgrib2/2.0.8
+export WGRIB2=$wgrib2_ROOT/bin/wgrib2
+
+# NCO Production Core Modules
 module load prod_envir/1.1.0
 
-module load util_shared/1.1.2
+# Third Party
+module load lsf/10.1
 
 module list
 
@@ -61,8 +72,7 @@ export COMPONENT=${COMPONENT:-atmos}
 ############################################
 # Specify versions
 ############################################
-export gfs_ver=v16.0.0
-
+export gfs_ver=v17.0.0
 
 ############################################
 # user defined
@@ -72,7 +82,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20210419
+export PDY=20210426
 
 USER=`whoami`
 
@@ -92,20 +102,11 @@ export KEEPDATA=YES
 ############################################
 echo $COMROOT
 export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/git
-export DATAROOT=/gpfs/dell3/ptmp/${USER}
 
 export DBNROOT=${UTILROOT}/fakedbn
 
 # for UK data
-#if [[ `hostname` =~ "^l" ]] ; then ! LUNA/TIDE
-#  export DCOMROOT=/gpfs/tp1/nco/ops/dcom
-#else                               ! SURGE/GYRE
-#  export DCOMROOT=/gpfs/gp1/nco/ops/dcom
-#fi
-# For canned data:
-#export DCOMROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput/dcom
-
-#export DCOMROOT=/gpfs/dell3/ptmp/Yali.Mao/dcom
+echo $DCOMROOT
 
 ############################################
 # Define DATA PCOM, COMOUT and COMIN

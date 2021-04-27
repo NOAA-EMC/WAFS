@@ -103,7 +103,7 @@ do
     # 2D inputs for WAFS from master file, reference to type(pdt_t) parameters sorc/wafs_awc_wafavn.fd/waf_grib2.f90
     criteria1=":PRES:surface:|:PRES:convective|:CPRAT:.*hour.{1}ave"
     $WGRIB2 $master2 | egrep "$criteria0|$criteria1" |  $WGRIB2 -i $master2 -grib master.fields
-    criteria=":HGT:.* mb:|:TMP:.* mb:|:UGRD:.* mb:|VGRD:.* mb:|:RH:.* mb:|:CLWMR:.* mb:|:ICIP:.* mb:"
+    criteria=":HGT:.* mb:|:TMP:.* mb:|:UGRD:.* mb:|VGRD:.* mb:|:RH:.* mb:|:CLMR:.* mb:|:ICIP:.* mb:"
     $WGRIB2 $wafs2 | egrep "$criteria" |  $WGRIB2 -i $wafs2 -grib wafs.fields
     cat master.fields wafs.fields > masterfilef${fcsthrs}.new
     rm master.fields wafs.fields
@@ -122,7 +122,7 @@ do
     # 3D inputs from WAFS file at high resolution on ICAO standard pressures
     criteria2=":HGT:|:TMP:"
     criteria3=":UGRD:|:VGRD:"
-    criteria4=":RH:|:CLWMR:"
+    criteria4=":RH:|:CLMR:"
     criteria5=":ICIP:|:EDPARM:"
     criteria6=":CATEDR:|:MWTURB:"
 
@@ -148,7 +148,7 @@ do
     done
   fi
 
-  export pgm=wafs_awc_wafavn
+  export pgm=wafs_awc_wafavn.x
   . prep_step
 
   startmsg
@@ -161,7 +161,7 @@ do
                       -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_icao_grb45f${fcsthrs}
 # after grid conversion by wgrib2, even with neighbor interpolation, values may still be mislead by noises, epescially 
 # the ref_value is not zero according to DST template 5.XX. Solution: rewrite and round those special meaning values
-  export pgm=wafs_setmissing
+  export pgm=wafs_setmissing.x
   . prep_step
   $MPIRUN $EXECgfs/wafs_setmissing tmpfile_icao_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs}.setmissing
   mv tmpfile_icao_grb45f${fcsthrs}.setmissing tmpfile_icao_grb45f${fcsthrs}

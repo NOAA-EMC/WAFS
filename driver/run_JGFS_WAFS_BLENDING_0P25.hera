@@ -22,15 +22,18 @@ export MPIRUN="srun"
 module purge
 $MODULESHOME/init/sh
 
-module use /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
-module load EnvVars/1.0.2
-module load intel/18.0.5.274
-module load impi/2018.4.274
-#module load lsf/10.1
-#module load CFP/2.0.1
+module use /scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack
+module load hpc/1.1.0
 
-module load grib_util/1.1.1
-module load prod_util/1.1.0
+# Loading Intel Compiler Suite
+module load hpc-intel/18.0.5.274
+module load hpc-impi/2018.0.4
+
+module load grib_util/1.2.2 
+module load prod_util/1.2.2
+
+module load wgrib2/2.0.8
+export WGRIB2=$wgrib2_ROOT/bin/wgrib2
 
 module list
 
@@ -107,13 +110,13 @@ export jlogfile=$DATA/jlogfile.${jobid}
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_makeup}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
 
 ############################################
 # run the job
 #############################################
-export SHOUR=12
-export EHOUR=12
+export SHOUR=06
+export EHOUR=36
 export FHINC=03
 
 sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_BLENDING_0P25

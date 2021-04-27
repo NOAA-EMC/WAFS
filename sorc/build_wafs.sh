@@ -10,18 +10,9 @@ module purge
 set -x
 mac=$(hostname | cut -c1-1)
 mac2=$(hostname | cut -c1-2)
-if [ $mac = f  ] ; then            # For Jet 
- machine=jet
- . /etc/profile
- . /etc/profile.d/modules.sh
-elif [ $mac = v -o $mac = m  ] ; then            # For Dell
+if [ $mac = v -o $mac = m  ] ; then            # For Dell
  machine=dell
  . $MODULESHOME/init/bash                 
-elif [ $mac = t -o $mac = e -o $mac = g ] ; then # For WCOSS
- machine=wcoss
- . /usrx/local/Modules/default/init/bash
-elif [ $mac = l -o $mac = s ] ; then             #    wcoss_c (i.e. luna and surge)
- export machine=cray-intel
 elif [ $mac2 = hf ] ; then                        # For Hera
  machine=hera
  . /etc/profile
@@ -33,7 +24,7 @@ fi
 
 moduledir=`dirname $(readlink -f ../modulefiles/wafs)`
 module use ${moduledir}
-module load wafs/wafs_v6.0.0-${machine}
+module load wafs/wafs_v7.0.0-${machine}
 module list
 
  curdir=`pwd`
@@ -60,9 +51,14 @@ for dir in wafs_awc_wafavn.fd wafs_gcip.fd wafs_blending.fd wafs_makewafs.fd waf
 #for dir in wafs_blending.fd ; do 
 #for dir in wafs_blending_0p25.fd ; do 
 #for dir in wafs_gcip.fd ; do
+#for dir in wafs_makewafs.fd ; do
 #for dir in wafs_awc_wafavn.fd ; do
 #for dir in wafs_grib2_0p25.fd wafs_blending_0p25.fd ; do
- export LIBS="${G2_LIB4} ${W3NCO_LIB4} ${BACIO_LIB4} ${IP_LIB4} ${SP_LIB4} ${JASPER_LIB} ${PNG_LIB} ${Z_LIB}  ${BUFR_LIB4}"
+ if [ $dir = "wafs_makewafs.fd" ] ; then
+     export LIBS="${W3NCO_LIB8}  ${W3EMC_LIB8} ${BACIO_LIB8}"
+ else
+     export LIBS="${G2_LIB4} ${W3NCO_LIB4} ${BACIO_LIB4} ${IP_LIB4} ${SP_LIB4} ${JASPER_LIBRARIES}/libjasper.a ${PNG_ROOT}/lib64/libpng.a ${ZLIB_LIBRARIES}/libz.a  ${BUFR_LIB4}"
+ fi
  cd ${curdir}/$dir
  make clean
  make
