@@ -93,7 +93,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20210307
+export PDY=20210426
 
 USER=`whoami`
 
@@ -124,7 +124,7 @@ echo $DCOMROOT
 export COMOUT=/gpfs/dell3/ptmp/${USER}/wafs_dwn/gfs.$PDY/$cyc/$COMPONENT
 
 #export COMINgfs=/gpfs/dell3/ptmp/${USER}/com_post/gfs.$PDY/$cyc/$COMPONENT
-export COMINgfs=/gpfs/dell1/nco/ops/com/gfs/para/gfs.$PDY/$cyc/$COMPONENT
+export COMINgfs=/gpfs/dell1/nco/ops/com/gfs/prod/gfs.$PDY/$cyc/$COMPONENT
 
 export COMINsat=${COMINsat:-$DCOMROOT/prod/$PDY/mcidas}
 export COMINradar=${COMINradar:-$COMROOT/hourly/prod/radar.$PDY}

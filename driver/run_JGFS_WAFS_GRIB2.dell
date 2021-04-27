@@ -41,6 +41,9 @@ module load grib_util/1.2.2
 
 module load wgrib2/2.0.8
 export WGRIB2=$wgrib2_ROOT/bin/wgrib2
+#wgrib2 of module wgrib2/2.0.8 under hpc-stack doesn't work when converting a grid file
+#https://github.com/NOAA-EMC/hpc-stack/issues/224
+export WGRIB2=/gpfs/dell1/nco/ops/nwprod/grib_util.v1.1.1/exec/wgrib2
 
 # NCO Production Core Modules
 module load prod_envir/1.1.0
@@ -82,7 +85,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20210307
+export PDY=20210426
 
 USER=`whoami`
 
@@ -107,7 +110,7 @@ export DBNROOT=${UTILROOT}/fakedbn
 ############################################
 # Define DATA, COMOUT and COMIN
 ############################################
-export COMIN=/gpfs/dell1/nco/ops/com/gfs/para/gfs.$PDY/$cyc/$COMPONENT
+export COMIN=/gpfs/dell1/nco/ops/com/gfs/prod/gfs.$PDY/$cyc/$COMPONENT
 export COMOUT=/gpfs/dell3/ptmp/${USER}/wafs_dwn/gfs.$PDY/$cyc/$COMPONENT
 
 export DATA=/gpfs/dell3/ptmp/${USER}/working_wafs/$jobid
