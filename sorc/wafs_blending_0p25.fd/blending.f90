@@ -269,10 +269,10 @@ contains
                    ij=(j-1)*im+i
 
                    if(gfld%ibmap /= 255) then !If US with BIT-MAP
-                      if(.not. gfld%bmap(ij)) usdata(i,j)=missing
+                      if(.not. gfld%bmap((j-1)*im+i)) usdata(i,j)=missing
                    endif
                    if(gfld2%ibmap /= 255) then !If UK with BIT-MAP
-                      if(.not. gfld2%bmap(ij)) ukdata(i,j)=missing
+                      if(.not. gfld2%bmap((jj-1)*im+i)) ukdata(i,j)=missing
                    end if
                    blddata(ij)=generalblending(whichblnd,missing,exclusive,usdata(i,j),ukdata(i,j))
                 end do
