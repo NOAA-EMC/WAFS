@@ -29,8 +29,11 @@ cd $DATA
 
 set -x
 
-for fcsthrs in 06 09 12 15 18 21 24 27 30 33 36
-do
+fcsthrs=$1
+
+DATA=$DATA/$fcsthrs
+mkdir -p $DATA
+cd $DATA
 
 ##########################################################
 # Wait for the availability of the gfs master pgrib file
@@ -97,62 +100,23 @@ do
       regrid_options=""
   fi
 
-  if [ ! `echo $MPIRUN | cut -d " " -f1` = 'srun' ] ; then
-    # 2D fields WAFS output, directly from master file
-    criteria0=":ICAHT:tropopause:|:TMP:tropopause:|:ICAHT:max.*wind:|:UGRD:max.*wind:|:VGRD:max.*wind:"
-    # 2D inputs for WAFS from master file, reference to type(pdt_t) parameters sorc/wafs_awc_wafavn.fd/waf_grib2.f90
-    criteria1=":PRES:surface:|:PRES:convective|:CPRAT:.*hour.{1}ave"
-    $WGRIB2 $master2 | egrep "$criteria0|$criteria1" |  $WGRIB2 -i $master2 -grib master.fields
-    criteria=":HGT:.* mb:|:TMP:.* mb:|:UGRD:.* mb:|VGRD:.* mb:|:RH:.* mb:|:CLWMR:.* mb:|:ICIP:.* mb:"
-    $WGRIB2 $wafs2 | egrep "$criteria" |  $WGRIB2 -i $wafs2 -grib wafs.fields
-    cat master.fields wafs.fields > masterfilef${fcsthrs}.new
-    rm master.fields wafs.fields
-    $WGRIB2  masterfilef${fcsthrs}.new -set master_table 6 -new_grid_interpolation bilinear -new_grid latlon 0:1440:0.25 90:721:-0.25 masterfilef${fcsthrs}
-  else
-
-    ################# START #######################
-    ##### Use MPMD to speed up the processing #####
-    ###############################################
-    USHREGRID=$USHgfs/wafs_grib2.regrid.sh
-
-    # 2D fields WAFS output, directly from master file
-    criteria0=":ICAHT:tropopause:|:TMP:tropopause:|:ICAHT:max.*wind:|:UGRD:max.*wind:|:VGRD:max.*wind:"
-    # 2D inputs for WAFS from master file, reference to type(pdt_t) parameters sorc/wafs_awc_wafavn.fd/waf_grib2.f90
-    criteria1=":PRES:surface:|:PRES:convective|:CPRAT:.*hour.\{1\}ave"
-    # 3D inputs from WAFS file at high resolution on ICAO standard pressures
-    criteria2=":HGT:|:TMP:"
-    criteria3=":UGRD:|:VGRD:"
-    criteria4=":RH:|:CLWMR:"
-    criteria5=":ICIP:|:EDPARM:"
-    criteria6=":CATEDR:|:MWTURB:"
-
-    echo 0 $USHREGRID 0 $master2 $criteria0 $regrid_options >> grib2.cmdfile
-    echo 1 $USHREGRID 1 $master2 $criteria1 $regrid_options >> grib2.cmdfile
-    for i in 2 3 4 5 6 ; do
-      criteria=`eval echo '$'criteria$i`
-      echo $i $USHREGRID $i $wafs2 $criteria $regrid_options >> grib2.cmdfile
-    done
-
-    MPMDRUN="$MPIRUN -l --multi-prog -N 7"
-    $MPMDRUN grib2.cmdfile
-
-    ###############################################
-    ##### Use MPMD to speed up the processing #####
-    ################### END #######################
-    date
-
-    rm masterfilef${fcsthrs}
-    for i in 0 1 2 3 4 5 6 ; do
-      cat regrid.tmp.$i >> masterfilef${fcsthrs}
-      rm regrid.tmp.$i
-    done
-  fi
+  options='-set_bitmap 1 -set_grib_type same -new_grid_winds earth'
+  # 2D fields WAFS output, directly from master file
+  criteria0=":ICAHT:tropopause:|:TMP:tropopause:|:ICAHT:max.*wind:|:UGRD:max.*wind:|:VGRD:max.*wind:"
+  # 2D inputs for WAFS from master file, reference to type(pdt_t) parameters sorc/wafs_awc_wafavn.fd/waf_grib2.f90
+  criteria1=":PRES:surface:|:PRES:convective|:CPRAT:.*hour.{1}ave"
+  $WGRIB2 $master2 | egrep "$criteria0|$criteria1" |  $WGRIB2 -i $master2 -grib master.fields
+  criteria=":HGT:.* mb:|:TMP:.* mb:|:UGRD:.* mb:|VGRD:.* mb:|:RH:.* mb:|:CLWMR:.* mb:|:ICIP:.* mb:"
+  $WGRIB2 $wafs2 | egrep "$criteria" |  $WGRIB2 -i $wafs2 -grib wafs.fields
+  cat master.fields wafs.fields > masterfilef${fcsthrs}.new
+  rm master.fields wafs.fields
+  $WGRIB2  masterfilef${fcsthrs}.new $options -set master_table 6 -new_grid_interpolation bilinear -new_grid latlon 0:1440:0.25 90:721:-0.25 masterfilef${fcsthrs}
 
   export pgm=wafs_awc_wafavn
   . prep_step
 
   startmsg
-  $MPIRUN $EXECgfs/$pgm -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng cat cb  >> $pgmout  2> errfile
+  $EXECgfs/$pgm -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng cat cb  >> $pgmout  2> errfile
   export err=$?; err_chk
 
 # To avoid interpolation of missing value (-0.1 or -1.0, etc), use neighbor interpolation instead of bilinear interpolation
@@ -163,7 +127,7 @@ do
 # the ref_value is not zero according to DST template 5.XX. Solution: rewrite and round those special meaning values
   export pgm=wafs_setmissing
   . prep_step
-  $MPIRUN $EXECgfs/wafs_setmissing tmpfile_icao_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs}.setmissing
+  $EXECgfs/wafs_setmissing tmpfile_icao_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs}.setmissing
   mv tmpfile_icao_grb45f${fcsthrs}.setmissing tmpfile_icao_grb45f${fcsthrs}
 
   # 2) traditional WAFS fields
@@ -205,19 +169,19 @@ do
   echo " error from tocgrib=",$err
 
 # Processing WAFS GRIB2 grid 45 (Icing, TB, CAT) for WIFS
-
-  . prep_step
-  startmsg
+  if [ $fcsthrs -le 36 ] ; then 
+      . prep_step
+      startmsg
  
-  export FORT11=gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
-  export FORT31=" "
-  export FORT51=grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
+      export FORT11=gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+      export FORT31=" "
+      export FORT51=grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
  
-  $TOCGRIB2 <  $FIXgfs/grib2_gfs_wafs_wifs_f${fcsthrs}.45 >> $pgmout 2> errfile
+      $TOCGRIB2 <  $FIXgfs/grib2_gfs_wafs_wifs_f${fcsthrs}.45 >> $pgmout 2> errfile
 
-  err=$?;export err ;err_chk
-  echo " error from tocgrib=",$err
-
+      err=$?;export err ;err_chk
+      echo " error from tocgrib=",$err
+  fi
 
   if [ $SENDCOM = "YES" ] ; then
 
@@ -236,7 +200,7 @@ do
    ##############################
 
      mv grib2.t${cyc}z.wafs_grbf${fcsthrs}.45  $PCOM/grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
-     mv grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45  $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
+     [ $fcsthrs -le 36 ] && mv grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45  $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
   fi
 
   ######################
@@ -248,7 +212,7 @@ do
 #    Distribute Data to WOC
 #
   
-    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
+    [ $fcsthrs -le 36 ] && $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_WIDX $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
 #
@@ -257,7 +221,6 @@ do
     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job   $PCOM/grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
   fi
 
-done
 
 ################################################################################
 # GOOD RUN
