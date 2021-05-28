@@ -38,19 +38,19 @@ cd $DATA
 ##########################################################
 # Wait for the availability of the gfs master pgrib file
 ##########################################################
-  # file name and forecast hour of GFS model data in Grib2 are 3 digits
-  export fcsthrs000="$(printf "%03d" $(( 10#$fcsthrs )) )"
+# file name and forecast hour of GFS model data in Grib2 are 3 digits
+export fcsthrs000="$(printf "%03d" $(( 10#$fcsthrs )) )"
 
-  # 2D data
-  master2=$COMIN/${RUN}.${cycle}.master.grb2f${fcsthrs000}
-  master2i=$COMIN/${RUN}.${cycle}.master.grb2if${fcsthrs000}
-  # 3D data
-  wafs2=$COMIN/${RUN}.${cycle}.wafs.grb2f${fcsthrs000}
-  wafs2i=$COMIN/${RUN}.${cycle}.wafs.grb2if${fcsthrs000}
+# 2D data
+master2=$COMIN/${RUN}.${cycle}.master.grb2f${fcsthrs000}
+master2i=$COMIN/${RUN}.${cycle}.master.grb2if${fcsthrs000}
+# 3D data
+wafs2=$COMIN/${RUN}.${cycle}.wafs.grb2f${fcsthrs000}
+wafs2i=$COMIN/${RUN}.${cycle}.wafs.grb2if${fcsthrs000}
 
-  icnt=1
-  while [ $icnt -lt 1000 ]
-  do
+icnt=1
+while [ $icnt -lt 1000 ]
+do
     if [[ -s $master2i && -s $wafs2i ]] ; then
       break
     fi
@@ -61,28 +61,56 @@ cd $DATA
         msg="ABORTING after 30 min of waiting for the gfs master and wafs file!"
         err_exit $msg
     fi
-  done
+done
 
-  ########################################
-  msg="HAS BEGUN!"
-  postmsg "$jlogfile" "$msg"
-  ########################################
+########################################
+msg="HAS BEGUN!"
+postmsg "$jlogfile" "$msg"
+########################################
 
-  echo " ------------------------------------------"
-  echo " BEGIN MAKING GFS WAFS GRIB2 PRODUCTS"
-  echo " ------------------------------------------"
+echo " ------------------------------------------"
+echo " BEGIN MAKING GFS WAFS GRIB2 PRODUCTS"
+echo " ------------------------------------------"
 
-  set +x
-  echo " "
-  echo "#####################################"
-  echo "      Process GRIB WAFS PRODUCTS     "
-  echo " FORECAST HOURS 06 - 36."
-  echo "#####################################"
-  echo " "
-  set -x
+set +x
+echo " "
+echo "#####################################"
+echo "      Process GRIB WAFS PRODUCTS     "
+echo " FORECAST HOURS 06 - 36."
+echo "#####################################"
+echo " "
+set -x
 
-  # ===================  process master file grib2  ===================
-  # 1) new WAFS fields
+#---------------------------
+# 1) traditional WAFS fields
+#---------------------------
+$WGRIB2 $master2 | grep -F -f $FIXgfs/wafs_gfsmaster.grb2.list | $WGRIB2 -i $master2 -grib tmpfile_gfsf${fcsthrs}
+# U V will have the same grid messange number by using -ncep_uv.
+# U V will have the different grid messange number without -ncep_uv.
+$WGRIB2 tmpfile_gfsf${fcsthrs} \
+                      -set master_table 6 \
+                      -new_grid_winds earth -set_grib_type jpeg \
+                      -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
+                      -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_gfs_grb45f${fcsthrs}
+# Chuang: create a file in working dir without US unblended WAFS product for ftp server 
+cp tmpfile_gfs_grb45f${fcsthrs} gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
+$WGRIB2 -s gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
+
+# Add WMO header. Processing WAFS GRIB2 grid 45 for ISCS and WIFS
+export pgm=$TOCGRIB2
+. prep_step
+startmsg
+export FORT11=gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
+export FORT31=" "
+export FORT51=grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
+$TOCGRIB2 <  $FIXgfs/grib2_gfs_wafsf${fcsthrs}.45 >> $pgmout 2> errfile
+err=$?;export err ;err_chk
+echo " error from tocgrib=",$err
+
+if [ $fcsthrs -le 36 -a $fcsthrs -gt 0 ] ; then
+#---------------------------
+# 2) new WAFS fields
+#---------------------------
   cp $PARMgfs/wafs_awc_wafavn.grb2.cfg waf.cfg
 
   date
@@ -95,11 +123,12 @@ cd $DATA
   newgrid="latlon 0:1440:0.25 90:721:-0.25"
   rm grib2.cmdfile
   if [ $npts -gt 1038240 ] ; then
-      regrid_options="bilinear $newgrid"
+    regrid_options="bilinear $newgrid"
   else
-      regrid_options=""
+    regrid_options=""
   fi
 
+  # Added for implmentation 2023
   options='-set_bitmap 1 -set_grib_type same -new_grid_winds earth'
   # 2D fields WAFS output, directly from master file
   criteria0=":ICAHT:tropopause:|:TMP:tropopause:|:ICAHT:max.*wind:|:UGRD:max.*wind:|:VGRD:max.*wind:"
@@ -119,108 +148,80 @@ cd $DATA
   $EXECgfs/$pgm -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng cat cb  >> $pgmout  2> errfile
   export err=$?; err_chk
 
-# To avoid interpolation of missing value (-0.1 or -1.0, etc), use neighbor interpolation instead of bilinear interpolation
+  # To avoid interpolation of missing value (-0.1 or -1.0, etc), use neighbor interpolation instead of bilinear interpolation
   $WGRIB2 tmpfile_icaof${fcsthrs} -set_grib_type same -new_grid_winds earth \
                       -new_grid_interpolation bilinear -if ":(CBHE|CTP):" -new_grid_interpolation neighbor -fi \
                       -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_icao_grb45f${fcsthrs}
-# after grid conversion by wgrib2, even with neighbor interpolation, values may still be mislead by noises, epescially 
-# the ref_value is not zero according to DST template 5.XX. Solution: rewrite and round those special meaning values
+  # after grid conversion by wgrib2, even with neighbor interpolation, values may still be mislead by noises, epescially 
+  # the ref_value is not zero according to DST template 5.XX. Solution: rewrite and round those special meaning values
   export pgm=wafs_setmissing
   . prep_step
   $EXECgfs/wafs_setmissing tmpfile_icao_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs}.setmissing
   mv tmpfile_icao_grb45f${fcsthrs}.setmissing tmpfile_icao_grb45f${fcsthrs}
 
-  # 2) traditional WAFS fields
-  $WGRIB2 $master2 | grep -F -f $FIXgfs/wafs_gfsmaster.grb2.list | $WGRIB2 -i $master2 -grib tmpfile_gfsf${fcsthrs}
-# U V will have the same grid messange number by using -ncep_uv.
-# U V will have the different grid messange number without -ncep_uv.
-  $WGRIB2 tmpfile_gfsf${fcsthrs} \
-                      -set master_table 6 \
-                      -new_grid_winds earth -set_grib_type jpeg \
-                      -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
-                      -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_gfs_grb45f${fcsthrs}
-
-  # 3) combine new and traditional WAFS fields
+#---------------------------
+# 3) combine new and traditional WAFS fields
+#---------------------------
   cat tmpfile_gfs_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs} > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
-
   $CNVGRIB -g21 gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 gfs.t${cyc}z.wafs_grb45f${fcsthrs}
- 
   $WGRIB2 -s gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx
-  
-# Chuang: create a file in working dir without US unblended WAFS product for ftp server 
 
-  $WGRIB2 gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 | grep -v ":CAT" | grep -v ":CTP" | \
-  grep -v ":ICIP" | grep -v ":ICAHT:cumulonimbus" | grep -v ":CBHE" | $WGRIB2 -i gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 \
-  -grib gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
-  $WGRIB2 -s gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx   
-
-# Processing WAFS GRIB2 grid 45 for ISCS and WIFS
-
+  # Processing WAFS GRIB2 grid 45 (Icing, TB, CAT) for WIFS
+  export pgm=$TOCGRIB2
   . prep_step
   startmsg
-
   export FORT11=gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
   export FORT31=" "
-  export FORT51=grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
-
-  $TOCGRIB2 <  $FIXgfs/grib2_gfs_wafsf${fcsthrs}.45 >> $pgmout 2> errfile
-
+  export FORT51=grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
+  $TOCGRIB2 <  $FIXgfs/grib2_gfs_wafs_wifs_f${fcsthrs}.45 >> $pgmout 2> errfile
   err=$?;export err ;err_chk
   echo " error from tocgrib=",$err
 
-# Processing WAFS GRIB2 grid 45 (Icing, TB, CAT) for WIFS
-  if [ $fcsthrs -le 36 ] ; then 
-      . prep_step
-      startmsg
- 
-      export FORT11=gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
-      export FORT31=" "
-      export FORT51=grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
- 
-      $TOCGRIB2 <  $FIXgfs/grib2_gfs_wafs_wifs_f${fcsthrs}.45 >> $pgmout 2> errfile
+fi
 
-      err=$?;export err ;err_chk
-      echo " error from tocgrib=",$err
-  fi
+if [ $SENDCOM = "YES" ] ; then
 
-  if [ $SENDCOM = "YES" ] ; then
+    ##############################
+    # Post Files to COM
+    ##############################
 
-   ##############################
-   # Post Files to COM
-   ##############################
+    mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
+    mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
+    if [ $fcsthrs -le 36  -a $fcsthrs -gt 0 ] ; then
+	mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}  $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}
+	mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+	mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx
+    fi
 
-     mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}  $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}
-     mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
-     mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx
-     mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
-     mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
+    ##############################
+    # Post Files to PCOM
+    ##############################
 
-   ##############################
-   # Post Files to PCOM
-   ##############################
+    mv grib2.t${cyc}z.wafs_grbf${fcsthrs}.45  $PCOM/grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
+    if [ $fcsthrs -le 36  -a $fcsthrs -gt 0 ] ; then
+	mv grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45  $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
+    fi
+fi
 
-     mv grib2.t${cyc}z.wafs_grbf${fcsthrs}.45  $PCOM/grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
-     [ $fcsthrs -le 36 ] && mv grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45  $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
-  fi
+######################
+# Distribute Data
+######################
 
-  ######################
-  # Distribute Data
-  ######################
-
-  if [ $SENDDBN = "YES" ] ; then
+if [ $SENDDBN = "YES" ] ; then
 #  
 #    Distribute Data to WOC
 #
   
-    [ $fcsthrs -le 36 ] && $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
+    if [ $fcsthrs -le 36  -a $fcsthrs -gt 0 ] ; then
+	$DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
+    fi
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_WIDX $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
 #
 #    Distribute Data to TOC TO WIFS FTP SERVER (AWC)
 #
     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job   $PCOM/grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
-  fi
-
+fi
 
 ################################################################################
 # GOOD RUN
