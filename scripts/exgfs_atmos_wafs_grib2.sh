@@ -81,6 +81,13 @@ echo "#####################################"
 echo " "
 set -x
 
+
+if [ $fcsthrs -le 36 -a $fcsthrs -gt 0 ] ; then
+    wafs=yes
+else
+    wafs=no
+fi
+
 #---------------------------
 # 1) traditional WAFS fields
 #---------------------------
@@ -96,20 +103,33 @@ $WGRIB2 tmpfile_gfsf${fcsthrs} \
 cp tmpfile_gfs_grb45f${fcsthrs} gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
 $WGRIB2 -s gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
 
-# Add WMO header. Processing WAFS GRIB2 grid 45 for ISCS and WIFS
+# For FAA, rename files and add different WMO header from WAFS
 export pgm=$TOCGRIB2
 . prep_step
 startmsg
 export FORT11=gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
 export FORT31=" "
-export FORT51=grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
-$TOCGRIB2 <  $FIXgfs/grib2_gfs_wafsf${fcsthrs}.45 >> $pgmout 2> errfile
+export FORT51=grib2.t${cyc}z.awf_grbf${fcsthrs}.45
+$TOCGRIB2 <  $FIXgfs/grib2_gfs_awff${fcsthrs}.45 >> $pgmout 2> errfile
 err=$?;export err ;err_chk
 echo " error from tocgrib=",$err
 
-if [ $fcsthrs -le 36 -a $fcsthrs -gt 0 ] ; then
+# For WAFS, add WMO header. Processing WAFS GRIB2 grid 45 for ISCS and WIFS
+if [ $wafs = 'yes' ] ; then
+    export pgm=$TOCGRIB2
+    . prep_step
+    startmsg
+    export FORT11=gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
+    export FORT31=" "
+    export FORT51=grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
+    $TOCGRIB2 <  $FIXgfs/grib2_gfs_wafsf${fcsthrs}.45 >> $pgmout 2> errfile
+    err=$?;export err ;err_chk
+    echo " error from tocgrib=",$err
+fi
+
+if [ $wafs = 'yes' ] ; then
 #---------------------------
-# 2) new WAFS fields
+# 2) new WAFS fields (cb, icing, turbulence)
 #---------------------------
   cp $PARMgfs/wafs_awc_wafavn.grb2.cfg waf.cfg
 
@@ -121,7 +141,6 @@ if [ $fcsthrs -le 36 -a $fcsthrs -gt 0 ] ; then
   # then convert to 1440 x 721.
   npts=`$WGRIB2 -npts $master2 | head -n1 | cut -d'=' -f2`
   newgrid="latlon 0:1440:0.25 90:721:-0.25"
-  rm grib2.cmdfile
   if [ $npts -gt 1038240 ] ; then
     regrid_options="bilinear $newgrid"
   else
@@ -185,9 +204,12 @@ if [ $SENDCOM = "YES" ] ; then
     # Post Files to COM
     ##############################
 
-    mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
-    mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
-    if [ $fcsthrs -le 36  -a $fcsthrs -gt 0 ] ; then
+    cp gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 $COMOUT/gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2
+    cp gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx $COMOUT/gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2.idx
+
+    if [ $wafs = 'yes' ] ; then
+	mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
+	mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
 	mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}  $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}
 	mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
 	mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx
@@ -197,8 +219,10 @@ if [ $SENDCOM = "YES" ] ; then
     # Post Files to PCOM
     ##############################
 
-    mv grib2.t${cyc}z.wafs_grbf${fcsthrs}.45  $PCOM/grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
-    if [ $fcsthrs -le 36  -a $fcsthrs -gt 0 ] ; then
+    mv grib2.t${cyc}z.awf_grbf${fcsthrs}.45  $PCOM/grib2.t${cyc}z.awf_grbf${fcsthrs}.45
+
+    if [ $wafs = 'yes' ] ; then
+	mv grib2.t${cyc}z.wafs_grbf${fcsthrs}.45  $PCOM/grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
 	mv grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45  $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
     fi
 fi
@@ -208,19 +232,25 @@ fi
 ######################
 
 if [ $SENDDBN = "YES" ] ; then
+
 #  
 #    Distribute Data to WOC
-#
-  
-    if [ $fcsthrs -le 36  -a $fcsthrs -gt 0 ] ; then
+#  
+    if [ $wafs = 'yes' ] ; then
 	$DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
+	$DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
+	$DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_WIDX $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
+#
+#       Distribute Data to TOC TO WIFS FTP SERVER (AWC)
+#
+	$DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
     fi
-    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
-    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_WIDX $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
 #
-#    Distribute Data to TOC TO WIFS FTP SERVER (AWC)
+#   Distribute data to FAA
 #
-    $DBNROOT/bin/dbn_alert NTC_LOW $NET $job   $PCOM/grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
+    $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.t${cyc}z.awf_grbf${fcsthrs}.45
+
+
 fi
 
 ################################################################################
