@@ -12,10 +12,11 @@
 #
 # Script history log:
 # 2020-04-02 Y Mao
+# Oct 2021 - Remove jlogfile
 
 set -x
 msg="JOB $job HAS BEGUN"
-postmsg "$jlogfile" "$msg"
+postmsg "$msg"
 export SEND_AWC_US_ALERT=NO
 export SEND_AWC_UK_ALERT=NO
 export SEND_US_WAFS=NO
@@ -44,7 +45,7 @@ do
        fi
        if [ $ic -eq $SLEEP_LOOP_MAX ] ; then
           msg="US WAFS GRIB2 file  $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 not found after waiting over $SLEEP_TIME seconds"
-          postmsg "$jlogfile" "$msg"
+          postmsg "$msg"
 	  echo "US WAFS GRIB2 file " $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 "not found after waiting ",$SLEEP_TIME, "exitting"
 	  SEND_UK_WAFS=YES
 	  break
@@ -71,7 +72,7 @@ do
 
        if [ $ic_uk -eq $SLEEP_LOOP_MAX_UK ] ; then
           msg="UK WAFS GRIB2 file  $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2  not found"
-          postmsg "$jlogfile" "$msg"
+          postmsg "$msg"
 	  echo "UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found"
           export SEND_US_WAFS=YES
 	  break
@@ -150,7 +151,7 @@ do
 	 #
 	 if [ $SEND_AWC_US_ALERT = "NO" ] ; then
 	     msg="WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending. Send alert message to AWC ......"
-	     postmsg "$jlogfile" "$msg"
+	     postmsg "$msg"
 	     make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
 	     make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
 	     if [ $SENDDBN_NTC = "YES" ] ; then
@@ -202,7 +203,7 @@ do
 	 #
 	 if [ $SEND_AWC_UK_ALERT = "NO" ] ; then
 	     msg="WARNING: No US WAFS GRIB2 0P25 file for WAFS blending. Send alert message to AWC ......"
-	     postmsg "$jlogfile" "$msg"
+	     postmsg "$msg"
 	     make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
 	     make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
 	     if [ $SENDDBN_NTC = "YES" ] ; then

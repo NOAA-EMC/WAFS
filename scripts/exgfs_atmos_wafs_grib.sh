@@ -19,6 +19,7 @@ echo "------------------------------------------------"
 echo "History: OCT 2004 - First implementation of this new script."
 echo "         Aug 2015 - Modified for Phase II"
 echo "         Dec 2015 - Modified for input model data in Grib2"
+echo "         Oct 2021 - Remove jlogfile"
 echo " "
 #####################################################################
 set +x
@@ -70,7 +71,7 @@ done
 
 ########################################
 msg="HAS BEGUN!"
-postmsg "$jlogfile" "$msg"
+postmsg "$msg"
 ########################################
 
 echo " ------------------------------------------"
@@ -166,7 +167,7 @@ set -x
 ################################################################################
 
 msg="HAS COMPLETED NORMALLY!"
-postmsg "$jlogfile" "$msg"
+postmsg "$msg"
 
 exit 0
 

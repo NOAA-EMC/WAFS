@@ -17,6 +17,8 @@ if [ $mac = f  ] ; then            # For Jet
 elif [ $mac = v -o $mac = m  ] ; then            # For Dell
  machine=dell
  . $MODULESHOME/init/bash                 
+elif [ $mac = a -o $mac = c -o $mac = d ] ; then # For WCOSS2
+ machine=wcoss2
 elif [ $mac = t -o $mac = e -o $mac = g ] ; then # For WCOSS
  machine=wcoss
  . /usrx/local/Modules/default/init/bash
@@ -32,13 +34,18 @@ elif [ $mac = O ] ; then           # For Orion
 fi
 
 moduledir=`dirname $(readlink -f ../modulefiles/wafs)`
-module use ${moduledir}
-module load wafs/wafs_v6.0.0-${machine}
+
+if [ $machine = wcoss2 ] ; then
+    source $moduledir/wafs/wafs_v6.0.0-${machine}
+else
+    module use ${moduledir}
+    module load wafs/wafs_v6.0.0-${machine}
+fi
 module list
 
  curdir=`pwd`
  export INC="${G2_INC4}"
- export FC=ifort
+ export FC=ftn
 
 # track="-O3 -g -traceback -ftrapuv -check all -fp-stack-check "
 # track="-O2 -g -traceback"

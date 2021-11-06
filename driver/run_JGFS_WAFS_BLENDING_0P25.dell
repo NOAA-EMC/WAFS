@@ -1,9 +1,9 @@
 #!/bin/sh
 
 #BSUB -J gfs_atmos_wafs_blending_0p25
-#BSUB -cwd /gpfs/dell3/ptmp/Yali.Mao
-#BSUB -oo /gpfs/dell3/ptmp/Yali.Mao/gfs_atmos_wafs_blending_0p25.o%J
-#BSUB -eo /gpfs/dell3/ptmp/Yali.Mao/gfs_atmos_wafs_blending_0p25.o%J
+#BSUB -cwd /gpfs/dell3/ptmp/Hui-Ya.Chuang
+#BSUB -oo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_atmos_wafs_blending_0p25.o%J
+#BSUB -eo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_atmos_wafs_blending_0p25.o%J
 ##BSUB -L /bin/sh
 #BSUB -q debug
 #BSUB -W 00:30
@@ -45,7 +45,7 @@ module list
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
 export envir=prod
 
-export cyc=${cyc:-00}
+export cyc=${cyc:-18}
 
 # gfs_atmos_wafs_blending for blending icing turbulence of US and UK
 export job=gfs_atmos_wafs_blending_0p25_${cyc}
@@ -72,7 +72,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20210419
+export PDY=20200908
 
 USER=`whoami`
 
@@ -91,7 +91,7 @@ export KEEPDATA=YES
 # Define ROOT directories
 ############################################
 echo $COMROOT
-export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/git
+export NWROOT=/gpfs/dell2/emc/verification/save/Hui-Ya.Chuang
 export DATAROOT=/gpfs/dell3/ptmp/${USER}
 
 export DBNROOT=${UTILROOT}/fakedbn
@@ -103,9 +103,9 @@ export DBNROOT=${UTILROOT}/fakedbn
 #  export DCOMROOT=/gpfs/gp1/nco/ops/dcom
 #fi
 # For canned data:
-#export DCOMROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput/dcom
+#export DCOMROOT=/gpfs/dell2/emc/modeling/noscrub/Hui-Ya.Chuang/2018impl/datainput/dcom
 
-#export DCOMROOT=/gpfs/dell3/ptmp/Yali.Mao/dcom
+#export DCOMROOT=/gpfs/dell3/ptmp/Hui-Ya.Chuang/dcom
 
 ############################################
 # Define DATA PCOM, COMOUT and COMIN
@@ -115,7 +115,7 @@ export COMOUT=/gpfs/dell3/ptmp/${USER}/wafs_dwn/gfs.$PDY/$cyc/$COMPONENT
 export PCOM=$COMOUT/wmo
 
 export COMINus=$COMIN
-export COMINuk=${COMINuk:-$DCOMROOT/prod/$PDY/wgrbbul/ukmet_wafs}
+export COMINuk=${COMINuk:-$DCOMROOT/dev/$PDY/wgrbbul/ukmet_wafs}
 
 export DATA=/gpfs/dell3/ptmp/${USER}/working_wafs/$jobid
 
@@ -124,7 +124,7 @@ export jlogfile=$DATA/jlogfile.${jobid}
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_branch}
 
 ############################################
 # run the job
@@ -140,7 +140,7 @@ exit
 #############################################
 # compare the output (optional)
 #############################################
-if [ $USER = 'Yali.Mao' ] ; then
+if [ $USER = 'Hui-Ya.Chuang' ] ; then
 
   # the standard data to be compared to
   stdout=/com/${NET}/$envir/${RUN}.${PDY}

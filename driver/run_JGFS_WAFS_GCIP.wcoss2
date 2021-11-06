@@ -1,50 +1,50 @@
 #!/bin/sh
 
-#BSUB -J gfs_atmos_wafs_gcip
-#BSUB -cwd /gpfs/dell3/ptmp/Hui-Ya.Chuang
-#BSUB -oo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_atmos_wafs_gcip.o%J
-#BSUB -eo /gpfs/dell3/ptmp/Hui-Ya.Chuang/gfs_atmos_wafs_gcip.o%J
-#####BSUB -L /bin/sh
-#BSUB -q debug
-#BSUB -W 00:30
-#BSUB -P GFS-DEV
-#BSUB -n 2
-#BSUB -R span[ptile=1]
-#BSUB -R affinity[core(1):distribute=balance]
+#PBS -j oe
+#PBS -o /lfs/h2/emc/ptmp/Yali.Mao/working_wafs/log.wafs_gcip
+#PBS -N wafs_gcip
+#PBS -l walltime=00:30:00
+#PBS -l select=1:ncpus=2:mem=50GB
+#PBS -q debug
+#PBS -A GFS-DEV
+##PBS -V
+##PBS -W umask=022
 
-### /gpfs/?p1/nco/ops/nwprod/ecflow/scripts/gfs/post/jgfs_post.ecf
-### BSUB -J %E%gfs_post_%FHR%_%CYC%
-### BSUB -o /%COM%/output/%ENVIR%/today/gfs_post_%FHR%_%CYC%.o%J
+#As first line, cd to current working directory where the job was submitted from
+#cd $PBS_O_WORKDIR
 
 set -xa
 
 # specify computation resource
-export NODES=2
-export ntasks=2
-export ptile=1
 export threads=1
-export MP_LABELIO=yes
 export OMP_NUM_THREADS=$threads
-export MPIRUN="mpirun -n 2 cfp"
+export MP_LABELIO=yes
+export MPIRUN="mpiexec -np 2 -cpu-bind verbose,core cfp"
+
 
 ############################################
 # Loading module
 ############################################
 module purge
-#module load EnvVars/1.0.2
-module load ips/18.0.1.163
-module load impi/18.0.1
-module load lsf/10.1
-module load CFP/2.0.1
+. $MODULESHOME/init/sh 
+module load envvar/1.0
+module load intel/19.1.3.304
+module load PrgEnv-intel/8.1.0
+module load craype/2.7.8
+# For compiling MPI code
+# module load cray-mpich/8.1.7
+# To access mpiexec
+module load cray-pals/1.0.12
+module load cfp/2.0.4
 
-module load prod_util/1.1.4
-module load grib_util/1.1.0
-module load prod_envir/1.1.0
+module load libjpeg/9c
 
-# to get HOMEobsproc_shared_bufr_dumplist
-module load bufr_dumplist/2.0.0
-# to get HOMEobsproc_dump
-module load dumpjb/5.1.0
+module load prod_util/2.0.9
+module load prod_envir/2.0.4
+module load grib_util/1.2.3
+module load wgrib2/2.0.8
+
+module load bufr_dump/2.0.0
 
 module list
 
@@ -70,7 +70,7 @@ export COMPONENT=${COMPONENT:-atmos}
 ############################################
 # Specify versions
 ############################################
-export gfs_ver=v16.0.0
+export gfs_ver=v16.2.0
 
 ############################################
 # user defined
@@ -80,7 +80,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20200810
+export PDY=20210824
 
 USER=`whoami`
 
@@ -99,37 +99,29 @@ export KEEPDATA=YES
 ############################################
 # Define ROOT directories
 ############################################
-export NWROOT=/gpfs/dell2/emc/verification/save/Hui-Ya.Chuang
+export NWROOT=/lfs/h2/emc/vpppg/noscrub/Yali.Mao
 echo $DCOMROOT
 # for satellite data
 #export DCOMROOT=/gpfs/gp1/nco/ops/dcom
-# for radar data
-#export COMROOTp1=/gpfs/gp1/nco/ops/com
-export COMROOTp1=
 
 # For canned data:
 #export DCOMROOT=/gpfs/dell2/emc/modeling/noscrub/Hui-Ya.Chuang/2018impl/datainput/dcom
-#export COMROOTp1=/gpfs/dell2/emc/modeling/noscrub/Hui-Ya.Chuang/2018impl/datainput/com1
-
+export DCOMROOT=/lfs/h1/ops/canned/dcom
+export COMROOT=/lfs/h1/ops/canned/com
 
 ############################################
 # Define DATA COMOUT and COMIN
 ############################################
-export COMOUT=/gpfs/dell3/ptmp/${USER}/wafs_dwn/gfs.$PDY/$cyc/$COMPONENT
+export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/com
 
-export COMINgfs=/gpfs/dell3/ptmp/${USER}/com_post/gfs.$PDY/$cyc/$COMPONENT
+export COMPATH=/lfs/h1/ops/canned/com/gfs:/lfs/h1/ops/canned/com/hourly
 
-export COMINsat=${COMINsat:-$DCOMROOT/prod/$PDY/mcidas}
-export COMINradar=${COMINradar:-$COMROOT/hourly/prod/radar.$PDY}
-
-export DATA=/gpfs/dell3/ptmp/${USER}/working_wafs/$jobid
-
-export jlogfile=$DATA/jlogfile.${jobid}
+export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/$jobid
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_branch}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/wafs_wcoss2}
 
 ############################################
 # run the job

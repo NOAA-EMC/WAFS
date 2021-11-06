@@ -23,6 +23,7 @@ echo "-----------------------------------------------------"
 echo "JGFS_ATMOS_WAFS_GCIP at 00Z/06Z/12Z/18Z GFS postprocessing"
 echo "-----------------------------------------------------"
 echo "History: 2015 - First implementation of this new script."
+echo "Oct 2021 - Remove jlogfile"
 echo " "
 #####################################################################
 
@@ -72,7 +73,7 @@ if [ $RUN = "gfs" ] ; then
 
   modelFile=modelfile.grb
 #  ln -sf $masterFile $modelFile
-  $WGRIB2 $masterFile | egrep ":HGT:|:VVEL:|:CLWMR:|:TMP:|:SPFH:|:RWMR:|:SNMR:|:GRLE:|:ICMR:|:RH:" | egrep "00 mb:|25 mb:|50 mb:|75 mb:|:HGT:surface" | $WGRIB2 -i $masterFile -grib $modelFile
+  $WGRIB2 $masterFile | egrep ":HGT:|:VVEL:|:CLMR:|:TMP:|:SPFH:|:RWMR:|:SNMR:|:GRLE:|:ICMR:|:RH:" | egrep "00 mb:|25 mb:|50 mb:|75 mb:|:HGT:surface" | $WGRIB2 -i $masterFile -grib $modelFile
 
   # metar / ships / lightning / pireps
   # dumped data files' suffix is ".ibm"
@@ -105,7 +106,7 @@ if [ $RUN = "gfs" ] ; then
 	  icnt=$((icnt + 1))
 	  if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
             msg="GCIP at ${vhour}z ABORTING after $SLEEP_TIME seconds of waiting for satellite $channel file!"
-            postmsg $jlogfile "$msg"
+            postmsg "$msg"
             rc=1
             echo $msg >> $COMOUT/${RUN}.gcip.log
             
@@ -153,7 +154,7 @@ if [ $RUN = "gfs" ] ; then
 	icnt=$((icnt + 1))
 	if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
             msg="WARNING: radar data is not available after $SLEEP_TIME seconds of waiting!"
-            postmsg $jlogfile "$msg"
+            postmsg "$msg"
 	    echo $msg
 	fi
     done

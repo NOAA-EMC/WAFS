@@ -201,8 +201,8 @@ CONTAINS
           do j = 1, ny
           do i = 1, nx
              do ii = 1, size(CFG_ss)
-                if(abs(ss(i,j)-CFG_ss(ii)%key)  < 0.1) then
-                   ss(i,j) = CFG_ss(ii)%value
+                if(abs(ss(i,j)-CFG_ss(ii).key)  < 0.1) then
+                   ss(i,j) = CFG_ss(ii).value
                    exit
                 end if
              end do

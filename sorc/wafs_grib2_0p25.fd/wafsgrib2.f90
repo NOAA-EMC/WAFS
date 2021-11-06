@@ -222,7 +222,7 @@ contains
   end subroutine get_grib2
 
 !----------------------------------------------------------------------------
-  subroutine put_grib2(ifl,parms, nlevel, gfld, ibmap,bbmap,fld, iret)
+  subroutine put_grib2(ifl,parms, nlevel, gfld, ibmap,bmap,fld, iret)
 ! basically the same as putgb2, but with flexible template 4 and template 5
 ! writes calculated values for one field at all pressure levels
     implicit none
@@ -231,7 +231,7 @@ contains
     integer, intent(in) :: nlevel          ! pressure level in Pa, integer
     type(gribfield), intent(in) :: gfld    ! a sample input carrying information
     integer, intent(in) :: ibmap ! indicator whether to use bitmap
-    logical*1, intent(in) :: bbmap(:)
+    logical*1, intent(in) :: bmap(:)
     real(4), intent(in) :: fld(:)     ! the data to be written
     integer, intent(out) :: iret           ! return status code  
 
@@ -245,12 +245,6 @@ contains
     integer, allocatable :: ipdtmpl(:), idrtmpl(:)
 
     character(len=*), parameter :: myself = 'put_grib2(): '
-
-    logical*1 :: bmap(gfld%ngrdpts)
-
-    ! To fix bugzilla #1209 http://www2.spa.ncep.noaa.gov/bugzilla/show_bug.cgi?id=1209
-    ! Introduce bmap and not use input argument bbmap directly
-    if(ibmap /=255)     bmap=bbmap
 
 !   ALLOCATE ARRAY FOR GRIB2 FIELD
     lcgrib=gfld%ngrdpts*4

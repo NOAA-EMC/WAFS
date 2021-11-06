@@ -40,7 +40,7 @@ module list
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
 export envir=prod
 
-export cyc=${cyc:-12}
+export cyc=${cyc:-00}
 
 # gfs_atmos_wafs_grib2 for generating global WAFS on grid 45
 export job=gfs_atmos_wafs_grib2_${cyc}
@@ -67,7 +67,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20200329
+export PDY=20200302
 
 USER=`whoami`
 
@@ -104,7 +104,7 @@ export jlogfile=$DATA/jlogfile.${jobid}
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_fork}
 
 ############################################
 # run the job

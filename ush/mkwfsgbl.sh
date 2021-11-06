@@ -47,7 +47,7 @@ echo " BEGIN MAKING ${NET} WAFS PRODUCTS"
 echo " ------------------------------------------"
 
 msg="Enter Make WAFS utility."
-postmsg "$jlogfile" "$msg"
+postmsg "$msg"
 
 for hour in $hour_list
 do
@@ -144,11 +144,11 @@ do
       $DBNROOT/bin/dbn_alert GRIB_LOW $NET $job $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$jobsuffix
    else
       msg="xtrn.wfs${NET}${cyc}${hour}${sets}.$job file not posted to db_net."
-      postmsg "$jlogfile" "$msg"
+      postmsg "$msg"
    fi
 
    msg="Wafs Processing $hour hour completed normally"
-   postmsg "$jlogfile" "$msg"
+   postmsg "$msg"
 
 done
 

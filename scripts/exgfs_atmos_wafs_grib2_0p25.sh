@@ -17,6 +17,7 @@ echo "-----------------------------------------------------"
 echo "JGFS_ATMOS_WAFS_GRIB2_0P25 at 00Z/06Z/12Z/18Z GFS postprocessing"
 echo "-----------------------------------------------------"
 echo "History: MARCH  2020 - First implementation of this new script."
+echo "Oct 2021 - Remove jlogfile"
 echo " "
 #####################################################################
 
@@ -57,7 +58,7 @@ do
 
   ########################################
   msg="HAS BEGUN!"
-  postmsg "$jlogfile" "$msg"
+  postmsg "$msg"
   ########################################
 
   echo " ------------------------------------------"
@@ -209,7 +210,7 @@ set -x
 ################################################################################
 
 msg="HAS COMPLETED NORMALLY!"
-postmsg "$jlogfile" "$msg"
+postmsg "$msg"
 
 exit 0
 

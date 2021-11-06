@@ -46,7 +46,7 @@ echo " BEGIN MAKING ${NET} WAFS PRODUCTS"
 echo " ------------------------------------------"
 
 msg="Enter Make WAFS utility."
-postmsg "$jlogfile" "$msg"
+postmsg "$msg"
 echo " "
 
 for hour in $fcsthrs_list 
@@ -112,6 +112,6 @@ do
 done
 
 msg="wafs_intdsk completed normally"
-postmsg "$jlogfile" "$msg"
+postmsg "$msg"
 
 exit
