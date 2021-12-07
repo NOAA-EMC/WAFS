@@ -35,11 +35,9 @@ fi
 
 moduledir=`dirname $(readlink -f ../modulefiles/wafs)`
 
-if [ $machine = wcoss2 ] ; then
-    source $moduledir/wafs/wafs_v6.0.0-${machine}
-else
-    module use ${moduledir}
-    module load wafs/wafs_v6.0.0-${machine}
+if [[ $machine =~ ^(wcoss2|dell|hera|orion)$ ]]; then
+    module use ${moduledir}/wafs
+    module load wafs_v6.0.0-${machine}
 fi
 module list
 
