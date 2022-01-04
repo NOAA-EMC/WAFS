@@ -74,8 +74,8 @@ export COMINgfs=${COMINgfs:-$(compath.py $envir/com/$NET/$gfs_ver)/$RUN.$PDY/$cy
 export COMINsat=${COMINsat:-$DCOMROOT/$PDY/mcidas}
 
 #  radar data
-export radar_ver=v1.2.0
-export COMINradar=${COMINradar:-$(compath.py $envir/com/radarl2/$radar_ver)/radar.$PDY}
+export radarl2_ver=${radarl2_ver:-v1.2.0}
+export COMINradar=${COMINradar:-$(compath.py $envir/com/radarl2/$radarl2_ver)/radar.$PDY}
 
 # metar/ships/lightning/pireps
 # data are dumped by $USHobsproc_dump/dumpjb
