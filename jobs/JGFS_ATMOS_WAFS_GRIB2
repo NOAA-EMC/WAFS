@@ -87,7 +87,7 @@ export FHINC=03
 ############################################
 # Execute the script.
 ############################################
-export MPIRUN=${MPIRUN:-mpirun}
+export MPIRUN=${MPIRUN:-"mpiexec -ppn 1 -n 1"}
 ${SCRIPTSgfs}/exgfs_atmos_wafs_grib2.sh
 export err=$?; err_chk
 

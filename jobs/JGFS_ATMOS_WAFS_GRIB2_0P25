@@ -89,7 +89,7 @@ export SLEEP_INT=10
 ############################################
 # Execute the script.
 ############################################
-export MPIRUN=${MPIRUN:-mpirun}
+export MPIRUN=${MPIRUN:-"mpiexec -ppn 1 -n 1"}
 ${SCRIPTSgfs}/exgfs_atmos_wafs_grib2_0p25.sh
 export err=$?; err_chk
 
