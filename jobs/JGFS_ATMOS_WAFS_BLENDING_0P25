@@ -52,7 +52,7 @@ export SCRIPTSgfs=$HOMEgfs/scripts
 ################################################
 # Set up the INPUT and OUTPUT directories
 ################################################
-export COMIN=${COMIN:-$(compath.py $envir/com/$NET/$gfs_ver)/$RUN.$PDY/$cyc/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-$(compath.py -o $NET/$gfs_ver)/$RUN.$PDY/$cyc/$COMPONENT}
 export PCOM=${PCOM:-$COMOUT/wmo}
 
@@ -132,11 +132,9 @@ then
     fi
     if test $recvy_shour -ge $EHOUR
     then
-      msg="WAFS blending Already Completed to $EHOUR"
-      postmsg "$msg"
+      echo "WAFS blending Already Completed to $EHOUR"
     else
-      msg="Starting: PDY=$PDY cycle=t${recvy_cyc}z SHOUR=$SHOUR      ."
-      postmsg "$msg"
+      echo "Starting: PDY=$PDY cycle=t${recvy_cyc}z SHOUR=$SHOUR      ."
     fi
   fi
 fi
@@ -147,8 +145,7 @@ fi
 ${SCRIPTSgfs}/exgfs_atmos_wafs_blending_0p25.sh
 export err=$?; err_chk
 
-msg="JOB $job HAS COMPLETED NORMALLY."
-postmsg "$msg"
+echo "JOB $job HAS COMPLETED NORMALLY."
 
 ############################################
 # print exec output

@@ -106,7 +106,7 @@ if [ $RUN = "gfs" ] ; then
 	  icnt=$((icnt + 1))
 	  if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
             msg="GCIP at ${vhour}z ABORTING after $SLEEP_TIME seconds of waiting for satellite $channel file!"
-            postmsg "$msg"
+            echo "$msg"
             rc=1
             echo $msg >> $COMOUT/${RUN}.gcip.log
             
@@ -153,9 +153,7 @@ if [ $RUN = "gfs" ] ; then
 	sleep $SLEEP_INT
 	icnt=$((icnt + 1))
 	if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
-            msg="WARNING: radar data is not available after $SLEEP_TIME seconds of waiting!"
-            postmsg "$msg"
-	    echo $msg
+            echo "WARNING: radar data is not available after $SLEEP_TIME seconds of waiting!"
 	fi
     done
 

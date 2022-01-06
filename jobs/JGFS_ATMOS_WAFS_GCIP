@@ -65,7 +65,7 @@ export TMPDIR=$DATA  # will be overwritten in exgfs script for parallel runs on 
 # Set up the input/output directory
 ################################################
 # model data
-export COMINgfs=${COMINgfs:-$(compath.py $envir/com/$NET/$gfs_ver)/$RUN.$PDY/$cyc/$COMPONENT}
+export COMINgfs=${COMINgfs:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 
 # satellite data
 #ftp://satepsanone.nesdis.noaa.gov/2day/gmosaic/
@@ -74,8 +74,8 @@ export COMINgfs=${COMINgfs:-$(compath.py $envir/com/$NET/$gfs_ver)/$RUN.$PDY/$cy
 export COMINsat=${COMINsat:-$DCOMROOT/$PDY/mcidas}
 
 #  radar data
-export radarl2_ver=${radarl2_ver:-v1.2.0}
-export COMINradar=${COMINradar:-$(compath.py $envir/com/radarl2/$radarl2_ver)/radar.$PDY}
+export radarl2_ver=${radarl2_ver:-v1.2}
+export COMINradar=${COMINradar:-$(compath.py radarl2/$radarl2_ver)/radar.$PDY}
 
 # metar/ships/lightning/pireps
 # data are dumped by $USHobsproc_dump/dumpjb
@@ -116,13 +116,12 @@ $MPIRUN gcip.cmdfile
 
 export err=$?
 if [ $err -eq 0 ] ; then
-  msg="JOB $job HAS COMPLETED NORMALLY!"
+  echo "JOB $job HAS COMPLETED NORMALLY!"
 elif [ $err -eq 1 ] ; then
-  msg="WARNING!!! JOB $job incomplete.  Missing satellite data."
+  echo "WARNING!!! JOB $job incomplete.  Missing satellite data."
 else
-  msg="JOB $job FAILED!!!!"
+  echo "JOB $job FAILED!!!!"
 fi
-postmsg "$msg"
 
 ############################################
 # print exec output

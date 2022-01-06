@@ -48,8 +48,7 @@ then
 #  checking any US WAFS product was sent due to No UK WAFS GRIB2 file or WAFS blending program
 #
    if [ $SEND_US_WAFS = "YES" -a $SEND_AWC_ALERT = "NO" ] ; then
-      msg="Warning! No UK WAFS GRIB2 file for WAFS blending program. Send alert message to AWC ......"
-      postmsg "$msg"
+      echo "Warning! No UK WAFS GRIB2 file for WAFS blending program. Send alert message to AWC ......"
       make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_admin_msg $PCOM/wifs_admin_msg
       make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_admin_msg $PCOM/iscs_admin_msg
       if [ $SENDDBN_NTC = "YES" ] ; then

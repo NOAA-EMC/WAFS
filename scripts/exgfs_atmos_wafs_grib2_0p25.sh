@@ -57,8 +57,7 @@ do
 
 
   ########################################
-  msg="HAS BEGUN!"
-  postmsg "$msg"
+  echo "HAS BEGUN!"
   ########################################
 
   echo " ------------------------------------------"
@@ -209,8 +208,7 @@ echo "**************JOB EXGFS_ATMOS_WAFS_GRIB2_0P25.SH COMPLETED NORMALLY ON THE
 set -x
 ################################################################################
 
-msg="HAS COMPLETED NORMALLY!"
-postmsg "$msg"
+echo "HAS COMPLETED NORMALLY!"
 
 exit 0
 

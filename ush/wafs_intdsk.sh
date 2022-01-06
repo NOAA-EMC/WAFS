@@ -45,8 +45,7 @@ echo " ------------------------------------------"
 echo " BEGIN MAKING ${NET} WAFS PRODUCTS"
 echo " ------------------------------------------"
 
-msg="Enter Make WAFS utility."
-postmsg "$msg"
+echo "Enter Make WAFS utility."
 echo " "
 
 for hour in $fcsthrs_list 
@@ -111,7 +110,6 @@ do
 #   rm tmpfile pgrbf${hour} pgrb2f${hour} pgrb2f${hour}.tmp
 done
 
-msg="wafs_intdsk completed normally"
-postmsg "$msg"
+echo "wafs_intdsk completed normally"
 
 exit

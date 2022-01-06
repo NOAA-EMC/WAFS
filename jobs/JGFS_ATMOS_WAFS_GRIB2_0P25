@@ -51,7 +51,7 @@ export SCRIPTSgfs=$HOMEgfs/scripts
 ################################################
 # Set up the input/output directory
 ################################################
-export COMIN=${COMIN:-$(compath.py $envir/com/$NET/$gfs_ver)/$RUN.$PDY/$cyc/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-$(compath.py -o $NET/$gfs_ver)/$RUN.$PDY/$cyc/$COMPONENT}
 export PCOM=${PCOM:-$COMOUT/wmo}
 
@@ -93,8 +93,7 @@ export MPIRUN=${MPIRUN:-"mpiexec -ppn 1 -n 1"}
 ${SCRIPTSgfs}/exgfs_atmos_wafs_grib2_0p25.sh
 export err=$?; err_chk
 
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg "$msg"
+echo "JOB $job HAS COMPLETED NORMALLY!"
 
 ############################################
 # print exec output
