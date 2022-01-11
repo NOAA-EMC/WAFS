@@ -6,7 +6,7 @@ set -x
 # 06/12/2018 yali.ma@noaa.gov:    Create module load version
 ##################################################################
 
-module purge
+module reset
 set -x
 mac=$(hostname | cut -c1-1)
 mac2=$(hostname | cut -c1-2)

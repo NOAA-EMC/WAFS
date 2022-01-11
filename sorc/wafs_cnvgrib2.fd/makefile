@@ -13,7 +13,7 @@ OBJS=	gds2gdt.o pds2pdt.o pds2pdtens.o wafs_cnvgrib2.o cnvwafs12.o cnvwafs22.o \
 # CMD		Name of the executable
 # PROFLIB	Library needed for profiling
 #
-FC =		ifort
+# FC =		ifort
 
 #INC= /nwprod/lib/incmod/g2_4
 
