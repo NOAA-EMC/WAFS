@@ -65,7 +65,7 @@ export TMPDIR=$DATA  # will be overwritten in exgfs script for parallel runs on 
 # Set up the input/output directory
 ################################################
 # model data
-export COMINgfs=${COMINgfs:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMINgfs=${COMINgfs:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
 
 # satellite data
 #ftp://satepsanone.nesdis.noaa.gov/2day/gmosaic/
