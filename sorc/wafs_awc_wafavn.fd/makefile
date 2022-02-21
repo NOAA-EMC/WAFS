@@ -1,6 +1,5 @@
 # makefile for waf programs
 #
-#FC = ifort
 #INC = /nwprod/lib/incmod/g2_4
 #LIBS = -L /nwprod/lib -lg2_4 -lw3emc_4 -lw3nco_4 -lbacio_4 -lip_4 -lsp_4 -ljasper -lpng -lz
 #FFLAGS = -FR -I$(INC) -g -O2 -convert big_endian -assume noold_ldout_format

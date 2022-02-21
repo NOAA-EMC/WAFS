@@ -1,8 +1,5 @@
 # makefile for GCIP
 #----------------------------------------
-#ifort -O3 GFIPS_Exe.f90 -L /nwprod/lib  -lbacio_4 -lip_4 -lw3nco_4 -lw3emc_4  -lbacio_4 -lsp_4
-#machine dependent: either zeus (hostname consists of 'fe') or wcoss
-#FC = ifort
 #FFLAGS = -FR -I$(INC) -g -O2
 FFLAGS	= ${FFLAGSgcip}
 
