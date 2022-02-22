@@ -17,12 +17,16 @@
 #           02/21/2020
 #              - Prepare unblended icing severity and GTG tubulence
 #                for blending at 0.25 degree
+#           02/22/2022
+#              - Add grib2 data requested by FAA, not including ICESEV and GTG
+#              - Stop generating grib1 data
 #####################################################################
 echo "-----------------------------------------------------"
 echo "JGFS_ATMOS_WAFS_GRIB2 at 00Z/06Z/12Z/18Z GFS postprocessing"
 echo "-----------------------------------------------------"
 echo "History: AUGUST  2009 - First implementation of this new script."
 echo "Oct 2021 - Remove jlogfile"
+echo "Feb 2022 - Add FAA data, stop grib1 data"
 echo " "
 #####################################################################
 
@@ -87,25 +91,30 @@ else
 fi
 
 #---------------------------
-# 1) traditional WAFS fields
+# 1) traditional WAFS fields + extra 3 fields for FAA
 #---------------------------
-$WGRIB2 $master2 | grep -F -f $FIXgfs/wafs_gfsmaster.grb2.list | $WGRIB2 -i $master2 -grib tmpfile_gfsf${fcsthrs}
+cat $FIXgfs/wafs_gfsmaster.grb2.list $FIXgfs/faa_gfsmaster.grb2.list > gfsmaster.grb2.list
+$WGRIB2 $master2 | grep -F -f gfsmaster.grb2.list | $WGRIB2 -i $master2 -grib tmpfile_gfsf${fcsthrs}
 # U V will have the same grid messange number by using -ncep_uv.
 # U V will have the different grid messange number without -ncep_uv.
 $WGRIB2 tmpfile_gfsf${fcsthrs} \
                       -set master_table 6 \
                       -new_grid_winds earth -set_grib_type jpeg \
                       -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
-                      -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_gfs_grb45f${fcsthrs}
+                      -new_grid latlon 0:288:1.25 90:145:-1.25 faa_gfs_grb45f${fcsthrs}
 # Chuang: create a file in working dir without US unblended WAFS product for ftp server 
-cp tmpfile_gfs_grb45f${fcsthrs} gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
+$WGRIB2 faa_gfs_grb45f${fcsthrs} | grep -v -F -f $FIXgfs/faa_gfsmaster.grb2.list \
+        | $WGRIB2 -i faa_gfs_grb45f${fcsthrs} -grib gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
 $WGRIB2 -s gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
+
+# 3 more fields for FAA than for WAFS
+
 
 # For FAA, rename files and add different WMO header from WAFS
 export pgm=$TOCGRIB2
 . prep_step
 startmsg
-export FORT11=gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
+export FORT11=faa_gfs_grb45f${fcsthrs}
 export FORT31=" "
 export FORT51=grib2.t${cyc}z.awf_grbf${fcsthrs}.45
 $TOCGRIB2 <  $FIXgfs/grib2_gfs_awff${fcsthrs}.45 >> $pgmout 2> errfile
@@ -179,8 +188,9 @@ if [ $wafs = 'yes' ] ; then
 #---------------------------
 # 3) combine new and traditional WAFS fields
 #---------------------------
-  cat tmpfile_gfs_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs} > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
-  $CNVGRIB -g21 gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 gfs.t${cyc}z.wafs_grb45f${fcsthrs}
+  cat gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 tmpfile_icao_grb45f${fcsthrs} > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+  # Stop support grib1 data beginning from 2023
+  #  $CNVGRIB -g21 gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 gfs.t${cyc}z.wafs_grb45f${fcsthrs}
   $WGRIB2 -s gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx
 
   # Processing WAFS GRIB2 grid 45 (Icing, TB, CAT) for WIFS

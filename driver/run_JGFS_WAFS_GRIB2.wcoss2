@@ -4,7 +4,7 @@
 #PBS -o /lfs/h2/emc/ptmp/Yali.Mao/working_wafs/log.wafs_grib2
 #PBS -N wafs_grib2
 #PBS -l walltime=00:30:00
-#PBS -l select=1:ncpus=28:mem=20GB
+#PBS -l select=1:ncpus=18:mem=20GB
 #PBS -q debug
 #PBS -A GFS-DEV
 ##PBS -V
