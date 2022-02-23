@@ -95,16 +95,17 @@ fi
 #---------------------------
 cat $FIXgfs/wafs_gfsmaster.grb2.list $FIXgfs/faa_gfsmaster.grb2.list > gfsmaster.grb2.list
 $WGRIB2 $master2 | grep -F -f gfsmaster.grb2.list | $WGRIB2 -i $master2 -grib tmpfile_gfsf${fcsthrs}
-# U V will have the same grid messange number by using -ncep_uv.
-# U V will have the different grid messange number without -ncep_uv.
+# U V will have the same grid message number by using -ncep_uv.
+# U V will have the different grid message number without -ncep_uv.
 $WGRIB2 tmpfile_gfsf${fcsthrs} \
                       -set master_table 6 \
                       -new_grid_winds earth -set_grib_type jpeg \
                       -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
-                      -new_grid latlon 0:288:1.25 90:145:-1.25 faa_gfs_grb45f${fcsthrs}
+                      -new_grid latlon 0:288:1.25 90:145:-1.25 gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2
+$WGRIB2 -s gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2 > gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2.idx
 # Chuang: create a file in working dir without US unblended WAFS product for ftp server 
-$WGRIB2 faa_gfs_grb45f${fcsthrs} | grep -v -F -f $FIXgfs/faa_gfsmaster.grb2.list \
-        | $WGRIB2 -i faa_gfs_grb45f${fcsthrs} -grib gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
+$WGRIB2 gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2 | grep -v -F -f $FIXgfs/faa_gfsmaster.grb2.list \
+        | $WGRIB2 -i gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2 -grib gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
 $WGRIB2 -s gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
 
 # 3 more fields for FAA than for WAFS
@@ -114,7 +115,7 @@ $WGRIB2 -s gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 > gfs.t${cyc}z.wafs
 export pgm=$TOCGRIB2
 . prep_step
 startmsg
-export FORT11=faa_gfs_grb45f${fcsthrs}
+export FORT11=gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2
 export FORT31=" "
 export FORT51=grib2.t${cyc}z.awf_grbf${fcsthrs}.45
 $TOCGRIB2 <  $FIXgfs/grib2_gfs_awff${fcsthrs}.45 >> $pgmout 2> errfile
@@ -146,7 +147,8 @@ if [ $wafs = 'yes' ] ; then
   # 3 minutes for new 3072 x 1536 master file for each forecast.
   # To reduce the time, will extract the required fields from master file and wafs files,
   # then convert to 1440 x 721.
-  npts=`$WGRIB2 -npts $master2 | head -n1 | cut -d'=' -f2`
+  $WGRIB2 -npts $master2 > master.npts
+  npts=`head -n1 master.npts | cut -d'=' -f2`
   newgrid="latlon 0:1440:0.25 90:721:-0.25"
   if [ $npts -gt 1038240 ] ; then
     regrid_options="bilinear $newgrid"
@@ -212,8 +214,8 @@ if [ $SENDCOM = "YES" ] ; then
     # Post Files to COM
     ##############################
 
-    cp gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 $COMOUT/gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2
-    cp gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx $COMOUT/gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2.idx
+    mv gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2 $COMOUT/gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2
+    mv gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2.idx $COMOUT/gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2.idx
 
     if [ $wafs = 'yes' ] ; then
 	mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
