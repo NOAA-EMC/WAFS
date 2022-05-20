@@ -278,10 +278,11 @@ subroutine get_grib2(pdt, pres_level, iret, fld, nx, ny, gfld_def)
 end subroutine get_grib2
 
 !----------------------------------------------------------------------------
-subroutine get_input_data2(cfg, model)
+subroutine get_input_data2(cfg, products, model)
 ! reads input data
     implicit none
     type(cfg_t), intent(in) :: cfg ! parameters read from cfg file
+    type(product_t), intent(in) :: products
     type(input_data_t), intent(inout) :: model ! arrays to hold input data
 
     integer :: lvl, p, iret, nx, ny
@@ -330,20 +331,23 @@ subroutine get_input_data2(cfg, model)
         call get_grib2(pdt_v_wnd, p, iret, fld=model%v_wnd(:,:,lvl))
         if (iret /= 0) print *, myself, 'failed to retrieve V at ', p, &
             ' hPa, iret = ', iret
-        call get_grib2(pdt_rh, p, iret, fld=model%rh(:,:,lvl))
-        if (iret /= 0) print *, myself, 'failed to retrieve RH at ', p, &
-            ' hPa, iret = ', iret
-        call get_grib2(pdt_cld_w, p, iret, fld=buf1) 
-        if (iret /= 0) print *, myself, &
-            'failed to retrieve cloud water at ', p, ' hPa, iret = ', iret
-        fp = 100.0 * p
-        where (buf1 /= glob_msng .and. model%t(:,:,lvl) /= glob_msng .and. &
-            model%rh(:,:,lvl) /= glob_msng)
-            model%cld_cover(:,:,lvl) = phys_cloud_cover(fp, model%t(:,:,lvl), &
-                model%rh(:,:,lvl), buf1)
-        elsewhere
-            model%cld_cover(:,:,lvl) = glob_msng
-        end where
+        ! For CTP only which has retired
+        if (products%do_tcld) then
+           call get_grib2(pdt_rh, p, iret, fld=model%rh(:,:,lvl))
+           if (iret /= 0) print *, myself, 'failed to retrieve RH at ', p, &
+                ' hPa, iret = ', iret
+           call get_grib2(pdt_cld_w, p, iret, fld=buf1) 
+           if (iret /= 0) print *, myself, &
+                'failed to retrieve cloud water at ', p, ' hPa, iret = ', iret
+           fp = 100.0 * p
+           where (buf1 /= glob_msng .and. model%t(:,:,lvl) /= glob_msng .and. &
+                model%rh(:,:,lvl) /= glob_msng)
+              model%cld_cover(:,:,lvl) = phys_cloud_cover(fp, model%t(:,:,lvl), &
+                   model%rh(:,:,lvl), buf1)
+           elsewhere
+              model%cld_cover(:,:,lvl) = glob_msng
+           end where
+        endif
         call get_grib2(pdt_icng_potential, p, iret, fld=model%pot(:,:,lvl))
         if (iret /= 0) print *, myself, 'failed to retrieve icing potential at', p, &
             ' hPa, iret = ', iret

@@ -88,6 +88,8 @@ export FHOURS=${FHOURS:-"00 06 09 12 15 18 21 24 27 30 33 36 42 48 54 60 66 72"}
 ############################################
 # Execute the script.
 ############################################
+export ICAO2023=${ICAO2023:-"no"}
+
 NP=`echo $FHOURS | wc -w`
 export MPIRUN=${MPIRUN:-"mpiexec -np $NP -cpu-bind verbose,core cfp"}
 
