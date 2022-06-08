@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #PBS -j oe
-#PBS -o /lfs/h2/emc/ptmp/Yali.Mao/working_wafs/log.wafs_blending
+#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_blending
 #PBS -N wafs_blending
 #PBS -l walltime=00:30:00
 #PBS -l select=1:ncpus=1:mem=500MB
@@ -97,7 +97,7 @@ export KEEPDATA=YES
 # Define ROOT directories
 ############################################
 echo $COMROOT
-export NWROOT=/lfs/h2/emc/vpppg/noscrub/Yali.Mao
+export NWROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao
 
 export DBNROOT=${UTILROOT}/fakedbn
 

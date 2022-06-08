@@ -1,10 +1,10 @@
 #!/bin/sh
 
 #PBS -j oe
-#PBS -o /lfs/h2/emc/ptmp/Yali.Mao/working_wafs/log.wafs_blending_0p25
+#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_blending_0p25
 #PBS -N wafs_blending_0p25
 #PBS -l walltime=00:30:00
-#PBS -l select=1:ncpus=1:mem=500MB
+#PBS -l select=1:ncpus=1:mem=15GB
 #PBS -q debug
 #PBS -A GFS-DEV
 ##PBS -V
@@ -98,7 +98,7 @@ export KEEPDATA=YES
 # Define ROOT directories
 ############################################
 echo $COMROOT
-export NWROOT=/lfs/h2/emc/vpppg/noscrub/Yali.Mao
+export NWROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao
 
 export DBNROOT=${UTILROOT}/fakedbn
 
@@ -125,9 +125,17 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/wafs_wcoss2}
 ############################################
 # run the job
 #############################################
-export SHOUR=06
-export EHOUR=36
-export FHOUT_GFS=3
+export ICAO2023=${ICAO2023:-no}
+
+export SHOUR=${SHOUR:-06}
+# Will change from 36 to 48 for 2023 ICAO standard
+if [ "$ICAO2023" = 'yes' ] ; then
+    export EHOUR=${EHOUR:-48}
+    export FHOUT_GFS=${FHOUT_GFS:-1}
+else
+    export EHOUR=${EHOUR:-36}
+    export FHOUT_GFS=${FHOUT_GFS:-3}
+fi
 
 sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_BLENDING_0P25
 

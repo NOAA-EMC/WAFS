@@ -31,6 +31,7 @@ set -x
 
 ffhr=$1
 export ffhr="$(printf "%03d" $(( 10#$ffhr )) )"
+export ffhr2="$(printf "%02d" $(( 10#$ffhr )) )"
 
 DATA=$DATA/$ffhr
 mkdir -p $DATA
@@ -133,14 +134,14 @@ if [ "$ICAO2023" = 'yes' ] ; then
 	#$WGRIB2 tmp_0p25.grb2 | grep -F -f $FIXgfs/wafs_gfsmaster_delta.grb2_0p25.list \
 	    #  | $WGRIB2 -i tmp_0p25.grb2 -grib gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2
 #---------------------------
-# Product 3: WAFS unblended EDPARM, ICESEV, CB (No CAT MWT) gfs.tHHz.wafs_0p25_unblended.fFFF.grib2
+# Product 3: WAFS unblended EDPARM, ICESEV, CB (No CAT MWT) gfs.tHHz.wafs_0p25_unblended.fFF.grib2
 #---------------------------
 	$WGRIB2 tmp_wafs_0p25.grb2 | grep -F -f $FIXgfs/gfs_wafs.grb2_0p25.list \
 	    | $WGRIB2 -i tmp_wafs_0p25.grb2 -set master_table 25 -grib tmp_wafs_0p25.grb2.forblend
 
 	# Convert template 5 to 5.40
-	$WGRIB2 tmp_wafs_0p25.grb2.forblend -set_grib_type jpeg -grib_out gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
-	$WGRIB2 -s gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 > gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx
+	$WGRIB2 tmp_wafs_0p25.grb2.forblend -set_grib_type jpeg -grib_out gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2
+	$WGRIB2 -s gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2 > gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2.idx
     fi
 
 else # icao2 on standard atmosphere pressure levels, relabeled to ICAO pressure levels every 25mb
@@ -154,7 +155,7 @@ else # icao2 on standard atmosphere pressure levels, relabeled to ICAO pressure 
     $WGRIB2 -s gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2 > gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2.idx
 
 #---------------------------
-# Product 3 (before 2023): WAFS unblended EDPARM, ICESEV, CB (No CAT MWT) gfs.tHHz.wafs_0p25_unblended.fFFF.grib2
+# Product 3 (before 2023): WAFS unblended EDPARM, ICESEV, CB (No CAT MWT) gfs.tHHz.wafs_0p25_unblended.fFF.grib2
 #---------------------------
     $WGRIB2 gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2 | egrep -v $criteria2 \
 	| $WGRIB2 -i gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2 -grib tmp_awf_grb2.0p25.forblend
@@ -197,17 +198,17 @@ else # icao2 on standard atmosphere pressure levels, relabeled to ICAO pressure 
 
     # Filter limited levels according to ICAO standard
     $WGRIB2 tmp_0p25_exact.grb2 | grep -F -f $FIXgfs/legend/wafs_gfsmaster.grb2_0p25.list \
-        | $WGRIB2 -i tmp_0p25_exact.grb2 -set master_table 25 -grib gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
-    $WGRIB2 -s gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 > gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx  
+        | $WGRIB2 -i tmp_0p25_exact.grb2 -set master_table 25 -grib gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2
+    $WGRIB2 -s gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2 > gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2.idx  
 fi
 
 ###### Step 6 TOCGIB2 ######
 # As in August 2020, no WMO header is needed for WAFS data at 1/4 deg
 ## . prep_step
 ## startmsg
-## export FORT11=gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
+## export FORT11=gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2
 ## export FORT31=" "
-## export FORT51=gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2
+## export FORT51=gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr2}.grib2
 ## $TOCGRIB2 <  $FIXgfs/grib2_gfs_wafs_wifs_f${ffhr}.0p25 >> $pgmout 2> errfile
 ## err=$?;export err ;err_chk
 ## echo " error from tocgrib2=",$err
@@ -225,14 +226,14 @@ if [ $SENDCOM = "YES" ] ; then
        mv gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2 $COMOUT/gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2
        mv gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2.idx $COMOUT/gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2.idx
        
-       mv gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
-       mv gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx
+       mv gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2 $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2
+       mv gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2.idx
    fi
 
    #############################
    # Post Files to PCOM
    ##############################
-   ## mv gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2 $PCOM/gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr}.grib2
+   ## mv gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr2}.grib2 $PCOM/gfs.t${cyc}z.wafs_0p25_unblended_wifs.f${ffhr2}.grib2
 fi
 
 
@@ -246,7 +247,7 @@ if [ $SENDDBN = "YES" ] ; then
     $DBNROOT/bin/dbn_alert MODEL GFS_AWF_0P25_GB2 $job $COMOUT/gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2
 
     # Unblended US WAFS data sent to UK for blending, to the same server as 1.25 deg unblended data: wmo/grib2.tCCz.wafs_grb_wifsfFF.45
-    $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_UBL_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
+    $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_UBL_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2
     # WAFS U/V/T/RH data sent to the same server as the unblended data as above
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2
 
