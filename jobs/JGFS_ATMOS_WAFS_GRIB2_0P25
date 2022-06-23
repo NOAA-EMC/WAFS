@@ -72,7 +72,10 @@ env
 #export EHOUR=${EHOUR:-120}
 #export EHOUR=${EHOUR:-36}
 
+export ICAO2023=${ICAO2023:-"no"}
+
 if [ "$ICAO2023" = 'yes' ] ; then
+    export FHOUT_GFS=${FHOUT_GFS:-1}
     if [ $FHOUT_GFS -eq 3 ] ; then #27
 	export FHOURS=${FHOURS:-"6 9 12 15 18 21 24 27 30 33 36 39 42 45 48 54 60 66 72 78 84 90 96 102 108 114 120"}
     else #39
@@ -97,8 +100,6 @@ export SLEEP_INT=10
 ############################################
 # Execute the script.
 ############################################
-export ICAO2023=${ICAO2023:-"no"}
-
 NP=`echo $FHOURS | wc -w`
 export MPIRUN=${MPIRUN:-"mpiexec -np $NP -cpu-bind verbose,core cfp"}
 

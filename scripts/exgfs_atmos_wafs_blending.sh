@@ -68,8 +68,8 @@ echo "start blending US and UK WAFS products for " $cyc " z cycle"
 #
           if [ $SEND_US_WAFS = "YES" -a $SEND_AWC_ALERT = "NO" ] ; then
              echo "Warning! No UK WAFS GRIB2 file for WAFS blending. Send alert message to AWC ......"
-             make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_admin_msg $PCOM/wifs_admin_msg
-             make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_admin_msg $PCOM/iscs_admin_msg
+             make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/legend/wafs_admin_msg $PCOM/wifs_admin_msg
+             make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/legend/wafs_admin_msg $PCOM/iscs_admin_msg
              if [ $SENDDBN_NTC = "YES" ] ; then
                 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/wifs_admin_msg
                 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/iscs_admin_msg

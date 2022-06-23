@@ -4,7 +4,7 @@
 #PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib2_0p25
 #PBS -N wafs_grib2_0p25
 #PBS -l walltime=00:30:00
-#PBS -l select=1:ncpus=39:mem=50GB
+#PBS -l select=1:ncpus=39:mem=150GB
 #PBS -q debug
 #PBS -A GFS-DEV
 ##PBS -V
@@ -113,13 +113,10 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/wafs_wcoss2}
 ############################################
 # run the job
 #############################################
-export SHOUR=06
-export EHOUR=36
-export FHOUT_GFS=3
 
+export ICAO2023=no
+export FHOUT_GFS=
 export FHOURS=
-
-export ICAO2023=
 
 sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_GRIB2_0P25
 

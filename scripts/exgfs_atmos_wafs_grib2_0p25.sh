@@ -115,7 +115,8 @@ $WGRIB2 tmp_wafs_0p25.grb2 | egrep "UGRD|VGRD|TMP|HGT|RH" \
     | $WGRIB2 -i tmp_wafs_0p25.grb2 -set master_table 25 -grib tmp.gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2
 cat tmp_master_0p25.grb2 >> tmp.gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2
 # Convert template 5 to 5.40
-$WGRIB2 tmp.gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2 -set_grib_type jpeg -grib_out gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2
+#$WGRIB2 tmp.gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2 -set_grib_type jpeg -grib_out gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2
+mv tmp.gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2 gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2
 $WGRIB2 -s gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2 > gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2.idx
 
 if [ "$ICAO2023" = 'yes' ] ; then
@@ -129,10 +130,6 @@ if [ "$ICAO2023" = 'yes' ] ; then
 	    | $WGRIB2 -i tmp_wafs_0p25.grb2 -grib gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2
 	$WGRIB2 -s gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2 > gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2.idx
 
-	#$WGRIB2 $icao2 $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid $newgrid tmp_icao_0p25.grb2      
-	# For AWC and Delta airline: new ICAO levels, including EDPARM, CAT, WMT and ICESEV (No CB)
-	#$WGRIB2 tmp_0p25.grb2 | grep -F -f $FIXgfs/wafs_gfsmaster_delta.grb2_0p25.list \
-	    #  | $WGRIB2 -i tmp_0p25.grb2 -grib gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2
 #---------------------------
 # Product 3: WAFS unblended EDPARM, ICESEV, CB (No CAT MWT) gfs.tHHz.wafs_0p25_unblended.fFF.grib2
 #---------------------------
@@ -140,7 +137,8 @@ if [ "$ICAO2023" = 'yes' ] ; then
 	    | $WGRIB2 -i tmp_wafs_0p25.grb2 -set master_table 25 -grib tmp_wafs_0p25.grb2.forblend
 
 	# Convert template 5 to 5.40
-	$WGRIB2 tmp_wafs_0p25.grb2.forblend -set_grib_type jpeg -grib_out gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2
+	#$WGRIB2 tmp_wafs_0p25.grb2.forblend -set_grib_type jpeg -grib_out gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2
+	mv tmp_wafs_0p25.grb2.forblend gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2
 	$WGRIB2 -s gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2 > gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2.idx
     fi
 
@@ -243,7 +241,6 @@ if [ $SENDDBN = "YES" ] ; then
    ######################
 
     # Hazard WAFS data (ICESEV EDR CAT MWT on 100mb to 1000mb or on new ICAO 2023 levels) sent to AWC and to NOMADS for US stakeholders
-#    $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2
     $DBNROOT/bin/dbn_alert MODEL GFS_AWF_0P25_GB2 $job $COMOUT/gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2
 
     # Unblended US WAFS data sent to UK for blending, to the same server as 1.25 deg unblended data: wmo/grib2.tCCz.wafs_grb_wifsfFF.45

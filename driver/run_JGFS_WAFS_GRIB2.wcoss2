@@ -117,12 +117,9 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/fork.implement2023}
 ############################################
 # run the job
 #############################################
-#export SHOUR=06
-#export EHOUR=36
-#export FHINC=03
-export FHOURS=
 
-export ICAO2023=
+export ICAO2023=no
+export FHOURS=
 
 sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_GRIB2
 

@@ -113,7 +113,7 @@ export DCOMROOT=/lfs/h1/ops/prod/dcom
 # Define DATA COMOUT and COMIN
 ############################################
 export COMPATH=/lfs/h1/ops/canned/com/gfs:/lfs/h1/ops/prod/com/radarl2
-export COMINgfs=/lfs/h2/emc/ptmp/Kate.Friedman/comrot/testcyc768h/gfs.20211227/00/atmos
+#export COMINgfs=/lfs/h2/emc/ptmp/Kate.Friedman/comrot/testcyc768h/gfs.20211227/00/atmos
 export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/com
 
 export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/$jobid

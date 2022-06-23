@@ -284,10 +284,6 @@ do
 	     FHINC=03
 	 fi
      fi
-     # temporarily set FHINC=03. Will remove this line for 2023 ICAO standard.
-     if [ ! "$ICAO2023" = 'yes' ] ; then 
-	 FHINC=03
-     fi
 
      ffhr=`expr $ffhr + $FHINC`
      if test $ffhr -lt 10
