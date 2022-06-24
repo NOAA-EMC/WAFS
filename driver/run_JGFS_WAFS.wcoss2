@@ -1,10 +1,10 @@
 #!/bin/sh
 
 #PBS -j oe
-#PBS -o /lfs/h2/emc/ptmp/Yali.Mao/working_wafs/log.wafs_octant
+#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_octant
 #PBS -N wafs_octant
 #PBS -l walltime=00:30:00
-#PBS -l select=1:ncpus=1:mem=500MB
+#PBS -l select=1:ncpus=1:mem=2GB
 #PBS -q debug
 #PBS -A GFS-DEV
 ##PBS -V
@@ -96,7 +96,7 @@ export KEEPDATA=YES
 ############################################
 # Define ROOT directories
 ############################################
-export NWROOT=/lfs/h2/emc/vpppg/noscrub/Yali.Mao
+export NWROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao
 
 export DBNROOT=${UTILROOT}/fakedbn
 

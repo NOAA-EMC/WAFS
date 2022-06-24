@@ -33,6 +33,8 @@ cp $COMINuk/EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 .
 cp ${COMINus}/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 .
 
 # run blending code
+export pgm=wafs_blending
+. prep_step
 startmsg
 $EXECgfs/wafs_blending grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 \
 blended_${PDY}${cyc}f${ffhr}.grib2 > f${ffhr}.out
@@ -49,8 +51,8 @@ then
 #
    if [ $SEND_US_WAFS = "YES" -a $SEND_AWC_ALERT = "NO" ] ; then
       echo "Warning! No UK WAFS GRIB2 file for WAFS blending program. Send alert message to AWC ......"
-      make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_admin_msg $PCOM/wifs_admin_msg
-      make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_admin_msg $PCOM/iscs_admin_msg
+      make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/legend/wafs_admin_msg $PCOM/wifs_admin_msg
+      make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/legend/wafs_admin_msg $PCOM/iscs_admin_msg
       if [ $SENDDBN_NTC = "YES" ] ; then
            $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/wifs_admin_msg
            $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/iscs_admin_msg
@@ -265,7 +267,7 @@ fi
 #   done
 #fi 
 
-
+export pgm=$TOCGRIB2
 . prep_step
 startmsg
 
@@ -275,7 +277,7 @@ export FORT11=blended_${PDY}${cyc}f${ffhr}.grib2
 export FORT31=" "
 export FORT51=grib2.t${cyc}z.WAFS_blended_f${ffhr}
 
-$TOCGRIB2 <  $FIXgfs/grib2_blended_wafs_wifs_f${ffhr}.45 >> $pgmout 2> errfile
+$TOCGRIB2 <  $FIXgfs/legend/grib2_blended_wafs_wifs_f${ffhr}.45 >> $pgmout 2> errfile
 
 err=$?;export err ;err_chk
 echo " error from tocgrib=",$err

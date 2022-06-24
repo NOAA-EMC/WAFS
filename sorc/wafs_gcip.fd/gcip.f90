@@ -379,19 +379,21 @@ real, allocatable :: realData3D(:,:, :) ! used for output data into binary file
   write(*,*) LF, "****************DONE*************************"
 
   stop
-end program GCIP
+
+contains
 
 !**********************************************************************
 ! * subroutine: usage() -- prints proper usage
 ! *
-subroutine usage(runtime, configFile, modelFile, satFiles, &
+subroutine usage(runtime, configFile, output_file, modelFile, satFiles, &
                   metarFile, shipFile, radarFile, pirepFile, &
-                  lightningFile, output_file, iret)
+                  lightningFile)
   character(len=*), intent(in) :: runtime   ! YYYYMMDDHH
-  character(len=*), intent(in) :: configFile, modelFile, satFiles(:)
-  character(len=*), intent(in) :: metarFile, shipFile, radarFile
-  character(len=*), intent(in) :: pirepFile, lightningFile
+  character(len=*), intent(in) :: configFile
   character(len=*), intent(in) :: output_file ! output GRIB file
+  character(len=*), intent(in), optional :: modelFile, satFiles(:)
+  character(len=*), intent(in), optional :: metarFile, shipFile, radarFile
+  character(len=*), intent(in), optional :: pirepFile, lightningFile
 
   character(len=256) :: progname
 
@@ -579,3 +581,4 @@ subroutine cleanupOutput(outdat)
 
   return
 end subroutine cleanupOutput
+end program GCIP

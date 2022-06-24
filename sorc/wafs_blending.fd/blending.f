@@ -326,7 +326,7 @@ C  GET ARGUMENTS
 	       else if(usdata(i,j)<=0. .and. ukdata(i,jj)<=-0.1)then !missing both data
 	        avgdata2d(i,j)=-0.1
 	       else ! both indicates Cb
-	        avgdata2d(i,j)=(usdata(i,j)+ukdata(i,jj))*0.5
+	        avgdata2d(i,j)=max(usdata(i,j),ukdata(i,jj))
 	       end if 	
 	      end if ! end of 3 different Cb blending 		
 	     end if  ! end of all blending   
