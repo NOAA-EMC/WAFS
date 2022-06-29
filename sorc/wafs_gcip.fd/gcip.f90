@@ -326,16 +326,26 @@ real, allocatable :: realData3D(:,:, :) ! used for output data into binary file
         !================================================!
         write(*,*) "Running pressure2flight ..."
         outdat_FL%ctype="FLT"
+        ! category embedded
+        call runPressure2Flight(kgds, outdat_FL%ctype, inputs%model%h, outdat, outdat_FL, iret)
+     elseif(cfg%p2f%outputFLT == 2) then
+        !================================================!
+        ! pressure 2 ICAO standard atmospheric levels (flight)
+        !================================================!
+        write(*,*) "Running pressure2flight ICAO Flight ..."
+        outdat_FL%ctype="PRS"
+        ! category embedded
+        call runPressure2Flight(kgds, outdat_FL%ctype, inputs%model%h, outdat, outdat_FL, iret)
      else
         !================================================!
-        ! pressure 2 ICAO standard levels
+        ! pressure 2 ICAO standard model levels (pressure)
         !================================================!
-        write(*,*) "Running pressure2flight ..."
+        write(*,*) "Running pressure2flight ICAO Pressure ..."
         outdat_FL%ctype="PRS"
+        ! category embedded
+        call runPressure2Pressure(kgds, outdat_FL%ctype, inputs%model%p, outdat, outdat_FL, iret)        
      end if
         
-     ! category embedded
-     call runPressure2Flight(kgds, outdat_FL%ctype, inputs%model%h, outdat, outdat_FL, iret)
 
      !================================================!
      ! do clean-up of pressure-level outdat
@@ -348,7 +358,7 @@ real, allocatable :: realData3D(:,:, :) ! used for output data into binary file
 
      do j = 1,ny
      do i = 1, nx
-        do k = 1, nz
+        do k = 1, size(outdat_FL%levels)
            outdat_FL%severity(i, j, k) = mapSev2Cat(outdat_FL%severity(i, j, k))
         end do
      end do

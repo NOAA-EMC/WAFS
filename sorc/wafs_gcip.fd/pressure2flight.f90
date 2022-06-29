@@ -18,7 +18,7 @@ module Pressure2Flight
 
   IMPLICIT NONE
   private
-  public runPressure2Flight
+  public runPressure2Flight, runPressure2Pressure
 
   real, parameter :: DELTA_HEIGHT = 10.0
   real, parameter :: FEET_TO_METERS = 0.3048
@@ -58,7 +58,8 @@ contains
     integer :: nx ,ny, nz, nzFL
 
     integer :: i, j, k, m
-
+    logical :: uselog
+    uselog = .false. ! If interpolate by height, don't use log
 
     nx = kgds(2)
     ny = kgds(3)
@@ -146,7 +147,7 @@ contains
             !--------------------------
             ! Icing Probability
             iceProbability_FL(i, j, k) = &
-                   m_interp(iceProbability, height, i, j, m, flightLevel)
+                   m_interp(uselog, iceProbability, height, i, j, m, flightLevel)
             if (iceProbability_FL(i, j, k) < 0.01) &
                    iceProbability_FL(i, j, k) = 0.0
 
@@ -158,7 +159,7 @@ contains
               sldPotential_FL(i, j, k) = -0.1
             else
               sldPotential_FL(i, j, k) = &
-                     m_interp(sldPotential, height, i, j, m, flightLevel)
+                     m_interp(uselog, sldPotential, height, i, j, m, flightLevel)
             end if !  if(abs(sldPotential(i, j, m) + 0.1) < m_EPSILON)
 
             if (iceProbability_FL(i, j, k) < 0.01) then
@@ -171,7 +172,7 @@ contains
             !--------------------------
             ! Severity
             iceSeverity_FL(i, j, k) = &
-                   m_interp(iceSeverity, height, i, j, m, flightLevel)
+                   m_interp(uselog, iceSeverity, height, i, j, m, flightLevel)
             if (iceSeverity_FL(i, j, k) <= 0.0) &
                    iceSeverity_FL(i, j, k) = MISSING              
 
@@ -230,8 +231,6 @@ contains
   end function m_isDataValid
 
 
-
-
 !**********************************************************************
 ! * function:    m_interp()
 ! *
@@ -242,7 +241,8 @@ contains
 ! * Notes: 
 ! *
 
-  real function m_interp(data, hgt, i, j, k, fl)
+  real function m_interp(uselog, data, hgt, i, j, k, fl)
+    logical, intent(in) :: uselog
     real, dimension(:,:,:), intent(in) :: data, hgt
     integer, intent(in) :: i, j, k
     real, intent(in) :: fl
@@ -256,8 +256,13 @@ contains
 
     if (m_isDataValid(data, i, j, k-1)) val_b = data(i, j, k-1)
 
-    m_interp = val_b + abs(fl - hgt(i, j, k-1)) * &
-         ((val_a - val_b) / (hgt(i, j, k) - hgt(i, j, k-1)))
+    if(uselog) then
+       m_interp = val_b + (log(fl) - log(hgt(i, j, k-1))) * &
+            ((val_a - val_b) / (log(hgt(i, j, k)) - log(hgt(i, j, k-1))))
+    else
+       m_interp = val_b + (fl - hgt(i, j, k-1)) * &
+            ((val_a - val_b) / (hgt(i, j, k) - hgt(i, j, k-1)))
+    end if
     return
 
   end function m_interp
@@ -321,5 +326,178 @@ contains
 
     P2H = (surf_temp/lapse)*(1-(pp/surf_pres)**(1/power_const))
   END FUNCTION P2H
+
+!**********************************************************************
+! * subroutine: runPressure2Pressure()
+! *
+! * Description: for ICAO standard 2023, convert model pressure levels
+! *              from 1000 to 10000mb to 300.9mb to 843.1mb
+! * 
+! * Returns:
+! *
+! * Notes: 
+! *
+  subroutine runPressure2Pressure(kgds, ctype, levelsInput, outdat, outdat_NEW, iret)
+    integer, intent(in) :: kgds(:)
+    character(3),intent(in) :: ctype
+    real, intent(in) :: levelsInput(:,:,:)
+    type(icing_output_t), target, intent(in):: outdat
+    type(icing_output_t), target, intent(inout):: outdat_NEW
+    integer, intent(out) :: iret
+
+    integer, parameter :: nICAOIcingLevels=26
+    integer, parameter :: ICAOIcingLevels(nICAOIcingLevels) = (/ 84310.,81200.,78190.,75260.,72430.,69680.,67020.,64440.,61940.,59520.,57180.,54920.,52720.,50600.,48550.,46560.,44650.,42790.,41000.,39270.,37600.,35990.,34430.,32930.,31490.,30090. /)
+
+    real, dimension(:, :, :), pointer :: iceProbability, sldPotential, iceSeverity
+    real, dimension(:, :, :), pointer :: iceProbability_FL, sldPotential_FL, iceSeverity_FL
+    real, pointer :: newLevels(:)
+    real :: newlevel
+
+    integer :: nx ,ny, nz, nzNEW
+
+    integer :: i, j, k, m
+    logical :: log
+    log = .true. ! If interpolate by pressure, yes to use log
+
+    nx = kgds(2)
+    ny = kgds(3)
+    nz = size(levelsInput, dim=3)
+    if(ctype == "PRS") then
+       nzNEW=nICAOIcingLevels
+    else
+       iret = -1
+       print *, "ICAO 2023 vertical levels are pressures, while input ctype=", ctype
+    endif
+
+    allocate(outdat_NEW%levels(nzNEW), stat=iret)
+    allocate(outdat_NEW%severity(nx, ny, nzNEW), stat=iret)
+    allocate(outdat_NEW%probability(nx, ny, nzNEW), stat=iret)
+    allocate(outdat_NEW%sld(nx, ny, nzNEW), stat=iret)
+    
+    ! By default, MISSING is for flight-level icing products.
+    outdat_NEW%levels = MISSING
+    outdat_NEW%severity = MISSING
+    outdat_NEW%probability = MISSING
+    outdat_NEW%sld = MISSING
+
+    newLevels =>  outdat_NEW%levels
+    iceProbability_FL => outdat_NEW%probability
+    sldPotential_FL => outdat_NEW%sld
+    iceSeverity_FL => outdat_NEW%severity
+
+    iceProbability => outdat%probability
+    sldPotential => outdat%sld
+    iceSeverity => outdat%severity
+
+    do k = 1, nzNEW
+       newLevels(k)=ICAOIcingLevels(k)
+    end do
+
+    ! now perform the interpolation on icing
+    do j = 1, ny
+    do i = 1, nx
+       do k = 1, nzNEW
+        ! By default, MISSING is for flight-level icing products.
+        newlevel = newLevels(k)
+        do m = 1, nz
+          if (abs(newlevel - levelsInput(i, j, m)) < 10.) then
+          !===================================================================
+          !  Pressure levels are close enough. No need to interpolate.
+            !--------------------------
+            ! Icing Probability
+            if (m_isDataValid(iceProbability, i, j, m)) &
+                   iceProbability_FL(i, j, k) = iceProbability(i, j, m)
+
+            if (iceProbability_FL(i, j, k) < 0.01) &
+                   iceProbability_FL(i, j, k) = 0.0
+
+            !--------------------------
+            ! SLD
+            if (m_isDataValid(sldPotential, i, j, m)) &
+                   sldPotential_FL(i, j, k) = sldPotential(i, j, m)
+
+            ! -0.1 indicates "icing was present, but there was not enough information 
+            !                 to determine whether SLD were present".
+            if (iceProbability_FL(i, j, k) < 0.01) then
+               sldPotential_FL(i, j, k) = 0.0
+            else
+               if (sldPotential_FL(i, j, k) < 0.01) &
+                    sldPotential_FL(i, j, k) = -0.1
+            end if
+
+            ! Severity
+	    if (m_isDataValid(iceSeverity, i, j, m)) then
+              iceSeverity_FL(i, j, k) = iceSeverity(i, j, m)
+
+              if (iceSeverity_FL(i, j, k) <= 0.0) &
+                   iceSeverity_FL(i, j, k) = MISSING
+            end if
+
+            exit
+
+          else if (levelsInput(i, j, m) < newlevel)  then
+          !===================================================================
+          ! Pressure levels are far enough, then interpolate.
+            !--------------------------
+            ! Icing Probability
+            iceProbability_FL(i, j, k) = &
+                   m_interp(log, iceProbability, levelsInput, i, j, m, newlevel)
+            if (iceProbability_FL(i, j, k) < 0.01) &
+                   iceProbability_FL(i, j, k) = 0.0
+
+            !--------------------------
+            ! SLD
+            if(abs(sldPotential(i, j, m) + 0.1) < m_EPSILON) then
+              sldPotential_FL(i, j, k) = -0.1
+            else if (abs(sldPotential(i, j, m-1) + 0.1) < m_EPSILON) then
+              sldPotential_FL(i, j, k) = -0.1
+            else
+              sldPotential_FL(i, j, k) = &
+                     m_interp(log, sldPotential, levelsInput, i, j, m, newlevel)
+            end if !  if(abs(sldPotential(i, j, m) + 0.1) < m_EPSILON)
+
+            if (iceProbability_FL(i, j, k) < 0.01) then
+               sldPotential_FL(i, j, k) = 0.0
+            else
+               if (sldPotential_FL(i, j, k) < 0.01) &
+                    sldPotential_FL(i, j, k) = -0.1
+            end if
+
+            !--------------------------
+            ! Severity
+            iceSeverity_FL(i, j, k) = &
+                   m_interp(log, iceSeverity, levelsInput, i, j, m, newlevel)
+            if (iceSeverity_FL(i, j, k) <= 0.0) &
+                   iceSeverity_FL(i, j, k) = MISSING              
+
+            exit
+
+          end if
+        end do
+
+        !===================================================================
+        ! prepare data to conversion to GRIB format
+
+        !--------------------------
+        ! Icing Probability
+        iceProbability_FL(i, j, k) = max(iceProbability_FL(i, j, k), 0.)
+        iceProbability_FL(i, j, k) = min(iceProbability_FL(i, j, k), 1.)
+
+        !--------------------------
+        ! SLD
+        if (.not. m_isDataValid(sldPotential_FL, i, j, k)) &
+             sldPotential_FL(i, j, k) = 0.0
+
+        if (sldPotential_FL(i, j, k) < SLD_SPECIAL_VALUE) &
+             sldPotential_FL(i, j, k) = SLD_SPECIAL_VALUE
+        
+        if (sldPotential_FL(i, j, k) > 1.0)   sldPotential_FL(i, j, k) = 1.0
+
+      end do ! do k = 1, Press2Flight_Params%num_flight_levels
+    end do ! do i = 1, grid%nx
+    end do ! do j = 1, grid%ny
+
+    return
+  end subroutine runPressure2Pressure
 
 end module Pressure2Flight
