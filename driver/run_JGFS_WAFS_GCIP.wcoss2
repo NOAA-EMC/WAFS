@@ -126,6 +126,7 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/wafs_wcoss2}
 ############################################
 # run the job
 #############################################
+export ICAO2023=no
 
 sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_GCIP
 
