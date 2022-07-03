@@ -30,8 +30,10 @@ fi
 if [ $machine = "dell" -o $machine = "hera" -o $machine = "orion" ]; then
   moduledir=`dirname $(readlink -f ../modulefiles/wafs)`
   set +x
-  module use ${moduledir}
-  module load wafs/wafs_v7.0.0-${machine}
+#  module use ${moduledir}
+#  module load wafs/wafs_v7.0.0-${machine}
+  module use ${moduledir}/wafs
+  module load wafs_v7.0.0-${machine}
   module list
   set -x
   INSTALL_PREFIX=${INSTALL_PREFIX:-"../../"}
