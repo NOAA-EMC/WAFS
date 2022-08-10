@@ -126,7 +126,8 @@ if [ "$ICAO2023" = 'yes' ] ; then
 #---------------------------
 	criteria1=":EDPARM:|:ICESEV:|parm=37:"
 	criteria2=":CATEDR:|:MWTURB:"
-	$WGRIB2 tmp_wafs_0p25.grb2 | egrep "${criteria1}|$criteria2" \
+	criteria3=":CBHE:|:ICAHT:"
+	$WGRIB2 tmp_wafs_0p25.grb2 | egrep "${criteria1}|$criteria2|$criteria3" \
 	    | $WGRIB2 -i tmp_wafs_0p25.grb2 -grib gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2
 	$WGRIB2 -s gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2 > gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2.idx
 
@@ -143,6 +144,12 @@ if [ "$ICAO2023" = 'yes' ] ; then
     fi
 
 else # icao2 on standard atmosphere pressure levels, relabeled to ICAO pressure levels every 25mb
+
+    # Collect CB fields, convert to 1/4 deg
+    criteria=":CBHE:|:ICAHT:"
+    $WGRIB2 $wafs2 | egrep $criteria | $WGRIB2 -i $wafs2 -grib tmp_wafs2_grb2
+    $WGRIB2 tmp_wafs2_grb2 $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid $newgrid tmp_wafs_grb2.0p25
+
 #---------------------------
 # Product 2 (before 2023): For AWC and Delta airline: EDPARM CAT MWT ICESEV (no CB)  gfs.tHHz.awf_0p25.fFFF.grib2
 #---------------------------
@@ -150,6 +157,7 @@ else # icao2 on standard atmosphere pressure levels, relabeled to ICAO pressure 
     criteria2=":CATEDR:|:MWTURB:"
     $WGRIB2 $icao2 | egrep "${criteria1}|$criteria2" | egrep -v ":70 mb:" | $WGRIB2 -i $icao2 -grib tmp_icao2_grb2
     $WGRIB2 tmp_icao2_grb2 $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid $newgrid gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2
+    cat tmp_wafs_grb2.0p25 >> gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2
     $WGRIB2 -s gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2 > gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2.idx
 
 #---------------------------
@@ -157,11 +165,6 @@ else # icao2 on standard atmosphere pressure levels, relabeled to ICAO pressure 
 #---------------------------
     $WGRIB2 gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2 | egrep -v $criteria2 \
 	| $WGRIB2 -i gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2 -grib tmp_awf_grb2.0p25.forblend
-
-    # Collect CB fields, convert to 1/4 deg
-    criteria=":CBHE:|:ICAHT:"
-    $WGRIB2 $wafs2 | egrep $criteria | $WGRIB2 -i $wafs2 -grib tmp_wafs2_grb2
-    $WGRIB2 tmp_wafs2_grb2 $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid $newgrid tmp_wafs_grb2.0p25
 
     cat tmp_awf_grb2.0p25.forblend >> tmp_wafs_grb2.0p25
 
