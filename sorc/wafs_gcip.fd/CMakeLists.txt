@@ -31,9 +31,9 @@ target_link_libraries(
   g2::g2_4
   ip::ip_4
   sp::sp_4
-  w3nco::w3nco_4
   bacio::bacio_4
-  bufr::bufr_4_DA
+  w3emc::w3emc_4
+  bufr::bufr_4
 )
 
 install(TARGETS ${exe_name} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
