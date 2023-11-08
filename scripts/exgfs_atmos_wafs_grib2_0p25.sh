@@ -243,11 +243,14 @@ if [ $SENDDBN = "YES" ] ; then
    # Distribute Data
    ######################
 
-    # Hazard WAFS data (ICESEV EDR CAT MWT on 100mb to 1000mb or on new ICAO 2023 levels) sent to AWC and to NOMADS for US stakeholders
-    $DBNROOT/bin/dbn_alert MODEL GFS_AWF_0P25_GB2 $job $COMOUT/gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2
+    if [ $hazard_timewindow = 'yes' ] ; then
+	# Hazard WAFS data (ICESEV EDR CAT MWT on 100mb to 1000mb or on new ICAO 2023 levels) sent to AWC and to NOMADS for US stakeholders
+	$DBNROOT/bin/dbn_alert MODEL GFS_AWF_0P25_GB2 $job $COMOUT/gfs.t${cyc}z.awf_0p25.f${ffhr}.grib2
 
-    # Unblended US WAFS data sent to UK for blending, to the same server as 1.25 deg unblended data: wmo/grib2.tCCz.wafs_grb_wifsfFF.45
-    $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_UBL_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2
+	# Unblended US WAFS data sent to UK for blending, to the same server as 1.25 deg unblended data: wmo/grib2.tCCz.wafs_grb_wifsfFF.45
+	$DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_UBL_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr2}.grib2
+    fi
+
     # WAFS U/V/T/RH data sent to the same server as the unblended data as above
     $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2
 
