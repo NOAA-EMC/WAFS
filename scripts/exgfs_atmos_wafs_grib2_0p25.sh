@@ -122,7 +122,7 @@ $WGRIB2 -s gfs.t${cyc}z.wafs_0p25.f${ffhr}.grib2 > gfs.t${cyc}z.wafs_0p25.f${ffh
 if [ "$ICAO2023" = 'yes' ] ; then
     if [ $hazard_timewindow = 'yes' ] ; then
 #---------------------------
-# Product 2: For AWC and Delta airline: EDPARM CAT MWT ICESEV (no CB)  gfs.tHHz.awf_0p25.fFFF.grib2
+# Product 2: For AWC and Delta airline: EDPARM CAT MWT ICESEV CB  gfs.tHHz.awf_0p25.fFFF.grib2
 #---------------------------
 	criteria1=":EDPARM:|:ICESEV:|parm=37:"
 	criteria2=":CATEDR:|:MWTURB:"
@@ -151,7 +151,7 @@ else # icao2 on standard atmosphere pressure levels, relabeled to ICAO pressure 
     $WGRIB2 tmp_wafs2_grb2 $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid $newgrid tmp_wafs_grb2.0p25
 
 #---------------------------
-# Product 2 (before 2023): For AWC and Delta airline: EDPARM CAT MWT ICESEV (no CB)  gfs.tHHz.awf_0p25.fFFF.grib2
+# Product 2 (before 2023): For AWC and Delta airline: EDPARM CAT MWT ICESEV CB  gfs.tHHz.awf_0p25.fFFF.grib2
 #---------------------------
     criteria1=":EDPARM:|:ICESEV:|parm=37:"
     criteria2=":CATEDR:|:MWTURB:"
