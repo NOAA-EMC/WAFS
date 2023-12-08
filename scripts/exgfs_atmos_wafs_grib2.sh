@@ -288,6 +288,8 @@ if [ $SENDDBN = "YES" ] ; then
 	    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
 	    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
 	    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_WIDX $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
+	else
+	    $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_1P25_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
 	fi
 #
 #       Distribute Data to TOC TO WIFS FTP SERVER (AWC)
