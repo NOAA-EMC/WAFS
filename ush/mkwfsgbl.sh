@@ -121,18 +121,18 @@ do
    if test "$SENDCOM" = 'YES'
    then
       cp xtrn.wfs${NET}${hour}${sets} $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$jobsuffix
-      cp com.wafs${hour}${sets} $PCOM/com.wafs${cyc}${hour}${sets}.$jobsuffix
+#      cp com.wafs${hour}${sets} $PCOM/com.wafs${cyc}${hour}${sets}.$jobsuffix
 
-      if test "$SENDDBN_NTC" = 'YES'
-      then
-         if test "$NET" = 'gfs'
-         then
-               $DBNROOT/bin/dbn_alert MODEL GFS_WAFS $job \
-                         $PCOM/com.wafs${cyc}${hour}${sets}.$jobsuffix
-               $DBNROOT/bin/dbn_alert MODEL GFS_XWAFS $job \
-                         $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$jobsuffix
-         fi
-      fi
+#      if test "$SENDDBN_NTC" = 'YES'
+#      then
+#         if test "$NET" = 'gfs'
+#         then
+#               $DBNROOT/bin/dbn_alert MODEL GFS_WAFS $job \
+#                         $PCOM/com.wafs${cyc}${hour}${sets}.$jobsuffix
+#               $DBNROOT/bin/dbn_alert MODEL GFS_XWAFS $job \
+#                         $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$jobsuffix
+#         fi
+#      fi
    fi
 
    ##############################

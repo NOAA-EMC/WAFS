@@ -130,31 +130,32 @@ then
     sh $USHgfs/mkwfsgbl.sh ${fcsthrs} x
 fi
 
-if test $fcsthrs -le 120
-then
-   set +x
-   echo " "
-   echo "####################################################"
-   echo " Process GFS WAFS GRIB PRODUCTS FOR EIGHT OCTANTS  "
-   echo " FOR FORECAST HOURS 00 - 120 AT 00Z, 06Z, 12Z AND 18Z."
-   echo " THESE GRID FILES SEND TO TOC."
-   echo "####################################################"
-   echo " "
-   set -x
-   export parmlist=$FIXgfs/grib_wafsgfs_intdsk
-   if test $fcsthrs -eq 00
-   then
-      export parmlist=$FIXgfs/grib_wafsgfs_intdskf00
-      sh $USHgfs/wafs_intdsk.sh  "00"
-   elif test $fcsthrs -eq 36
-   then
-      sh $USHgfs/wafs_intdsk.sh  "36"
-      export parmlist=$FIXgfs/grib_wafsgfs_intdskf00
-      sh $USHgfs/wafs_intdsk.sh  "03 09 15 21 27 33"
-   else
-      sh $USHgfs/wafs_intdsk.sh  ${fcsthrs}
-   fi
-fi
+# Turning off OCTANTS for ICAO2023 implementation on 20240117
+#if test $fcsthrs -le 120
+#then
+#   set +x
+#   echo " "
+#   echo "####################################################"
+#   echo " Process GFS WAFS GRIB PRODUCTS FOR EIGHT OCTANTS  "
+#   echo " FOR FORECAST HOURS 00 - 120 AT 00Z, 06Z, 12Z AND 18Z."
+#   echo " THESE GRID FILES SEND TO TOC."
+#   echo "####################################################"
+#   echo " "
+#   set -x
+#   export parmlist=$FIXgfs/grib_wafsgfs_intdsk
+#   if test $fcsthrs -eq 00
+#   then
+#      export parmlist=$FIXgfs/grib_wafsgfs_intdskf00
+#      sh $USHgfs/wafs_intdsk.sh  "00"
+#   elif test $fcsthrs -eq 36
+#   then
+#      sh $USHgfs/wafs_intdsk.sh  "36"
+#      export parmlist=$FIXgfs/grib_wafsgfs_intdskf00
+#      sh $USHgfs/wafs_intdsk.sh  "03 09 15 21 27 33"
+#   else
+#      sh $USHgfs/wafs_intdsk.sh  ${fcsthrs}
+#   fi
+#fi
 
 ################################################################################
 # GOOD RUN
