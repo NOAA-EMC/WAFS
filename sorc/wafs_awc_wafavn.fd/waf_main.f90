@@ -323,7 +323,7 @@ program wafavn
        call get_gfld(model_data%nx, model_data%ny, gfld, iret)
        write(*,*) "grib2 dimension =", model_data%nx, model_data%ny, iret
        call alloc_input_storage(model_data%nx, model_data%ny, cfg, model_data)
-       call get_input_data2(cfg, model_data)
+       call get_input_data2(cfg, products,model_data)
        call convert_pdt2gds(gfld, gds)
     else
        call get_pdsgds(model_data%nx, model_data%ny, pds, gds, iret)        

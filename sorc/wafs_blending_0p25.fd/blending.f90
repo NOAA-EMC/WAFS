@@ -138,22 +138,22 @@ contains
           if(     gfld%ipdtmpl(1)==19 .and. gfld%ipdtmpl(2)==37)then  ! ICESEV
              missing=-1.
              whichblnd='max'
-             exclusive=.true.
+             exclusive=.false.
           else if(gfld%ipdtmpl(1)==19 .and. gfld%ipdtmpl(2)==30)then  ! EDPARM
              missing=-0.5
              whichblnd='max'
-             exclusive=.true.
+             exclusive=.false.
           else if(gfld%ipdtmpl(1)==19 .and. gfld%ipdtmpl(2)==29)then  ! CATEDR   
              missing=-0.5
              whichblnd='max'
-             exclusive=.true.
+             exclusive=.false.
           else if(gfld%ipdtmpl(1)==19 .and. gfld%ipdtmpl(2)==28)then  ! MWTURB
              missing=-0.5
              whichblnd='max'
-             exclusive=.true.
+             exclusive=.false.
           else if(gfld%ipdtmpl(1)== 6 .and. gfld%ipdtmpl(2)==25)then  ! CB extent
              missing=-0.1
-             whichblnd='avg'
+             whichblnd='max'
              exclusive=.false.
           else if(gfld%ipdtmpl(2)== 3 .and. gfld%ipdtmpl(10)==11)then  ! CB base
              missing=-1.

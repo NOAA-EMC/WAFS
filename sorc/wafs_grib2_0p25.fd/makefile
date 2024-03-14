@@ -11,7 +11,6 @@ MODS = wafsgrib2.mod
 # CMD		Name of the executable
 # PROFLIB	Library needed for profiling
 #
-#FC =	 ifort	
 #LDFLAGS = -p -bnoquiet -bloadmap:mug
 #LDFLAGS = -pg
 #INC = /nwprod/lib/incmod/g2_4

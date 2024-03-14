@@ -49,7 +49,7 @@ export COMPONENT=${COMPONENT:-atmos}
 ############################################
 # Specify HOME Directory
 ############################################
-export gfs_ver=${gfs_ver:-v16.0.0}
+export gfs_ver=${gfs_ver:-v16.3.0}
 export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export EXECgfs=$HOMEgfs/exec
 export FIXgfs=$HOMEgfs/fix/wafs
@@ -60,8 +60,8 @@ export SCRIPTSgfs=$HOMEgfs/scripts
 ################################################
 # Set up the INPUT and OUTPUT directories
 ################################################
-export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY/$cyc/$COMPONENT}
-export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/$cyc/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-$(compath.py -o $NET/$gfs_ver)/$RUN.$PDY/$cyc/$COMPONENT}
 export PCOM=${PCOM:-$COMOUT/wmo}
 
 if [ $SENDCOM = YES ] ; then
@@ -69,7 +69,7 @@ if [ $SENDCOM = YES ] ; then
 fi
 
 export COMINus=${COMINus:-$COMIN/wmo}
-export COMINuk=${COMINuk:-$DCOMROOT/prod/$PDY/wgrbbul/ukmet_wafs}
+export COMINuk=${COMINuk:-$DCOMROOT/$PDY/wgrbbul/ukmet_wafs}
 
 ############################################
 # print current environment
@@ -79,10 +79,10 @@ env
 ##############################################
 # Set up the forecast hours
 ##############################################
-export SHOUR=06
-export EHOUR=36
+export SHOUR=${SHOUR:-06}
+export EHOUR=${EHOUR:-36}
 
-export FHINC=03
+export FHINC=${FHINC:-03}
 
 ###############################################
 # Specify Timeout Behavior of WAFS blending
@@ -119,11 +119,9 @@ then
     fi
     if test $recvy_shour -ge $EHOUR
     then
-      msg="WAFS blending Already Completed to $EHOUR"
-      postmsg "$jlogfile" "$msg"
+      echo "WAFS blending Already Completed to $EHOUR"
     else
-      msg="Starting: PDY=$PDY cycle=t${recvy_cyc}z SHOUR=$SHOUR      ."
-      postmsg "$jlogfile" "$msg"
+      echo "Starting: PDY=$PDY cycle=t${recvy_cyc}z SHOUR=$SHOUR      ."
     fi
   fi
 fi
@@ -134,8 +132,7 @@ fi
 ${SCRIPTSgfs}/exgfs_atmos_wafs_blending.sh
 export err=$?; err_chk
 
-msg="JOB $job HAS COMPLETED NORMALLY."
-postmsg "$jlogfile" "$msg"
+echo "JOB $job HAS COMPLETED NORMALLY."
 
 ############################################
 # print exec output

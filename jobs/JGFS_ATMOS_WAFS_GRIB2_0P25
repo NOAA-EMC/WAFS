@@ -40,7 +40,7 @@ export COMPONENT=${COMPONENT:-atmos}
 ############################################
 # Specify HOME Directory 
 ############################################
-export gfs_ver=${gfs_ver:-v16.0.0}
+export gfs_ver=${gfs_ver:-v16.3.0}
 export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export EXECgfs=$HOMEgfs/exec
 export FIXgfs=$HOMEgfs/fix/wafs
@@ -51,9 +51,8 @@ export SCRIPTSgfs=$HOMEgfs/scripts
 ################################################
 # Set up the input/output directory
 ################################################
-
-export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY/$cyc/$COMPONENT}
-export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/$cyc/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-$(compath.py -o $NET/$gfs_ver)/$RUN.$PDY/$cyc/$COMPONENT}
 export PCOM=${PCOM:-$COMOUT/wmo}
 
 if [ $SENDCOM = YES ] ; then
@@ -68,12 +67,23 @@ env
 ##############################################
 # Set up the forecast hours
 ##############################################
-export SHOUR=${SHOUR:-06}
+#export SHOUR=${SHOUR:-06}
 # Will change to 120 for 2023 ICAO standard
 #export EHOUR=${EHOUR:-120}
-export EHOUR=${EHOUR:-36}
+#export EHOUR=${EHOUR:-36}
 
-export FHOUT_GFS=${FHOUT_GFS:-1}
+export ICAO2023=${ICAO2023:-"no"}
+
+if [ "$ICAO2023" = 'yes' ] ; then
+    export FHOUT_GFS=${FHOUT_GFS:-1}
+    if [ $FHOUT_GFS -eq 3 ] ; then #27
+	export FHOURS=${FHOURS:-"6 9 12 15 18 21 24 27 30 33 36 39 42 45 48 54 60 66 72 78 84 90 96 102 108 114 120"}
+    else #39
+	export FHOURS=${FHOURS:-"6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 27 30 33 36 39 42 45 48 54 60 66 72 78 84 90 96 102 108 114 120"}
+    fi
+else #11
+    export FHOURS=${FHOURS:-"6 9 12 15 18 21 24 27 30 33 36"}
+fi
 
 ###############################################
 # Specify Timeout Behavior of WAFS blending
@@ -90,12 +100,26 @@ export SLEEP_INT=10
 ############################################
 # Execute the script.
 ############################################
-export MPIRUN=${MPIRUN:-mpirun}
-${SCRIPTSgfs}/exgfs_atmos_wafs_grib2_0p25.sh
+NP=`echo $FHOURS | wc -w`
+export MPIRUN=${MPIRUN:-"mpiexec -np $NP -cpu-bind verbose,core cfp"}
+
+rm wafsgrib2_0p25.cmdfile
+ic=0
+for fcsthrs in $FHOURS ; do
+  if [ `echo $MPIRUN | cut -d " " -f1` = 'srun' ] ; then
+    echo $ic ${SCRIPTSgfs}/exgfs_atmos_wafs_grib2_0p25.sh $fcsthrs >> wafsgrib2_0p25.cmdfile
+  else
+    echo ${SCRIPTSgfs}/exgfs_atmos_wafs_grib2_0p25.sh $fcsthrs >> wafsgrib2_0p25.cmdfile
+    export MP_PGMMODEL=mpmd
+  fi
+  ic=`expr $ic + 1`
+done
+
+$MPIRUN wafsgrib2_0p25.cmdfile
+
 export err=$?; err_chk
 
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
+echo "JOB $job HAS COMPLETED NORMALLY!"
 
 ############################################
 # print exec output

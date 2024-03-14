@@ -12,10 +12,11 @@
 #
 # Script history log:
 # 2020-04-02 Y Mao
+# Oct 2021 - Remove jlogfile
+# 2022-05-25 | Y Mao | Add ICAO new milestone Nov 2023
 
 set -x
-msg="JOB $job HAS BEGUN"
-postmsg "$jlogfile" "$msg"
+echo "JOB $job HAS BEGUN"
 export SEND_AWC_US_ALERT=NO
 export SEND_AWC_UK_ALERT=NO
 export SEND_US_WAFS=NO
@@ -43,8 +44,7 @@ do
           break
        fi
        if [ $ic -eq $SLEEP_LOOP_MAX ] ; then
-          msg="US WAFS GRIB2 file  $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 not found after waiting over $SLEEP_TIME seconds"
-          postmsg "$jlogfile" "$msg"
+          echo "US WAFS GRIB2 file  $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 not found after waiting over $SLEEP_TIME seconds"
 	  echo "US WAFS GRIB2 file " $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 "not found after waiting ",$SLEEP_TIME, "exitting"
 	  SEND_UK_WAFS=YES
 	  break
@@ -65,13 +65,12 @@ do
      do
        # Three(3) unblended UK files for each cycle+fhour: icing, turb, cb
        ukfiles=`ls $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 | wc -l`
-       if [ $ukfiles -eq 3 ] ; then
+       if [ $ukfiles -ge 3 ] ; then
            break
        fi
 
        if [ $ic_uk -eq $SLEEP_LOOP_MAX_UK ] ; then
-          msg="UK WAFS GRIB2 file  $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2  not found"
-          postmsg "$jlogfile" "$msg"
+          echo "UK WAFS GRIB2 file  $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2  not found"
 	  echo "UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found"
           export SEND_US_WAFS=YES
 	  break
@@ -135,22 +134,13 @@ do
 
      if [ $SEND_US_WAFS = "YES" ] ; then
 
-       # Temporary!!! Remove the 'if' condition after 2023 implementation!!!
-       # Before 2023 implementation, don't send alerts for products of hourly or after 36 forecast hour
-       # Reason? UK won't have those data available. So silently skip doing anything about it.
-       if [ $ffhr -eq 06 -o $ffhr -eq 09 -o $ffhr -eq 12 -o \
-	    $ffhr -eq 15 -o $ffhr -eq 18 -o $ffhr -eq 21 -o \
-            $ffhr -eq 24 -o $ffhr -eq 27 -o $ffhr -eq 30 -o \
-	    $ffhr -eq 33 -o $ffhr -eq 36 ] ; then
-
 	 ##############################################################################################
 	 #
 	 #  checking any US WAFS product was sent due to No UK WAFS GRIB2 file or WAFS blending program
 	 #  (Alert once for all forecast hours)
 	 #
 	 if [ $SEND_AWC_US_ALERT = "NO" ] ; then
-	     msg="WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending. Send alert message to AWC ......"
-	     postmsg "$jlogfile" "$msg"
+	     echo "WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending. Send alert message to AWC ......"
 	     make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
 	     make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
 	     if [ $SENDDBN_NTC = "YES" ] ; then
@@ -178,21 +168,20 @@ do
 	 #
 	 #   Distribute US WAFS unblend Data to NCEP FTP Server (WOC) and TOC
 	 #
-	 echo "altering the unblended US WAFS products - $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 "
-	 echo "and $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx "
+	 echo "altering the unblended US WAFS products - $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 "
+	 echo "and $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx "
 
 	 if [ $SENDDBN = "YES" ] ; then
-	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_UBL_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
-	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_UBL_GB2_WIDX $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx
+	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_UBL_GB2 $job $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
+	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_UBL_GB2_WIDX $job $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx
 	 fi
 
 #	 if [ $SENDDBN_NTC = "YES" ] ; then
 #	     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
 #	 fi
 
-       fi
 
-       export SEND_US_WAFS=NO
+	 export SEND_US_WAFS=NO
 
      elif [ $SEND_UK_WAFS = "YES" ] ; then
 	 ##############################################################################################
@@ -201,8 +190,7 @@ do
 	 #  (Alert once for all forecast hours)
 	 #
 	 if [ $SEND_AWC_UK_ALERT = "NO" ] ; then
-	     msg="WARNING: No US WAFS GRIB2 0P25 file for WAFS blending. Send alert message to AWC ......"
-	     postmsg "$jlogfile" "$msg"
+	     echo "WARNING: No US WAFS GRIB2 0P25 file for WAFS blending. Send alert message to AWC ......"
 	     make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
 	     make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
 	     if [ $SENDDBN_NTC = "YES" ] ; then
@@ -289,20 +277,14 @@ do
 
      if [ $FHOUT_GFS -eq 3 ] ; then
 	 FHINC=03
-	 if [ $ffhr -ge 48 ] ; then
-	     FHINC=06
-	 fi
      else
 	 if [ $ffhr -lt 24 ] ; then
 	     FHINC=01
-	 elif [ $ffhr -lt 48 ] ; then
-	     FHINC=03
 	 else
-	     FHINC=06
+	     FHINC=03
 	 fi
      fi
-     # temporarily set FHINC=03. Will remove this line for 2023 ICAO standard.
-     FHINC=03
+
      ffhr=`expr $ffhr + $FHINC`
      if test $ffhr -lt 10
      then

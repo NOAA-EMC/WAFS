@@ -46,8 +46,7 @@ echo " ------------------------------------------"
 echo " BEGIN MAKING ${NET} WAFS PRODUCTS"
 echo " ------------------------------------------"
 
-msg="Enter Make WAFS utility."
-postmsg "$jlogfile" "$msg"
+echo "Enter Make WAFS utility."
 
 for hour in $hour_list
 do
@@ -122,18 +121,18 @@ do
    if test "$SENDCOM" = 'YES'
    then
       cp xtrn.wfs${NET}${hour}${sets} $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$jobsuffix
-      cp com.wafs${hour}${sets} $PCOM/com.wafs${cyc}${hour}${sets}.$jobsuffix
+#      cp com.wafs${hour}${sets} $PCOM/com.wafs${cyc}${hour}${sets}.$jobsuffix
 
-      if test "$SENDDBN_NTC" = 'YES'
-      then
-         if test "$NET" = 'gfs'
-         then
-               $DBNROOT/bin/dbn_alert MODEL GFS_WAFS $job \
-                         $PCOM/com.wafs${cyc}${hour}${sets}.$jobsuffix
-               $DBNROOT/bin/dbn_alert MODEL GFS_XWAFS $job \
-                         $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$jobsuffix
-         fi
-      fi
+#      if test "$SENDDBN_NTC" = 'YES'
+#      then
+#         if test "$NET" = 'gfs'
+#         then
+#               $DBNROOT/bin/dbn_alert MODEL GFS_WAFS $job \
+#                         $PCOM/com.wafs${cyc}${hour}${sets}.$jobsuffix
+#               $DBNROOT/bin/dbn_alert MODEL GFS_XWAFS $job \
+#                         $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$jobsuffix
+#         fi
+#      fi
    fi
 
    ##############################
@@ -143,12 +142,10 @@ do
    if [ "$SENDDBN_NTC" = 'YES' ] ; then
       $DBNROOT/bin/dbn_alert GRIB_LOW $NET $job $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$jobsuffix
    else
-      msg="xtrn.wfs${NET}${cyc}${hour}${sets}.$job file not posted to db_net."
-      postmsg "$jlogfile" "$msg"
+      echo "xtrn.wfs${NET}${cyc}${hour}${sets}.$job file not posted to db_net."
    fi
 
-   msg="Wafs Processing $hour hour completed normally"
-   postmsg "$jlogfile" "$msg"
+   echo "Wafs Processing $hour hour completed normally"
 
 done
 

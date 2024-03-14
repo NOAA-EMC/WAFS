@@ -12,10 +12,10 @@
 #
 # Script history log:
 # 2010-12-30  Huiya Chuang 
+# Oct 2021 - Remove jlogfile
 
 set -x
-msg="JOB $job HAS BEGUN"
-postmsg "$jlogfile" "$msg"
+echo "JOB $job HAS BEGUN"
 
 cd $DATA
 export SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
@@ -39,8 +39,7 @@ echo "start blending US and UK WAFS products for " $cyc " z cycle"
 	  sleep $SLEEP_INT 
        fi 
        if [ $ic -eq $SLEEP_LOOP_MAX ] ; then
-          msg="US WAFS GRIB2 file " $COMINus/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 "not found after waiting over $SLEEP_TIME seconds"
-          postmsg "$jlogfile" "$msg"
+          echo "US WAFS GRIB2 file " $COMINus/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 "not found after waiting over $SLEEP_TIME seconds"
 	  echo "US WAFS GRIB2 file " $COMINus/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 "not found after waiting ",$SLEEP_TIME, "exitting"
           export err=1; err_chk
        fi 
@@ -58,8 +57,7 @@ echo "start blending US and UK WAFS products for " $cyc " z cycle"
 	  sleep $SLEEP_INT 
        fi 
        if [ $ic -eq $SLEEP_LOOP_MAX ] ; then
-          msg="UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found after waiting over $SLEEP_TIME seconds"
-          postmsg "$jlogfile" "$msg"
+          echo "UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found after waiting over $SLEEP_TIME seconds"
 	  echo "UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found after waiting ",$SLEEP_TIME, 
 	  echo "turning back on dbn alert for unblended US WAFS product"
           export SEND_US_WAFS=YES 
@@ -69,10 +67,9 @@ echo "start blending US and UK WAFS products for " $cyc " z cycle"
 #  checking any US WAFS product was sent due to No UK WAFS GRIB2 file or WAFS blending program
 #
           if [ $SEND_US_WAFS = "YES" -a $SEND_AWC_ALERT = "NO" ] ; then
-             msg="Warning! No UK WAFS GRIB2 file for WAFS blending. Send alert message to AWC ......"
-             postmsg "$jlogfile" "$msg"
-             make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_admin_msg $PCOM/wifs_admin_msg
-             make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_admin_msg $PCOM/iscs_admin_msg
+             echo "Warning! No UK WAFS GRIB2 file for WAFS blending. Send alert message to AWC ......"
+             make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/legend/wafs_admin_msg $PCOM/wifs_admin_msg
+             make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/legend/wafs_admin_msg $PCOM/iscs_admin_msg
              if [ $SENDDBN_NTC = "YES" ] ; then
                 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/wifs_admin_msg
                 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/iscs_admin_msg

@@ -1,55 +1,47 @@
 #!/bin/sh
 
-#BSUB -J gfs_atmos_wafs_grib2
-#BSUB -cwd /gpfs/dell3/ptmp/Yali.Mao
-#BSUB -oo /gpfs/dell3/ptmp/Yali.Mao/gfs_atmos_wafs_grib2.o%J
-#BSUB -eo /gpfs/dell3/ptmp/Yali.Mao/gfs_atmos_wafs_grib2.o%J
-##BSUB -L /bin/sh
-#BSUB -q debug
-#BSUB -W 00:30
-#BSUB -P GFS-DEV
-#BSUB -n 1
-#BSUB -R span[ptile=1]
-#BSUB -R affinity[core(1):distribute=balance]
+#PBS -j oe
+#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib2
+#PBS -N wafs_grib2
+#PBS -l walltime=00:30:00
+#PBS -l select=1:ncpus=18:mem=80GB
+#PBS -q debug
+#PBS -A GFS-DEV
+##PBS -V
+##PBS -W umask=022
+
+#As first line, cd to current working directory where the job was submitted from
+#cd $PBS_O_WORKDIR
 
 set -xa
 
 # specify computation resource
-export NODES=1
-export ntasks=1
-export ptile=1
+#OpenMP
+#export OMP_NUM_THREADS=128
+#export OMP_PLACES=cores
+#Serial
 export threads=1
-export MP_LABELIO=yes
 export OMP_NUM_THREADS=$threads
-export MPIRUN=mpirun
+export MP_LABELIO=yes
+
 
 ############################################
 # Loading module
 ############################################
 module purge
+. $MODULESHOME/init/sh 
+module load envvar/1.0
+module load intel/19.1.3.304 PrgEnv-intel/8.1.0 craype/2.7.10
+module load cray-pals/1.0.12
+# For MPMD
+module load cfp/2.0.4
 
-module use /usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles/stack
-module load hpc/1.1.0
+module load libjpeg/9c
 
-# Loading Intel Compiler Suite
-module load hpc-ips/18.0.1.163
-module load hpc-impi/18.0.1
-
-# hpc-stack modules
-module load prod_util/1.2.2
-module load grib_util/1.2.2
-
-module load wgrib2/2.0.8
-export WGRIB2=$wgrib2_ROOT/bin/wgrib2
-#wgrib2 of module wgrib2/2.0.8 under hpc-stack doesn't work when converting a grid file
-#https://github.com/NOAA-EMC/hpc-stack/issues/224
-export WGRIB2=/gpfs/dell1/nco/ops/nwprod/grib_util.v1.1.1/exec/wgrib2
-
-# NCO Production Core Modules
-module load prod_envir/1.1.0
-
-# Third Party
-module load lsf/10.1
+module load prod_util/2.0.9
+module load prod_envir/2.0.4
+module load grib_util/1.2.3
+module load wgrib2/2.0.7
 
 module list
 
@@ -75,7 +67,8 @@ export COMPONENT=${COMPONENT:-atmos}
 ############################################
 # Specify versions
 ############################################
-export gfs_ver=v17.0.0
+export gfs_ver=v16.2.0
+
 
 ############################################
 # user defined
@@ -83,9 +76,7 @@ export gfs_ver=v17.0.0
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 
-#export PDY=`$NDATE -24 | cut -c 1-8`
-export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20210426
+export PDY=20220216
 
 USER=`whoami`
 
@@ -103,31 +94,32 @@ export KEEPDATA=YES
 ############################################
 # Define ROOT directories
 ############################################
-export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/git
+export NWROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao/git
 
 export DBNROOT=${UTILROOT}/fakedbn
 
 ############################################
 # Define DATA, COMOUT and COMIN
 ############################################
-export COMIN=/gpfs/dell1/nco/ops/com/gfs/prod/gfs.$PDY/$cyc/$COMPONENT
-export COMOUT=/gpfs/dell3/ptmp/${USER}/wafs_dwn/gfs.$PDY/$cyc/$COMPONENT
+#export COMIN=/lfs/h1/ops/canned/com/gfs/v16.2/gfs.$PDY/$cyc/$COMPONENT
+#export COMOUT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/gfs.$PDY/$cyc/$COMPONENT
+export COMPATH=/lfs/h1/ops/prod/com/gfs
+#export COMIN=/lfs/h2/emc/ptmp/Kate.Friedman/comrot/testcyc768h/gfs.20211227/00/atmos
+export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/com
 
-export DATA=/gpfs/dell3/ptmp/${USER}/working_wafs/$jobid
-
-export jlogfile=$DATA/jlogfile.${jobid}
+export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/$jobid
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/fork.implement2023}
 
 ############################################
 # run the job
 #############################################
-export SHOUR=06
-export EHOUR=36
-export FHINC=03
+
+export ICAO2023=no
+export FHOURS=
 
 sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_GRIB2
 
@@ -136,7 +128,7 @@ exit
 #############################################
 # compare the output (optional)
 #############################################
-if [ $USER = 'Yali.Mao' ] ; then
+if [ $USER = 'Hui-Ya.Chuang' ] ; then
 
   # the standard data to be compared to
   stdout=/com2/${NET}/$envir/${RUN}.${PDY}

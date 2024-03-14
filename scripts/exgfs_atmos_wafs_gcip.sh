@@ -23,6 +23,7 @@ echo "-----------------------------------------------------"
 echo "JGFS_ATMOS_WAFS_GCIP at 00Z/06Z/12Z/18Z GFS postprocessing"
 echo "-----------------------------------------------------"
 echo "History: 2015 - First implementation of this new script."
+echo "Oct 2021 - Remove jlogfile"
 echo " "
 #####################################################################
 
@@ -69,6 +70,9 @@ if [ $RUN = "gfs" ] ; then
   done
 
   cpreq $PARMgfs/wafs_gcip_gfs.cfg $configFile
+  if [ "$ICAO2023" = 'yes' ] ; then
+      sed -e "s|outputFLT=.*|outputFLT=3|g" -i $configFile
+  fi
 
   modelFile=modelfile.grb
 #  ln -sf $masterFile $modelFile
@@ -105,7 +109,7 @@ if [ $RUN = "gfs" ] ; then
 	  icnt=$((icnt + 1))
 	  if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
             msg="GCIP at ${vhour}z ABORTING after $SLEEP_TIME seconds of waiting for satellite $channel file!"
-            postmsg $jlogfile "$msg"
+            echo "$msg"
             rc=1
             echo $msg >> $COMOUT/${RUN}.gcip.log
             
@@ -152,9 +156,7 @@ if [ $RUN = "gfs" ] ; then
 	sleep $SLEEP_INT
 	icnt=$((icnt + 1))
 	if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
-            msg="WARNING: radar data is not available after $SLEEP_TIME seconds of waiting!"
-            postmsg $jlogfile "$msg"
-	    echo $msg
+            echo "WARNING: radar data is not available after $SLEEP_TIME seconds of waiting!"
 	fi
     done
 

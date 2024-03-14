@@ -6,13 +6,24 @@ set -x
 # 06/12/2018 yali.ma@noaa.gov:    Create module load version
 ##################################################################
 
-module purge
+module reset
 set -x
 mac=$(hostname | cut -c1-1)
 mac2=$(hostname | cut -c1-2)
-if [ $mac = v -o $mac = m  ] ; then            # For Dell
+if [ $mac = f  ] ; then            # For Jet 
+ machine=jet
+ . /etc/profile
+ . /etc/profile.d/modules.sh
+elif [ $mac = v -o $mac = m  ] ; then            # For Dell
  machine=dell
  . $MODULESHOME/init/bash                 
+elif [ $mac = a -o $mac = c -o $mac = d ] ; then # For WCOSS2
+ machine=wcoss2
+elif [ $mac = t -o $mac = e -o $mac = g ] ; then # For WCOSS
+ machine=wcoss
+ . /usrx/local/Modules/default/init/bash
+elif [ $mac = l -o $mac = s ] ; then             #    wcoss_c (i.e. luna and surge)
+ export machine=cray-intel
 elif [ $mac2 = hf ] ; then                        # For Hera
  machine=hera
  . /etc/profile
@@ -23,13 +34,16 @@ elif [ $mac = O ] ; then           # For Orion
 fi
 
 moduledir=`dirname $(readlink -f ../modulefiles/wafs)`
-module use ${moduledir}
-module load wafs/wafs_v7.0.0-${machine}
+
+if [[ $machine =~ ^(wcoss2|dell|hera|orion)$ ]]; then
+    module use ${moduledir}/wafs
+    module load wafs_v6.0.0-${machine}
+fi
 module list
 
  curdir=`pwd`
  export INC="${G2_INC4}"
- export FC=ifort
+ export FC=ftn
 
 # track="-O3 -g -traceback -ftrapuv -check all -fp-stack-check "
 # track="-O2 -g -traceback"
@@ -51,14 +65,9 @@ for dir in wafs_awc_wafavn.fd wafs_gcip.fd wafs_blending.fd wafs_makewafs.fd waf
 #for dir in wafs_blending.fd ; do 
 #for dir in wafs_blending_0p25.fd ; do 
 #for dir in wafs_gcip.fd ; do
-#for dir in wafs_makewafs.fd ; do
 #for dir in wafs_awc_wafavn.fd ; do
 #for dir in wafs_grib2_0p25.fd wafs_blending_0p25.fd ; do
- if [ $dir = "wafs_makewafs.fd" ] ; then
-     export LIBS="${W3NCO_LIB8}  ${W3EMC_LIB8} ${BACIO_LIB8}"
- else
-     export LIBS="${G2_LIB4} ${W3NCO_LIB4} ${BACIO_LIB4} ${IP_LIB4} ${SP_LIB4} ${JASPER_LIBRARIES}/libjasper.a ${PNG_ROOT}/lib64/libpng.a ${ZLIB_LIBRARIES}/libz.a  ${BUFR_LIB4}"
- fi
+ export LIBS="${G2_LIB4} ${W3NCO_LIB4} ${BACIO_LIB4} ${IP_LIB4} ${SP_LIB4} ${JASPER_LIB} ${PNG_LIB} ${Z_LIB}  ${BUFR_LIB4}"
  cd ${curdir}/$dir
  make clean
  make
