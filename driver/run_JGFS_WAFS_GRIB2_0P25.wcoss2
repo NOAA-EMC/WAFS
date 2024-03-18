@@ -37,7 +37,7 @@ module load libjpeg/9c
 module load prod_util/2.0.9
 module load prod_envir/2.0.4
 module load grib_util/1.2.3
-module load wgrib2/2.0.7
+module load wgrib2/2.0.8
 
 module list
 
@@ -63,7 +63,7 @@ export COMPONENT=${COMPONENT:-atmos}
 ############################################
 # Specify versions
 ############################################
-export gfs_ver=v16.2.0
+export gfs_ver=v16.3.0
 
 
 ############################################
@@ -99,7 +99,7 @@ export DBNROOT=${UTILROOT}/fakedbn
 ############################################
 # Define DATA, COMOUT and COMIN
 ############################################
-export COMPATH=/lfs/h1/ops/canned/com/gfs
+#export COMPATH=/lfs/h1/ops/canned/com/gfs
 #export COMIN=/lfs/h2/emc/ptmp/Kate.Friedman/comrot/testcyc768h/gfs.20211227/00/atmos
 export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/com
 
