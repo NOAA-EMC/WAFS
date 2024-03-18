@@ -125,54 +125,11 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/wafs_wcoss2}
 ############################################
 # run the job
 #############################################
-export ICAO2023=${ICAO2023:-no}
-
 export SHOUR=${SHOUR:-06}
 # Will change from 36 to 48 for 2023 ICAO standard
-if [ "$ICAO2023" = 'yes' ] ; then
-    export EHOUR=${EHOUR:-48}
-    export FHOUT_GFS=${FHOUT_GFS:-1}
-else
-    export EHOUR=${EHOUR:-36}
-    export FHOUT_GFS=${FHOUT_GFS:-3}
-fi
+export EHOUR=${EHOUR:-48}
+export FHOUT_GFS=${FHOUT_GFS:-1}
 
 sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_BLENDING_0P25
 
-exit
-
-#############################################
-# compare the output (optional)
-#############################################
-if [ $USER = 'Hui-Ya.Chuang' ] ; then
-
-  # the standard data to be compared to
-  stdout=/com/${NET}/$envir/${RUN}.${PDY}
-  if [ $envir = prod ]; then
-    stdpcom=/pcom/wafs
-  else
-    stdpcom=/pcom/${envir}/wafs
-  fi
-  stdout=/gpfs/hps/nco/ops/com/gfs/para/gfs.$PDY
-
-  ffhr=$SHOUR
-
-  while test $ffhr -le $EHOUR ; do
-
-    cmp $COMOUT/WAFS_blended_${PDY}${cyc}f${ffhr}.grib2 $stdout/WAFS_blended_${PDY}${cyc}f${ffhr}.grib2
-
-    # $PCOM data on develop machine may be out of date, so skip the comparison
-    continue
-
-    cmp $PCOM/grib2.t${cyc}z.WAFS_blended_f${ffhr} $stdpcom/grib2.t${cyc}z.WAFS_blended_f${ffhr}
-
-    ffhr=`expr $ffhr + $FHINC`
-    if test $ffhr -lt 10
-    then
-      ffhr=0${ffhr}
-    fi
-
-  done
-
-fi
 exit

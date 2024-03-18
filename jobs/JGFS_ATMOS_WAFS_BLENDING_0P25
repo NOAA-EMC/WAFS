@@ -71,18 +71,9 @@ env
 ##############################################
 # Set up the forecast hours
 ##############################################
-export ICAO2023=${ICAO2023:-no}
-
 export SHOUR=${SHOUR:-06}
-# Will change from 36 to 48 for 2023 ICAO standard
-if [ "$ICAO2023" = 'yes' ] ; then
-    export EHOUR=${EHOUR:-48}
-    export FHOUT_GFS=${FHOUT_GFS:-1}
-else
-    export EHOUR=${EHOUR:-36}
-    export FHOUT_GFS=3
-fi
-
+export EHOUR=${EHOUR:-48}
+export FHOUT_GFS=${FHOUT_GFS:-1}
 
 ###############################################
 # Specify Timeout Behavior of WAFS blending
