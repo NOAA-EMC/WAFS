@@ -70,9 +70,6 @@ if [ $RUN = "gfs" ] ; then
   done
 
   cpreq $PARMgfs/wafs_gcip_gfs.cfg $configFile
-  if [ "$ICAO2023" = 'yes' ] ; then
-      sed -e "s|outputFLT=.*|outputFLT=3|g" -i $configFile
-  fi
 
   modelFile=modelfile.grb
 #  ln -sf $masterFile $modelFile

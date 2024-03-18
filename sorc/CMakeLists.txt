@@ -1,8 +1,5 @@
-add_subdirectory(wafs_awc_wafavn.fd)
-add_subdirectory(wafs_blending.fd)
 add_subdirectory(wafs_blending_0p25.fd)
 add_subdirectory(wafs_cnvgrib2.fd)
 add_subdirectory(wafs_gcip.fd)
 add_subdirectory(wafs_grib2_0p25.fd)
 add_subdirectory(wafs_makewafs.fd)
-add_subdirectory(wafs_setmissing.fd)

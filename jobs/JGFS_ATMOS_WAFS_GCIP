@@ -99,8 +99,6 @@ export SLEEP_INT=10
 ############################################
 # Execute the script, parallel run for 000 003
 ############################################
-export ICAO2023=${ICAO2023:-"no"}
-
 export MPIRUN=${MPIRUN:-"mpiexec -l -np 2 --cpu-bind verbose,core cfp"}
 
 # GCIP runs f000 f003 for each cycle, 4 times/day,

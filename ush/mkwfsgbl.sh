@@ -79,9 +79,9 @@ do
 
    #
    # BAG - Put in fix on 20070925 to force the percision of U and V winds
-   #       to default to 1 through the use of the wafs.namelist file.
+   #       to default to 1 through the use of the grib_wafs.namelist file.
    #
-   $COPYGB -g3 -i0 -N$FIXgfs/wafs.namelist -x pgrbf${hour} tmp
+   $COPYGB -g3 -i0 -N$FIXgfs/grib_wafs.namelist -x pgrbf${hour} tmp
    mv tmp pgrbf${hour}
    $GRBINDEX pgrbf${hour} pgrbif${hour}
 

@@ -41,7 +41,7 @@ module load libjpeg/9c
 module load prod_util/2.0.9
 module load prod_envir/2.0.4
 module load grib_util/1.2.3
-module load wgrib2/2.0.7
+module load wgrib2/2.0.8
 
 module list
 
@@ -67,7 +67,7 @@ export COMPONENT=${COMPONENT:-atmos}
 ############################################
 # Specify versions
 ############################################
-export gfs_ver=v16.2.0
+export gfs_ver=v16.3.0
 
 
 ############################################
@@ -118,51 +118,8 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/fork.implement2023}
 # run the job
 #############################################
 
-export ICAO2023=no
 export FHOURS=
 
 sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_GRIB2
 
-exit
-
-#############################################
-# compare the output (optional)
-#############################################
-if [ $USER = 'Hui-Ya.Chuang' ] ; then
-
-  # the standard data to be compared to
-  stdout=/com2/${NET}/$envir/${RUN}.${PDY}
-  stdout=/gpfs/hps/nco/ops/com/gfs/para/gfs.$PDY
-  if [ $envir = prod ]; then
-    stdpcom=/pcom/wafs
-  else
-    stdpcom=/pcom/${envir}/wafs
-  fi
-
-  ffhr=$SHOUR
-
-  cd $COMOUT
-
-  while test $ffhr -le $EHOUR ; do
-    cmp $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2 $stdout/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2
-
-    cmp $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr} $stdout/gfs.t${cyc}z.wafs_grb45f${ffhr}
-
-    cmp $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.nouswafs.grib2 $stdout/gfs.t${cyc}z.wafs_grb45f${ffhr}.nouswafs.grib2
-
-    # $PCOM data on develop machine may be out of date, so skip the comparison
-
-    #cmp $PCOM/grib2.t${cyc}z.wafs_grbf${ffhr}.45 $stdpcom/grib2.t${cyc}z.wafs_grbf${ffhr}.45
-    #cmp $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 $stdpcom/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45
-  
-
-    ffhr=`expr $ffhr + $FHINC`
-    if test $ffhr -lt 10
-    then
-      ffhr=0${ffhr}
-    fi
-
-  done
-
-fi
 exit

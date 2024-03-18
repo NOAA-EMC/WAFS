@@ -61,11 +61,9 @@ if [ ! -d "../exec" ] ; then
   mkdir -p ../exec
 fi
 
-for dir in wafs_awc_wafavn.fd wafs_gcip.fd wafs_blending.fd wafs_makewafs.fd wafs_cnvgrib2.fd wafs_setmissing.fd wafs_grib2_0p25.fd wafs_blending_0p25.fd ; do
-#for dir in wafs_blending.fd ; do 
+for dir in wafs_gcip.fd wafs_makewafs.fd wafs_cnvgrib2.fd wafs_grib2_0p25.fd wafs_blending_0p25.fd ; do
 #for dir in wafs_blending_0p25.fd ; do 
 #for dir in wafs_gcip.fd ; do
-#for dir in wafs_awc_wafavn.fd ; do
 #for dir in wafs_grib2_0p25.fd wafs_blending_0p25.fd ; do
  export LIBS="${G2_LIB4} ${W3NCO_LIB4} ${BACIO_LIB4} ${IP_LIB4} ${SP_LIB4} ${JASPER_LIB} ${PNG_LIB} ${Z_LIB}  ${BUFR_LIB4}"
  cd ${curdir}/$dir

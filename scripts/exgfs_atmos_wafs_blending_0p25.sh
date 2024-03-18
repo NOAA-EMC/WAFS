@@ -141,8 +141,8 @@ do
 	 #
 	 if [ $SEND_AWC_US_ALERT = "NO" ] ; then
 	     echo "WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending. Send alert message to AWC ......"
-	     make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
-	     make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
+	     make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_blending_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
+	     make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_blending_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
 	     if [ $SENDDBN_NTC = "YES" ] ; then
 		 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/wifs_0p25_admin_msg
 		 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/iscs_0p25_admin_msg
@@ -191,8 +191,8 @@ do
 	 #
 	 if [ $SEND_AWC_UK_ALERT = "NO" ] ; then
 	     echo "WARNING: No US WAFS GRIB2 0P25 file for WAFS blending. Send alert message to AWC ......"
-	     make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
-	     make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
+	     make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_blending_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
+	     make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_blending_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
 	     if [ $SENDDBN_NTC = "YES" ] ; then
 		 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/wifs_0p25_admin_msg
 		 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/iscs_0p25_admin_msg

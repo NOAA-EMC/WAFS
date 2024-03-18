@@ -39,7 +39,7 @@ module load libjpeg/9c
 module load prod_util/2.0.9
 module load prod_envir/2.0.4
 module load grib_util/1.2.3
-module load wgrib2/2.0.7
+module load wgrib2/2.0.8
 
 # make_NTC_file.pl
 module load util_shared/1.4.0
@@ -68,7 +68,7 @@ export COMPONENT=${COMPONENT:-atmos}
 ############################################
 # Specify versions
 ############################################
-export gfs_ver=v16.2.0
+export gfs_ver=v16.3.0
 
 ############################################
 # user defined
@@ -133,40 +133,4 @@ export FHINC=03
 
 sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_BLENDING
 
-exit
-
-#############################################
-# compare the output (optional)
-#############################################
-if [ $USER = 'Hui-Ya.Chuang' ] ; then
-
-  # the standard data to be compared to
-  stdout=/com/${NET}/$envir/${RUN}.${PDY}
-  if [ $envir = prod ]; then
-    stdpcom=/pcom/wafs
-  else
-    stdpcom=/pcom/${envir}/wafs
-  fi
-  stdout=/gpfs/hps/nco/ops/com/gfs/para/gfs.$PDY
-
-  ffhr=$SHOUR
-
-  while test $ffhr -le $EHOUR ; do
-
-    cmp $COMOUT/WAFS_blended_${PDY}${cyc}f${ffhr}.grib2 $stdout/WAFS_blended_${PDY}${cyc}f${ffhr}.grib2
-
-    # $PCOM data on develop machine may be out of date, so skip the comparison
-    continue
-
-    cmp $PCOM/grib2.t${cyc}z.WAFS_blended_f${ffhr} $stdpcom/grib2.t${cyc}z.WAFS_blended_f${ffhr}
-
-    ffhr=`expr $ffhr + $FHINC`
-    if test $ffhr -lt 10
-    then
-      ffhr=0${ffhr}
-    fi
-
-  done
-
-fi
 exit
