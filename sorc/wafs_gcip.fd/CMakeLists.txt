@@ -10,7 +10,6 @@ hybrid2pressure.f90
 icing.f90
 kinds.f90
 lightning.f90
-makefile
 metar.f90
 model.f90
 pirep.f90

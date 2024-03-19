@@ -4,7 +4,6 @@ cnvwafs21.f
 cnvwafs22.f
 gds2gdt.f
 gdt2gds.f
-makefile
 makepds.f
 makepdsens.f
 pds2pdt.f
