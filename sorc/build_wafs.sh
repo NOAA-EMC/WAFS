@@ -9,8 +9,8 @@ readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.."
 BUILD_TYPE=${BUILD_TYPE:-"Release"}
 CMAKE_OPTS=${CMAKE_OPTS:-}
 COMPILER=${COMPILER:-"intel"}
-BUILD_DIR=${BUILD_DIR:-"${DIR_ROOT}/build"}
-INSTALL_PREFIX=${INSTALL_PREFIX:-"${DIR_ROOT}/install"}
+BUILD_DIR=${BUILD_DIR:-"${DIR_ROOT}/sorc/build/wafs"}
+INSTALL_PREFIX=${INSTALL_PREFIX:-"${DIR_ROOT}/sorc/install/wafs"}
 
 #==============================================================================#
 
@@ -35,7 +35,7 @@ mkdir -p "${BUILD_DIR}" && cd "${BUILD_DIR}"
 
 # Configure, build, install
 set -x
-cmake ${CMAKE_OPTS} "${DIR_ROOT}"
+cmake ${CMAKE_OPTS} "${DIR_ROOT}/sorc"
 make -j "${BUILD_JOBS:-8}" VERBOSE="${BUILD_VERBOSE:-}"
 make install
 set +x
@@ -46,6 +46,9 @@ if [[ ! -d "${DIR_ROOT}/exec" ]]; then
 fi
 
 # Copy wafs executables to WAFS/exec
-cp "${INSTALL_PREFIX}/bin/" "${DIR_ROOT}/exec/"
+for exe in wafs_blending_0p25.x wafs_cnvgrib2.x wafs_gcip.x wafs_grib2_0p25.x wafs_makewafs.x; do
+  rm -rf "${DIR_ROOT}/exec/${exe}"
+  cp "${INSTALL_PREFIX}/bin/${exe}" "${DIR_ROOT}/exec/${exe}"
+done
 
 exit
