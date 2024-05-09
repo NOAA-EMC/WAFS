@@ -15,29 +15,37 @@ INSTALL_PREFIX=${INSTALL_PREFIX:-"${DIR_ROOT}/install"}
 #==============================================================================#
 
 # Detect machine (sets MACHINE_ID)
-source $DIR_ROOT/ush/detect_machine.sh
+source "${DIR_ROOT}/ush/detect_machine.sh"
 
 # Load modules
-source $DIR_ROOT/ush/module-setup.sh
-module use $DIR_ROOT/modulefiles
-module load wafs_$MACHINE_ID.$COMPILER
+source "${DIR_ROOT}/ush/module-setup.sh"
+module use "${DIR_ROOT}/modulefiles"
+module load wafs_"${MACHINE_ID}.${COMPILER}"
 module list
 
 # Collect BUILD Options
-CMAKE_OPTS+=" -DCMAKE_BUILD_TYPE=$BUILD_TYPE"
+CMAKE_OPTS+=" -DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
 
 # Install destination for built executables, libraries, CMake Package config
-CMAKE_OPTS+=" -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX"
+CMAKE_OPTS+=" -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}"
 
 # Re-use or create a new BUILD_DIR (Default: create new BUILD_DIR)
-[[ ${BUILD_CLEAN:-"YES"} =~ [yYtT] ]] && rm -rf $BUILD_DIR
-mkdir -p $BUILD_DIR && cd $BUILD_DIR
+[[ ${BUILD_CLEAN:-"YES"} =~ [yYtT] ]] && rm -rf "${BUILD_DIR}"
+mkdir -p "${BUILD_DIR}" && cd "${BUILD_DIR}"
 
 # Configure, build, install
 set -x
-cmake $CMAKE_OPTS $DIR_ROOT
-make -j ${BUILD_JOBS:-8} VERBOSE=${BUILD_VERBOSE:-}
+cmake ${CMAKE_OPTS} "${DIR_ROOT}"
+make -j "${BUILD_JOBS:-8}" VERBOSE="${BUILD_VERBOSE:-}"
 make install
 set +x
+
+# Check WAFS/exec folder exists
+if [[ ! -d "${DIR_ROOT}/exec" ]]; then
+  mkdir -p "${DIR_ROOT}/exec"
+fi
+
+# Copy wafs executables to WAFS/exec
+cp "${INSTALL_PREFIX}/bin/" "${DIR_ROOT}/exec/"
 
 exit
