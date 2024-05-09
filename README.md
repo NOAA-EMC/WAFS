@@ -3,9 +3,9 @@ Software necessary to generate WAFS products
 
 To install:
 
-Clone repository:
+Clone repository (recursively with UPP, if desired):
 ```bash
-git clone https://github.com/noaa-emc/wafs
+git clone --recursive https://github.com/NOAA-EMC/WAFS
 ```
 
 Move into desired branch and then run:
