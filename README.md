@@ -1,18 +1,18 @@
 # WAFS
-Software necessary to generate WAFS products in the GFS.
+Software necessary to generate WAFS products
 
 To install:
 
-Clone repository:
+Clone repository (recursively with UPP, if desired):
 ```bash
-git clone https://github.com/noaa-emc/emc_gfs_wafs
+git clone --recursive https://github.com/NOAA-EMC/WAFS
 ```
 
 Move into desired branch and then run:
 
 ```bash
-./ush/build.sh
+./sorc/build_all.sh
 ```
 
-`build.sh` will detect the platform, load the appropriate modules, build the WAFS executables, and install them under `./install`.
+`build_all.sh` will build WAFS executables and offline UPP executable.
 

@@ -1,0 +1,3 @@
+[submodule "sorc/upp.fd"]
+  path = sorc/upp.fd
+  url = https://github.com/NOAA-EMC/UPP
