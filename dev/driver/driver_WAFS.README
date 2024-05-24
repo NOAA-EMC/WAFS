@@ -2,111 +2,104 @@
 How to use the drivers for WAFS jobs
 *********************************************************************
 
-There are 4 WAFS jobs and their corresponding drivers
-JGFS_ATMOS_WAFS   <-> run_JGFS_ATMOS_WAFS.dell
-JGFS_ATMOS_WAFS_GRIB2		<-> run_JGFS_ATMOS_WAFS_GRIB2.dell
-JGFS_ATMOS_WAFS_BLENDING	<-> run_JGFS_ATMOS_WAFS_BLENDING.dell
-JGFS_ATMOS_WAFS_GCIP          <-> run_JGFS_ATMOS_WAFS_GCIP.dell
-JGFS_ATMOS_WAFS_GRIB2_0P25	<-> run_JGFS_ATMOS_WAFS_GRIB2_0P25.dell
-JGFS_ATMOS_WAFS_BLENDING_0P25	<-> run_JGFS_ATMOS_WAFS_BLENDING_0P25.dell
+There are 1 standalone UPP job and 5 WAFS jobs
+run_JWAFS_UPP.wcoss2
+run_JWAFS_GRIB.wcoss2
+run_JWAFS_GCIP.wcoss2
+run_JWAFS_GRIB2.wcoss2
+run_JWAFS_GRIB2_0P25.wcoss2
+run_JWAFS_BLENDING_0P25.wcoss2
 
+JWAFS_UPP is a downstream of GFS model outputs in netcdf
 
-JGFS_ATMOS_WAFS_BLENDING is a downstream of JGFS_ATMOS_WAFS_GRIB2 and
-should run after JGFS_ATMOS_WAFS_GRIB2
+JWAFS_GRIB is a downstream of GFS pgrb outputs
 
-JGFS_ATMOS_WAFS_BLENDING_0P25 is a downstream of JGFS_ATMOS_WAFS_GRIB2_0P25 and
-should run after JGFS_ATMOS_WAFS_GRIB2_0P25
+JWAFS_GCIP is a downstream of GFS master files, also has satellite and
+radar observation data inputs, and METAR SHIP PIREPs data which are dumped
+from DCOMROOT by using 'dumpjb'
 
-JGFS_ATMOS_WAFS_GCIP has satellite and radar data inputs, and METAR SHIP PIREPs 
-data which are dumped from DCOMROOT by using 'dumpjb'
+JWAFS_GRIB2 and JWAFS_GRIB2_0P25 are both a downstream of GFS master files
+and JWAFS_UPP outputs
 
-Step 1:
+JWAFS_BLENDING_0P25 is a downstream of UK data at DCOM and JWAFS_GRIB2_0P25,
+and should be run after JWAFS_GRIB2_0P25
+
+Step 1: source code
 =====================
-After a user downloads/checkouts the project tag.
-1) cd sorc
-2) sh build_wafs.sh
+Project location, defined by HOMEwafs
+export NWROOT=(the location holds your WAFS local inventory)
+export HOMEwafs=${HOMEwafs:-${NWROOT}/{the folder of your WAFS local inventory)}
 
-Project location, defined by HOMEgfs
-export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/git
-export HOMEgfs=${HOMEgfs:-${NWROOT}/EMC_wafs_branch}
+A user needs to modify NWROOT or HOMEwafs to the project location 
 
-A user needs to modify NWROOT or HOMEgfs to the project location 
-
-
-Step 2:
+Step 2: output and working folder
 =====================
-Canned model data:
-/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput/gfs/prod/gfs.20180725/00
+Specify COMOUT output folder by setting COMROOT
+export COMROOT=(a folder ends with $envir/com)
 
-So first set the specific data:
-export PDY=20180725
-export cyc=00
-
-1) For run_JGFS_ATMOS_WAFS.dell, run_JGFS_ATMOS_WAFS_GRIB2.dell,
-It's optional for a user to modify the input data location, COMROOT or COMIN:
-export COMROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/datainput
-export COMIN=$COMROOT/gfs.$PDY/$cyc
-
-2) JGFS_ATMOS_WAFS_BLENDING has two inputs, UK and US.
-US data is a downstream product of JGFS_ATMOS_WAFS_GRIB2, so COMINus needs to point to
-$COMOUT/wmo of run_JGFS_ATMOS_WAFS_GRIB2.dell:
-export COMINus=
-
-UK data is from DCOM, currently copied DCOM from Phase 1. For canned data, it's at:
-/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput/dcom/us007003/20180725/wgrbbul/ukmet_wafs
-export DCOMROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput/dcom
-export COMINuk=${COMINuk:-$DCOMROOT/us007003/$PDY/wgrbbul/ukmet_wafs}
-
-It's optional for a user to change either DCOMROOT or COMINuk to where the input UK data is.
-
-3) JGFS_ATMOS_WAFS_GCIP has 4 inputs: model data, bufr, satellite and radar 
-
-Canned model data location: 
-/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput/gfs/prod/gfs.20180725/00
-It's optional for a user to modify the input data location, COMROOT or COMINgfs:
-export COMROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput
-export COMINgfs=$COMROOT/gfs.$PDY/$cyc
-
-BUFR data is dumped from DCOM.
-export DCOMROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput/dcom
-dumpjb searches data in b000 b001 b004 b007 under $DCOMROOT/us007003/20180725.
-Though it's optional to modify DCOMROOT for dumping BUFR data, it should be mentioned
-DCOMROOT of satellite data may be affected.
-
-Satellite data, currently copied from DCOM on Phase1. For canned data, it's at:
-/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput/dcom/us007003/20161101/mcidas/
-It's optional for a user to modify the input data location, DCOMROOT or COMINsat:
-export DCOMROOT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput/dcom
-export COMINsat=${COMINsat:-$DCOMROOT/us007003/$PDY/mcidas}
-
-Radar data, currently copied from COM on Phase1. For canned data, it's at:
-/gpfs/hps/emc/global/noscrub/Yali.Mao/datainput/com/hourly/prod/radar.20161101/
-It's optional for a user to modify the input data location, COMROOTp1 or COMINradar
-export COMROOTp1=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/datainput/com1
-export COMINradar=${COMINradar:-$COMROOTp1/hourly/prod/radar.$PDY}
-
-Step 3:
-=====================
 Change working folder:
 export DATA=
 
-Change product output folder:
-export COMOUT=
-
 Change file names of error messages and script printout:
-#BSUB -oo
-#BSUB -eo
+#PBS -j oe
+#PBS -o (your job log file with full path)
+
+Step 3: input data
+=====================
+Specify date and cycle:
+export PDY=(date as YYYYMMDD)
+export cyc=(cycle as CC)
+
+Specify COMIN by either setting COMIN or by setting COMPATH used by compath.py
+export COMPATH=(location of canned data ending with $envir/com/$RUN structure)
+export COMIN=(folder with a full path)
+
+1) run_JWAFS_GRIB2.WCOSS2 and run_JWAFS_GRIB2_0P25.WCOSS2
+Ensure COMPATH includes both GFS and WAFS
+
+2) run_JWAFS_BLENDING_0P25.wcoss2 has two inputs, UK and US.
+US data is a downstream product of JWAFS_GRIB2_0P25,
+so either:
+export COMPATH=($COMROOT/wafs where COMROOT is of run_JWAFS_GRIB2_0P25.wcoss2)
+or:
+export COMINus=($COMOUT of run_JWAFS_GRIB2_0P25.wcoss2)
+
+UK data is from DCOM,
+either:
+export DCOMROOT=(a folder canned data with structure of $PDY/wgrbbul/ukmet_wafs)
+or:
+export COMINuk=${COMINuk:-$DCOMROOT/$PDY/wgrbbul/ukmet_wafs}
+
+3) run_JWAFS_GCIP.wcoss2 has 4 inputs: gfs master files of f000 and f003, bufr, satellite and radar 
+Ensure COMPATH includes GFS
+
+BUFR data is dumped from DCOM.
+dumpjb searches data in b000 b001 b003 b004 b007 under $DCOMROOT/$PDY
+Though it's optional to modify DCOMROOT for dumping BUFR data, it should be mentioned
+DCOMROOT of satellite data may be affected.
+
+Satellite data,
+either:
+export DCOMROOT=(a folder canned data with structure of $PDY/mcidas)
+or:
+export COMINsat=${COMINsat:-$DCOMROOT/$PDY/mcidas}
+
+Radar data,
+either ensure COMPATH includes radar,
+or:
+export COMINradar=${COMINradar:-$COMROOT/radarl2/$radarl2_ver)/radar.$PDY}
+
+4) run_JWAFS_UPP.wcoss2 and run_JWAFS_GRIB.wcoss2
+Ensure COMPATH includes GFS
 
 
 *********************************************************************
 How to test and test results
 *********************************************************************
 Test by comparing outputs to operational products in different ways.
-1) Use wgrib2 to check date, cycle and forecast hour are correct.
-2) Check the number of fields and records are correct by comparing the
+1) Compared outputs to the operational.
+2) Use wgrib2 to check date, cycle and forecast hour are correct.
+3) Check the number of fields and records are correct by comparing the
    control files generated by g2ctl
-3) Plot and compare by using GrADS to have a sanity check whether 
+4) Plot and compare by using GrADS to have a sanity check whether 
    the differences are reasonable.
-
-The test products are saved at:
-COMOUT=/gpfs/dell2/emc/modeling/noscrub/Yali.Mao/2018impl/dataprod/gfs.20180725/00

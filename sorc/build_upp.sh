@@ -8,10 +8,6 @@ readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.."
 # User Options
 BUILD_TYPE=${BUILD_TYPE:-"Release"}
 
-# Checkout post_gtg code
-cd "${DIR_ROOT}/sorc/upp.fd"
-git -c submodule."post_gtg.fd".update=checkout submodule update --init --recursive
-
 # Build upp.x
 cd "${DIR_ROOT}/sorc/upp.fd/tests"
 

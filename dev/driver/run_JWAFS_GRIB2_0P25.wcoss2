@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #PBS -j oe
-#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib2_0p25
+#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs.new/log.wafs_grib2_0p25
 #PBS -N wafs_grib2_0p25
 #PBS -l walltime=00:30:00
 #PBS -l select=1:ncpus=39:mem=150GB
@@ -20,24 +20,27 @@ export threads=1
 export OMP_NUM_THREADS=$threads
 export MP_LABELIO=yes
 
+############################################
+# Define ROOT directories
+############################################
+export NWROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao/git
+export DBNROOT=${UTILROOT}/fakedbn
+
+################################
+# Set up the HOME directory
+################################
+export HOMEwafs=${HOMEwafs:-${NWROOT}/WAFS.fork}
 
 ############################################
 # Loading module
 ############################################
-module purge
-. $MODULESHOME/init/sh 
-module load envvar/1.0
-module load intel/19.1.3.304 PrgEnv-intel/8.1.0 craype/2.7.10
-module load cray-pals/1.0.12
+source $HOMEwafs/versions/run.ver
+module reset
+source $HOMEwafs/dev/modulefiles/wafs.sh
+
 # For MPMD
-module load cfp/2.0.4
-
-module load libjpeg/9c
-
-module load prod_util/2.0.9
-module load prod_envir/2.0.4
-module load grib_util/1.2.3
-module load wgrib2/2.0.8
+module load cray-pals/$craypals_ver
+module load cfp/$cfp_ver
 
 module list
 
@@ -45,26 +48,19 @@ module list
 # required exports!
 ############################################
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
-export envir=prod
+export envir=para
 
 export cyc=${cyc:-00}
 
-# gfs_atmos_wafs_grib2 for generating global WAFS on grid 45
-export job=gfs_atmos_wafs_grib2_0p25_${cyc}
+# wafs_grib2 for generating global WAFS on grid 45
+export job=wafs_grib2_0p25_${cyc}
 
 ############################################
 # set NET RUN
 ############################################
 ### NET: gfs/para/parallel-test/nam/rap/ dump/ens/nawips/nesdis/
-export NET=gfs
-export RUN=gfs
-export COMPONENT=${COMPONENT:-atmos}
-
-############################################
-# Specify versions
-############################################
-export gfs_ver=v16.3.0
-
+export NET=wafs
+export RUN=wafs
 
 ############################################
 # user defined
@@ -74,7 +70,7 @@ export jobid=${job}.${pid}
 
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20211227
+export PDY=20240522
 
 USER=`whoami`
 
@@ -90,25 +86,14 @@ export SENDDBN_NTC=NO
 export KEEPDATA=YES
  
 ############################################
-# Define ROOT directories
-############################################
-export NWROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao
-
-export DBNROOT=${UTILROOT}/fakedbn
-
-############################################
 # Define DATA, COMOUT and COMIN
 ############################################
-#export COMPATH=/lfs/h1/ops/canned/com/gfs
-#export COMIN=/lfs/h2/emc/ptmp/Kate.Friedman/comrot/testcyc768h/gfs.20211227/00/atmos
-export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/com
 
-export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/$jobid
+export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
-################################
-# Set up the HOME directory
-################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/wafs_wcoss2}
+export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}:/lfs/h2/emc/vpppg/noscrub/yali.mao/separation/prod/com/wafs
+
+export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs.new/$jobid
 
 ############################################
 # run the job
@@ -117,6 +102,6 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/wafs_wcoss2}
 export FHOUT_GFS=
 export FHOURS=
 
-sh $HOMEgfs/jobs/JGFS_ATMOS_WAFS_GRIB2_0P25
+sh $HOMEwafs/jobs/JWAFS_GRIB2_0P25
 
 exit
