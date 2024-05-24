@@ -2,10 +2,10 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgfs_atmos_wafs_blending_0p25.sh (copied from exgfs_atmos_wafs_blending.sh)
+# Script name:         exwafs_blending_0p25.sh
 # Script description:  This scripts looks for US and UK WAFS Grib2 products at 1/4 deg,
-# wait for specified period of time, and then run $USHgfs/wafs_blending_0p25.sh
-# if both WAFS data are available.  Otherwise, the job aborts with error massage
+# wait for specified period of time. If both WAFS data are available.
+# Otherwise, the job aborts with error massage
 #
 # Author:        Y Mao       Org: EMC         Date: 2020-04-02
 #
@@ -14,6 +14,7 @@
 # 2020-04-02 Y Mao
 # Oct 2021 - Remove jlogfile
 # 2022-05-25 | Y Mao | Add ICAO new milestone Nov 2023
+# May 2024 - WAFS separation
 
 set -x
 echo "JOB $job HAS BEGUN"
@@ -32,7 +33,7 @@ export ic_uk=1
 
 while test $ffhr -le $EHOUR
 do
-
+    ffhr="$(printf "%03d" $(( 10#$ffhr )) )"
 ##########################
 # look for US WAFS data
 ##########################
@@ -40,12 +41,12 @@ do
      export ic=1
      while [ $ic -le $SLEEP_LOOP_MAX ]
      do 
-       if [ -s ${COMINus}/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 ] ; then
+       if [ -s ${COMINus}/wafs.t${cyc}z.0p25_unblended.f${ffhr}.grib2 ] ; then
           break
        fi
        if [ $ic -eq $SLEEP_LOOP_MAX ] ; then
-          echo "US WAFS GRIB2 file  $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 not found after waiting over $SLEEP_TIME seconds"
-	  echo "US WAFS GRIB2 file " $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 "not found after waiting ",$SLEEP_TIME, "exitting"
+          echo "US WAFS GRIB2 file  $COMINus/wafs.t${cyc}z.0p25_unblended.f${ffhr}.grib2 not found after waiting over $SLEEP_TIME seconds"
+	  echo "US WAFS GRIB2 file " $COMINus/wafs.t${cyc}z.0p25_unblended.f${ffhr}.grib2 "not found after waiting ",$SLEEP_TIME, "exitting"
 	  SEND_UK_WAFS=YES
 	  break
        else
@@ -109,14 +110,14 @@ do
 	 cat $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 > EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
 
 	 # pick up US data
-	 cp ${COMINus}/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 .
+	 cp ${COMINus}/wafs.t${cyc}z.0p25_unblended.f${ffhr}.grib2 .
 
 	 # run blending code
 	 export pgm=wafs_blending_0p25.x
 	 . prep_step
 
 	 startmsg
-	 $EXECgfs/$pgm gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 \
+	 $EXECwafs/$pgm wafs.t${cyc}z.0p25_unblended.f${ffhr}.grib2 \
                               EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 \
                               0p25_blended_${PDY}${cyc}f${ffhr}.grib2 > f${ffhr}.out
 
@@ -141,8 +142,8 @@ do
 	 #
 	 if [ $SEND_AWC_US_ALERT = "NO" ] ; then
 	     echo "WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending. Send alert message to AWC ......"
-	     make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_blending_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
-	     make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_blending_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
+	     make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXwafs/wafs_blending_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
+	     make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXwafs/wafs_blending_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
 	     if [ $SENDDBN_NTC = "YES" ] ; then
 		 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/wifs_0p25_admin_msg
 		 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/iscs_0p25_admin_msg
@@ -168,16 +169,16 @@ do
 	 #
 	 #   Distribute US WAFS unblend Data to NCEP FTP Server (WOC) and TOC
 	 #
-	 echo "altering the unblended US WAFS products - $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2 "
-	 echo "and $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx "
+	 echo "altering the unblended US WAFS products - $COMINus/wafs.t${cyc}z.0p25_unblended.f${ffhr}.grib2 "
+	 echo "and $COMINus/wafs.t${cyc}z.0p25_unblended.f${ffhr}.grib2.idx "
 
 	 if [ $SENDDBN = "YES" ] ; then
-	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_UBL_GB2 $job $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
-	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_UBL_GB2_WIDX $job $COMINus/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2.idx
+	     $DBNROOT/bin/dbn_alert MODEL WAFS_0P25_UBL_GB2 $job $COMINus/wafs.t${cyc}z.0p25_unblended.f${ffhr}.grib2
+	     $DBNROOT/bin/dbn_alert MODEL WAFS_0P25_UBL_GB2_WIDX $job $COMINus/wafs.t${cyc}z.0p25_unblended.f${ffhr}.grib2.idx
 	 fi
 
 #	 if [ $SENDDBN_NTC = "YES" ] ; then
-#	     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $COMOUT/gfs.t${cyc}z.wafs_0p25_unblended.f${ffhr}.grib2
+#	     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $COMOUT/wafs.t${cyc}z.0p25_unblended.f${ffhr}.grib2
 #	 fi
 
 
@@ -191,8 +192,8 @@ do
 	 #
 	 if [ $SEND_AWC_UK_ALERT = "NO" ] ; then
 	     echo "WARNING: No US WAFS GRIB2 0P25 file for WAFS blending. Send alert message to AWC ......"
-	     make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXgfs/wafs_blending_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
-	     make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXgfs/wafs_blending_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
+	     make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXwafs/wafs_blending_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
+	     make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXwafs/wafs_blending_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
 	     if [ $SENDDBN_NTC = "YES" ] ; then
 		 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/wifs_0p25_admin_msg
 		 $DBNROOT/bin/dbn_alert NTC_LOW WAFS  $job $PCOM/iscs_0p25_admin_msg
@@ -221,7 +222,7 @@ do
 	 echo "altering the unblended UK WAFS products - EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2"
 
 	 if [ $SENDDBN = "YES" ] ; then
-	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_UKMET_0P25_UBL_GB2 $job EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
+	     $DBNROOT/bin/dbn_alert MODEL WAFS_UKMET_0P25_UBL_GB2 $job EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
 	 fi
 
 #	 if [ $SENDDBN_NTC = "YES" ] ; then
@@ -244,7 +245,7 @@ do
 	 ## export FORT31=" "
 	 ## export FORT51=grib2.t${cyc}z.WAFS_0p25_blended_f${ffhr}
 
-	 ## $TOCGRIB2 <  $FIXgfs/grib2_blended_wafs_wifs_f${ffhr}.0p25 >> $pgmout 2> errfile
+	 ## $TOCGRIB2 <  $FIXwafs/grib2_blended_wafs_wifs_f${ffhr}.0p25 >> $pgmout 2> errfile
 
 	 ## err=$?;export err ;err_chk
 	 ## echo " error from tocgrib=",$err
@@ -265,7 +266,7 @@ do
 	 fi
 
 	 if [ $SENDDBN = "YES" ] ; then
-	     $DBNROOT/bin/dbn_alert MODEL GFS_WAFS_0P25_BL_GB2 $job $COMOUT/WAFS_0p25_blended_${PDY}${cyc}f${ffhr}.grib2
+	     $DBNROOT/bin/dbn_alert MODEL WAFS_0P25_BL_GB2 $job $COMOUT/WAFS_0p25_blended_${PDY}${cyc}f${ffhr}.grib2
 	 fi 
      fi
 
@@ -286,10 +287,6 @@ do
      fi
 
      ffhr=`expr $ffhr + $FHINC`
-     if test $ffhr -lt 10
-     then
-         ffhr=0${ffhr}
-     fi
 
 done
 ################################################################################

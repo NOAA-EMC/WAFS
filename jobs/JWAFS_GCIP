@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ############################################
-# GFS GCIP PRODUCT GENERATION
+# WAFS GCIP PRODUCT GENERATION
 ############################################
 
 date
@@ -39,23 +39,21 @@ setpdy.sh
 ############################################
 # Set up the NET and RUN
 ############################################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
-export COMPONENT=${COMPONENT:-atmos}
+export NET=${NET:-wafs}
+export RUN=${RUN:-wafs}
 
 ############################################
 # Specify HOME Directory
 ############################################
-export gfs_ver=${gfs_ver:-v16.3.0}
-export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
-export EXECgfs=$HOMEgfs/exec
-export FIXgfs=$HOMEgfs/fix/wafs
-export PARMgfs=$HOMEgfs/parm/wafs
-export USHgfs=$HOMEgfs/ush
-export SCRIPTSgfs=$HOMEgfs/scripts
+export HOMEwafs=${HOMEwafs:-${NWROOT}/wafs.${wafs_ver}}
+export EXECwafs=$HOMEwafs/exec
+export FIXwafs=$HOMEwafs/fix/wafs
+export PARMwafs=$HOMEwafs/parm/wafs
+export USHwafs=$HOMEwafs/ush
+export SCRIPTSwafs=$HOMEwafs/scripts
 
 # For BUFR dump, TMPDIR must be defined
-export TMPDIR=$DATA  # will be overwritten in exgfs script for parallel runs on ffhr
+export TMPDIR=$DATA  # will be overwritten in exwafs script for parallel runs on ffhr
 # For BUFR dump, these two environment variables are defined by module load
 # HOMEobsproc_shared_bufr_dumplist <= module load bufr_dumplist/1.5.0
 # HOMEobsproc_dump   <= module load dumpjb/4.0.0
@@ -65,7 +63,7 @@ export TMPDIR=$DATA  # will be overwritten in exgfs script for parallel runs on 
 # Set up the input/output directory
 ################################################
 # model data
-export COMINgfs=${COMINgfs:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMINgfs=${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})/gfs.${PDY}/${cyc}/atmos}
 
 # satellite data
 #ftp://satepsanone.nesdis.noaa.gov/2day/gmosaic/
@@ -74,7 +72,6 @@ export COMINgfs=${COMINgfs:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PD
 export COMINsat=${COMINsat:-$DCOMROOT/$PDY/mcidas}
 
 #  radar data
-export radarl2_ver=${radarl2_ver:-v1.2}
 export COMINradar=${COMINradar:-$(compath.py ${envir}/radarl2/$radarl2_ver)/radar.$PDY}
 
 # metar/ships/lightning/pireps
@@ -82,7 +79,7 @@ export COMINradar=${COMINradar:-$(compath.py ${envir}/radarl2/$radarl2_ver)/rada
 #
 
 # COMOUT
-export COMOUT=${COMOUT:-$(compath.py -o $NET/$gfs_ver)/$RUN.$PDY/$cyc/$COMPONENT}
+export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc}
 
 mkdir -p $COMOUT
 
@@ -104,11 +101,11 @@ export MPIRUN=${MPIRUN:-"mpiexec -l -np 2 --cpu-bind verbose,core cfp"}
 # GCIP runs f000 f003 for each cycle, 4 times/day,
 # to make the output valid every 3 hours 
 if [ `echo $MPIRUN | cut -d " " -f1` = 'srun' ] ; then
-  echo 0 ${SCRIPTSgfs}/exgfs_atmos_wafs_gcip.sh 000 >> gcip.cmdfile
-  echo 1 ${SCRIPTSgfs}/exgfs_atmos_wafs_gcip.sh 003 >> gcip.cmdfile
+  echo 0 ${SCRIPTSwafs}/exwafs_gcip.sh 000 >> gcip.cmdfile
+  echo 1 ${SCRIPTSwafs}/exwafs_gcip.sh 003 >> gcip.cmdfile
 else
-  echo ${SCRIPTSgfs}/exgfs_atmos_wafs_gcip.sh 000 >> gcip.cmdfile
-  echo ${SCRIPTSgfs}/exgfs_atmos_wafs_gcip.sh 003 >> gcip.cmdfile
+  echo ${SCRIPTSwafs}/exwafs_gcip.sh 000 >> gcip.cmdfile
+  echo ${SCRIPTSwafs}/exwafs_gcip.sh 003 >> gcip.cmdfile
   export MP_PGMMODEL=mpmd
 fi
 

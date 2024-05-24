@@ -1,6 +1,6 @@
 #!/bin/sh
 ######################################################################
-#  UTILITY SCRIPT NAME :  exgfs_atmos_wafs_grib2.sh
+#  UTILITY SCRIPT NAME :  exwafs_grib2.sh
 #         DATE WRITTEN :  07/15/2009
 #
 #  Abstract:  This utility script produces the WAFS GRIB2. The output 
@@ -22,17 +22,19 @@
 #              - Stop generating grib1 data for WAFS
 #####################################################################
 echo "-----------------------------------------------------"
-echo "JGFS_ATMOS_WAFS_GRIB2 at 00Z/06Z/12Z/18Z GFS postprocessing"
+echo "JWAFS_GRIB2 at 00Z/06Z/12Z/18Z GFS&WAFS postprocessing"
 echo "-----------------------------------------------------"
 echo "History: AUGUST  2009 - First implementation of this new script."
 echo "Oct 2021 - Remove jlogfile"
 echo "Feb 2022 - Add FAA data, stop grib1 data"
+echo "May 2024 - WAFS separation"
 echo " "
 #####################################################################
 
 set -x
 
 fcsthrs=$1
+export fcsthrs="$(printf "%03d" $(( 10#$fcsthrs )) )"
 
 DATA=$DATA/$fcsthrs
 mkdir -p $DATA
@@ -42,17 +44,13 @@ cd $DATA
 # Wait for the availability of the gfs master pgrib file
 ##########################################################
 # file name and forecast hour of GFS model data in Grib2 are 3 digits
-export fcsthrs000="$(printf "%03d" $(( 10#$fcsthrs )) )"
 
 # 2D data
-master2=$COMIN/${RUN}.${cycle}.master.grb2f${fcsthrs000}
-master2i=$COMIN/${RUN}.${cycle}.master.grb2if${fcsthrs000}
+master2=$COMINgfs/gfs.${cycle}.master.grb2f${fcsthrs}
+master2i=$COMINgfs/gfs.${cycle}.master.grb2if${fcsthrs}
 # 3D data
-wafs2=$COMIN/${RUN}.${cycle}.wafs.grb2f${fcsthrs000}
-wafs2i=$COMIN/${RUN}.${cycle}.wafs.grb2f${fcsthrs000}.idx
-# 3D data (on ICAO standard level)
-icao2=$COMIN/${RUN}.${cycle}.wafs_icao.grb2f${fcsthrs000}
-icao2i=$COMIN/${RUN}.${cycle}.wafs_icao.grb2f${fcsthrs000}.idx
+wafs2=$COMIN/${RUN}.${cycle}.grb2f${fcsthrs}
+wafs2i=$COMIN/${RUN}.${cycle}.grb2f${fcsthrs}.idx
 
 icnt=1
 while [ $icnt -lt 1000 ]
@@ -96,32 +94,32 @@ fi
 #---------------------------
 # 1) Grib2 data for FAA
 #---------------------------
-$WGRIB2 $master2 | grep -F -f $FIXgfs/grib2_gfs_awf_master.list | $WGRIB2 -i $master2 -grib tmpfile_gfsf${fcsthrs}
+$WGRIB2 $master2 | grep -F -f $FIXwafs/grib2_gfs_awf_master.list | $WGRIB2 -i $master2 -grib tmpfile_wafsf${fcsthrs}
 # F006 master file has two records of 0-6 hour APCP and ACPCP each, keep only one
-# FAA APCP ACPCP: included every 6 forecast hour (0, 48], every 12 forest hour [48, 72] (controlled by $FIXgfs/grib2_gfs_awf_master3d.list)
+# FAA APCP ACPCP: included every 6 forecast hour (0, 48], every 12 forest hour [48, 72] (controlled by $FIXwafs/grib2_gfs_awf_master.list)
 if [ $fcsthrs -eq 6 ] ; then
-    $WGRIB2 tmpfile_gfsf${fcsthrs} -not "(APCP|ACPCP)" -grib tmp.grb2
-    $WGRIB2 tmpfile_gfsf${fcsthrs} -match APCP -append -grib tmp.grb2 -quit
-    $WGRIB2 tmpfile_gfsf${fcsthrs} -match ACPCP -append -grib tmp.grb2 -quit
-    mv tmp.grb2 tmpfile_gfsf${fcsthrs}
+    $WGRIB2 tmpfile_wafsf${fcsthrs} -not "(APCP|ACPCP)" -grib tmp.grb2
+    $WGRIB2 tmpfile_wafsf${fcsthrs} -match APCP -append -grib tmp.grb2 -quit
+    $WGRIB2 tmpfile_wafsf${fcsthrs} -match ACPCP -append -grib tmp.grb2 -quit
+    mv tmp.grb2 tmpfile_wafsf${fcsthrs}
 fi
 # U V will have the same grid message number by using -ncep_uv.
 # U V will have the different grid message number without -ncep_uv.
-$WGRIB2 tmpfile_gfsf${fcsthrs} \
+$WGRIB2 tmpfile_wafsf${fcsthrs} \
                       -set master_table 6 \
                       -new_grid_winds earth -set_grib_type jpeg \
                       -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
-                      -new_grid latlon 0:288:1.25 90:145:-1.25 gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2
-$WGRIB2 -s gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2 > gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2.idx
+                      -new_grid latlon 0:288:1.25 90:145:-1.25 ${RUN}.t${cyc}z.awf_grd45f${fcsthrs}.grib2
+$WGRIB2 -s ${RUN}.t${cyc}z.awf_grd45f${fcsthrs}.grib2 > ${RUN}.t${cyc}z.awf_grd45f${fcsthrs}.grib2.idx
 
 # For FAA, add WMO header. The header is different from WAFS
 export pgm=$TOCGRIB2
 . prep_step
 startmsg
-export FORT11=gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2
+export FORT11=${RUN}.t${cyc}z.awf_grd45f${fcsthrs}.grib2
 export FORT31=" "
 export FORT51=grib2.t${cyc}z.awf_grbf${fcsthrs}.45
-$TOCGRIB2 <  $FIXgfs/grib2_gfs_awff${fcsthrs}.45 >> $pgmout 2> errfile
+$TOCGRIB2 <  $FIXwafs/grib2_gfs_awff${fcsthrs}.45 >> $pgmout 2> errfile
 err=$?;export err ;err_chk
 echo " error from tocgrib=",$err
 
@@ -130,28 +128,28 @@ if [ $wafs_timewindow = 'yes' ] ; then
 # 2) traditional WAFS fields
 #---------------------------
     # 3D data from $wafs2, on exact model pressure levels
-    $WGRIB2 $wafs2 | grep -F -f $FIXgfs/grib2_gfs_wafs_wafsmaster.list | $WGRIB2 -i $wafs2 -grib tmpfile_gfsf${fcsthrs}
+    $WGRIB2 $wafs2 | grep -F -f $FIXwafs/grib2_wafs.gfs_master.list | $WGRIB2 -i $wafs2 -grib tmpfile_wafsf${fcsthrs}
     # 2D data from $master2
-    tail -5 $FIXgfs/grib2_gfs_wafs_wafsmaster.list > grib2_gfs_wafs_wafsmaster.list.2D
-    $WGRIB2 $master2 | grep -F -f grib2_gfs_wafs_wafsmaster.list.2D | $WGRIB2 -i $master2 -grib tmpfile_gfsf${fcsthrs}.2D
+    tail -5 $FIXwafs/grib2_wafs.gfs_master.list > grib2_wafs.gfs_master.list.2D
+    $WGRIB2 $master2 | grep -F -f grib2_wafs.gfs_master.list.2D | $WGRIB2 -i $master2 -grib tmpfile_wafsf${fcsthrs}.2D
     # Complete list of WAFS data
-    cat tmpfile_gfsf${fcsthrs}.2D >> tmpfile_gfsf${fcsthrs}
+    cat tmpfile_wafsf${fcsthrs}.2D >> tmpfile_wafsf${fcsthrs}
     # WMO header
-    cp $FIXgfs/grib2_gfs_wafsf${fcsthrs}.45 wafs_wmo_header45
+    cp $FIXwafs/grib2_wafsf${fcsthrs}.45 wafs_wmo_header45
     # U V will have the same grid message number by using -ncep_uv.
     # U V will have the different grid message number without -ncep_uv.
-    $WGRIB2 tmpfile_gfsf${fcsthrs} \
+    $WGRIB2 tmpfile_wafsf${fcsthrs} \
             -set master_table 6 \
             -new_grid_winds earth -set_grib_type jpeg \
             -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
-            -new_grid latlon 0:288:1.25 90:145:-1.25 gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
-    $WGRIB2 -s gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx
+            -new_grid latlon 0:288:1.25 90:145:-1.25 ${RUN}.t${cyc}z.grd45f${fcsthrs}.grib2
+    $WGRIB2 -s ${RUN}.t${cyc}z.grd45f${fcsthrs}.grib2 > ${RUN}.t${cyc}z.grd45f${fcsthrs}.grib2.idx
 
     # For WAFS, add WMO header. Processing WAFS GRIB2 grid 45 for ISCS and WIFS
     export pgm=$TOCGRIB2
     . prep_step
     startmsg
-    export FORT11=gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+    export FORT11=${RUN}.t${cyc}z.grd45f${fcsthrs}.grib2
     export FORT31=" "
     export FORT51=grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
     $TOCGRIB2 < wafs_wmo_header45 >> $pgmout 2> errfile
@@ -167,13 +165,13 @@ if [ $SENDCOM = "YES" ] ; then
     ##############################
 
     # FAA data
-    mv gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2 $COMOUT/gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2
-    mv gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2.idx $COMOUT/gfs.t${cyc}z.awf_grb45f${fcsthrs}.grib2.idx
+    mv ${RUN}.t${cyc}z.awf_grd45f${fcsthrs}.grib2 $COMOUT/${RUN}.t${cyc}z.awf_grd45f${fcsthrs}.grib2
+    mv ${RUN}.t${cyc}z.awf_grd45f${fcsthrs}.grib2.idx $COMOUT/${RUN}.t${cyc}z.awf_grd45f${fcsthrs}.grib2.idx
 
     # WAFS data
     if [ $wafs_timewindow = 'yes' ] ; then
-	mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
-	mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx
+	mv ${RUN}.t${cyc}z.grd45f${fcsthrs}.grib2 $COMOUT/${RUN}.t${cyc}z.grd45f${fcsthrs}.grib2
+	mv ${RUN}.t${cyc}z.grd45f${fcsthrs}.grib2.idx $COMOUT/${RUN}.t${cyc}z.grd45f${fcsthrs}.grib2.idx
     fi
 
     ##############################
@@ -197,7 +195,7 @@ if [ $SENDDBN = "YES" ] ; then
 #    Distribute Data to WOC
 #  
     if [ $wafs_timewindow = 'yes' ] ; then
-	$DBNROOT/bin/dbn_alert MODEL GFS_WAFS_1P25_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+	$DBNROOT/bin/dbn_alert MODEL WAFS_1P25_GB2 $job $COMOUT/${RUN}.t${cyc}z.grd45f${fcsthrs}.grib2
 #
 #       Distribute Data to TOC TO WIFS FTP SERVER (AWC)
 #
@@ -214,9 +212,9 @@ fi
 ################################################################################
 # GOOD RUN
 set +x
-echo "**************JOB EXGFS_ATMOS_WAFS_GRIB2.SH COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_ATMOS_WAFS_GRIB2.SH COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_ATMOS_WAFS_GRIB2.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXWAFS_GRIB2.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXWAFS_GRIB2.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXWAFS_GRIB2.SH COMPLETED NORMALLY ON THE IBM"
 set -x
 ################################################################################
 

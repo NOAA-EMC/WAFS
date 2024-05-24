@@ -1,6 +1,6 @@
 #!/bin/sh
 ######################################################################
-#  UTILITY SCRIPT NAME :  exgfs_atmos_wafs_grib.sh
+#  UTILITY SCRIPT NAME :  exwafs_grib.sh
 #         DATE WRITTEN :  10/04/2004
 #
 #  Abstract:  This utility script produces the  WAFS GRIB
@@ -20,6 +20,7 @@ echo "History: OCT 2004 - First implementation of this new script."
 echo "         Aug 2015 - Modified for Phase II"
 echo "         Dec 2015 - Modified for input model data in Grib2"
 echo "         Oct 2021 - Remove jlogfile"
+echo "         May 2024 - WAFS separation"
 echo " "
 #####################################################################
 set +x
@@ -34,7 +35,7 @@ then
 #   export job=${job:-interactive}
 else
    echo ""
-   echo "Usage: exgfs_atmos_wafs_grib.sh  \$fcsthrs "
+   echo "Usage: exwafs_grib.sh  \$fcsthrs "
    echo ""
    exit 16
 fi
@@ -44,7 +45,7 @@ cd $DATA
 set -x
 
 # To fix bugzilla 628 ( removing 'j' ahead of $job )
-export jobsuffix=gfs_atmos_wafs_f${fcsthrs}_$cyc
+export jobsuffix=wafs_f${fcsthrs}_$cyc
 
 ###############################################
 # Wait for the availability of the pgrib file
@@ -55,7 +56,7 @@ icnt=1
 while [ $icnt -lt 1000 ]
 do
 #  if [ -s $COMIN/${RUN}.${cycle}.pgrbf$fcsthrs ]
-  if [ -s $COMIN/${RUN}.${cycle}.pgrb2.1p00.f$fcsthrs000 ]
+  if [ -s $COMINgfs/gfs.${cycle}.pgrb2.1p00.f$fcsthrs000 ]
   then
      break
   fi
@@ -106,36 +107,36 @@ fi
 
 if test $fcsthrs -ge 12 -a $fcsthrs -le 24
 then
-    sh $USHgfs/mkwfsgbl.sh ${fcsthrs} a
+    sh $USHwafs/mkwfsgbl.sh ${fcsthrs} a
 fi
 
 if test $fcsthrs -eq 30
 then
-    sh $USHgfs/mkwfsgbl.sh ${fcsthrs} a
+    sh $USHwafs/mkwfsgbl.sh ${fcsthrs} a
     for fcsthrs in 12 18 24 30
     do
-       sh $USHgfs/mkwfsgbl.sh ${fcsthrs} b
+       sh $USHwafs/mkwfsgbl.sh ${fcsthrs} b
     done
-    sh $USHgfs/mkwfsgbl.sh 00 x
-    sh $USHgfs/mkwfsgbl.sh 06 x
+    sh $USHwafs/mkwfsgbl.sh 00 x
+    sh $USHwafs/mkwfsgbl.sh 06 x
 fi
 
 if test $fcsthrs -gt 30 -a $fcsthrs -le 48
 then
-    sh $USHgfs/mkwfsgbl.sh ${fcsthrs} x
+    sh $USHwafs/mkwfsgbl.sh ${fcsthrs} x
 fi
 
 if test $fcsthrs -eq 60 -o $fcsthrs -eq 72
 then
-    sh $USHgfs/mkwfsgbl.sh ${fcsthrs} x
+    sh $USHwafs/mkwfsgbl.sh ${fcsthrs} x
 fi
 
 ################################################################################
 # GOOD RUN
 set +x
-echo "**************JOB EXGFS_ATMOS_WAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_ATMOS_WAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_ATMOS_WAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXWAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXWAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXWAFS_GRIB.SH COMPLETED NORMALLY ON THE IBM"
 set -x
 ################################################################################
 
