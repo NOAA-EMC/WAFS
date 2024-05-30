@@ -19,8 +19,10 @@ sh sorc/checkout_upp.sh
 ```
 
 Way 2:
+Recursively clone repository if knowing the desired branch or tag
+```bash
 git clone --recursive -b desired_branch.or.tag  https://github.com/NOAA-EMC/WAFS
-
+```
 
 To compile:
 ==================================
