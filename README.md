@@ -1,7 +1,7 @@
 # WAFS
 Software necessary to generate WAFS products
 
-To install:
+To checkout:
 ==================================
 
 Way 1:
