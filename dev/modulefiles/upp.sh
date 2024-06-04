@@ -1,5 +1,5 @@
 #!/bin/bash
-# modulefile for EVS wafs stat
+# modulefile for UPP run
 set -x
 
 module load intel/${intel_ver}
