@@ -1,20 +1,31 @@
 # WAFS
 Software necessary to generate WAFS products
 
-To install:
+To checkout:
+==================================
 
+Way 1:
 Clone repository
 ```bash
 git clone https://github.com/NOAA-EMC/WAFS
 ```
 
-Move into desired branch and then run:
+Checkout the desired branch or tag
 
 Clone submodule and sub-submodule repository (including upp and upp/sorc/post_gtg):
 (gtg code is UCAR private, access needs to be authorized)
 ```bash
 sh sorc/checkout_upp.sh
 ```
+
+Way 2:
+Recursively clone repository if knowing the desired branch or tag
+```bash
+git clone --recursive -b desired_branch.or.tag  https://github.com/NOAA-EMC/WAFS
+```
+
+To compile:
+==================================
 
 Compile the executable files:
 ```bash

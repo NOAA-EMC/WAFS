@@ -12,6 +12,13 @@ set -x
 export KEEPDATA=${KEEPDATA:-NO}
 
 ############################################
+# Specify it is production or developmen
+############################################
+export envir=${envir:-prod}
+# print current environment
+env
+
+############################################
 # Working Directory
 ############################################
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
@@ -58,11 +65,6 @@ export COMINgfs=${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})/gfs.${PDY}/${c
 if [ $SENDCOM = YES ] ; then
   mkdir -p $COMOUT $PCOM
 fi
-
-############################################
-# print current environment
-############################################
-env
 
 ##############################################
 # Set up the forecast hours

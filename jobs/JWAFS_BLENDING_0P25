@@ -11,6 +11,13 @@ set -x
 export KEEPDATA=${KEEPDATA:-NO}
 
 ############################################
+# Specify it is production or developmen
+############################################
+export envir=${envir:-prod}
+# print current environment
+env
+
+############################################
 # Working Directory
 ############################################
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
@@ -60,11 +67,6 @@ fi
 
 export COMINus=${COMINus:-$COMIN}
 export COMINuk=${COMINuk:-$DCOMROOT/$PDY/wgrbbul/ukmet_wafs}
-
-############################################
-# print current environment
-############################################
-env
 
 ##############################################
 # Set up the forecast hours

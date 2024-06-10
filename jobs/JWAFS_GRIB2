@@ -12,6 +12,13 @@ set -x
 export KEEPDATA=${KEEPDATA:-NO}
 
 ############################################
+# Specify it is production or developmen
+############################################
+export envir=${envir:-prod}
+# print current environment
+env
+
+############################################
 # Working Directory
 ############################################
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
@@ -55,11 +62,6 @@ export SCRIPTSwafs=$HOMEwafs/scripts
 ################################################
 # Set up the input/output directory
 ################################################
-#### if [ $envir = "prod" ] || [ $envir = "para" ] ; then
-####  export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY}
-#### else
-####   export COMIN=${COMIN:-$COMROOT/${NET}/prod/$RUN.$PDY}
-#### fi
 
 export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${wafs_ver})/${RUN}.${PDY}/${cyc}}
 export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc}
@@ -70,11 +72,6 @@ export COMINgfs=${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})/gfs.${PDY}/${c
 if [ $SENDCOM = YES ] ; then
   mkdir -p $COMOUT $PCOM
 fi
-
-############################################
-# print current environment
-############################################
-env
 
 ##############################################
 # Set up the forecast hours

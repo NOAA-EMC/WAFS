@@ -18,7 +18,8 @@ INSTALL_PREFIX=${INSTALL_PREFIX:-"${DIR_ROOT}/sorc/install/wafs"}
 source "${DIR_ROOT}/ush/detect_machine.sh"
 
 # Load modules
-source "${DIR_ROOT}/ush/module-setup.sh"
+source "${DIR_ROOT}/ush/module-reset.sh"
+source "${DIR_ROOT}/versions/build.ver"
 module use "${DIR_ROOT}/modulefiles"
 module load wafs_"${MACHINE_ID}.${COMPILER}"
 module list
@@ -46,7 +47,7 @@ if [[ ! -d "${DIR_ROOT}/exec" ]]; then
 fi
 
 # Copy wafs executables to WAFS/exec
-for exe in wafs_blending_0p25.x wafs_cnvgrib2.x wafs_gcip.x wafs_grib2_0p25.x wafs_makewafs.x; do
+for exe in wafs_blending_0p25.x wafs_cnvgrib2.x wafs_gcip.x wafs_makewafs.x; do
   rm -rf "${DIR_ROOT}/exec/${exe}"
   cp "${INSTALL_PREFIX}/bin/${exe}" "${DIR_ROOT}/exec/${exe}"
 done
