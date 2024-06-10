@@ -12,3 +12,6 @@ git submodule update --init --recursive
 cd "${DIR_ROOT}/sorc/upp.fd"
 cp sorc/post_gtg.fd/*f90 sorc/ncep_post.fd/.
 cp sorc/post_gtg.fd/gtg.config.gfs parm/gtg.config.gfs
+
+############ cp UPP parm/ to the main vertical structure ############
+cp -r parm "${DIR_ROOT}/parm/upp"

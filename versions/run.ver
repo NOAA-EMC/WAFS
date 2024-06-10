@@ -27,6 +27,6 @@ export bufr_dump_ver=1.1.2
 # For UPP
 export hdf5_ver=1.10.6
 export netcdf_ver=4.7.4
-export crtm_ver=2.4.0.1
+# export crtm_ver=2.4.0.1 # WAFS doesn't need CRTM
 export craympich_ver=8.1.9
 export g2tmpl_ver=1.9.1

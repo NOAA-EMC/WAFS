@@ -19,6 +19,6 @@ module load wgrib2/$wgrib2_ver
 
 module load hdf5/$hdf5_ver
 module load netcdf/$netcdf_ver
-module load crtm/$crtm_ver
+#module load crtm/$crtm_ver # WAFS doesn't need CRTM
 module load cray-mpich/$craympich_ver
 module load g2tmpl/$g2tmpl_ver

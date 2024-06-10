@@ -12,7 +12,7 @@ fi
 
 # Build upp executable file
 cd "${DIR_ROOT}/sorc/upp.fd/sorc"
-sh build_ncep_post.sh
+./build_ncep_post.sh
 
 # Copy upp to WAFS/exec
 rm -rf "${DIR_ROOT}/exec/ncep_post"

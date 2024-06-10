@@ -15,10 +15,10 @@ INSTALL_PREFIX=${INSTALL_PREFIX:-"${DIR_ROOT}/sorc/install/wafs"}
 #==============================================================================#
 
 # Detect machine (sets MACHINE_ID)
-source "${DIR_ROOT}/sorc/detect_machine.sh"
+source "${DIR_ROOT}/ush/detect_machine.sh"
 
 # Load modules
-source "${DIR_ROOT}/sorc/module-reset.sh"
+source "${DIR_ROOT}/ush/module-reset.sh"
 source "${DIR_ROOT}/versions/build.ver"
 module use "${DIR_ROOT}/modulefiles"
 module load wafs_"${MACHINE_ID}.${COMPILER}"
