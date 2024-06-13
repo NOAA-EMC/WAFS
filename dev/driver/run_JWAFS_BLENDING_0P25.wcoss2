@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #PBS -j oe
-#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs.new/log.wafs_blending_0p25
+#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_blending_0p25
 #PBS -N wafs_blending_0p25
 #PBS -l walltime=00:30:00
 #PBS -l select=1:ncpus=1:mem=15GB
@@ -21,20 +21,9 @@ export MP_LABELIO=yes
 #export MPIRUN="mpiexec -ppn 1 -n 1"
 
 ############################################
-# Define ROOT directories
-############################################
-echo $COMROOT
-export NWROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao/git
-
-export DBNROOT=${UTILROOT}/fakedbn
-
-# for UK (canned)  data
-export DCOMROOT=/lfs/h1/ops/prod/dcom
-export DCOMROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao/separation/dcom
-
-################################
 # Set up the HOME directory
-################################
+############################################
+export NWROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao/git
 export HOMEwafs=${HOMEwafs:-${NWROOT}/WAFS.fork}
 
 ############################################
@@ -44,21 +33,24 @@ source $HOMEwafs/versions/run.ver
 module reset
 source $HOMEwafs/dev/modulefiles/wafs.sh
 
-module list
-
 # make_NTC_file.pl
 module load util_shared/$util_shared_ver
 
+module list
+
 ############################################
-# required exports!
+# Modify ROOT after loading modules
+############################################
+export DBNROOT=${UTILROOT}/fakedbn
+# for UK (canned)  data
+export DCOMROOT=/lfs/h1/ops/prod/dcom
+export DCOMROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao/separation/dcom
+
+############################################
+# Define envir
 ############################################
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
 export envir=para
-
-export cyc=${cyc:-00}
-
-# wafs_blending for blending icing turbulence of US and UK
-export job=wafs_blending_0p25_${cyc}
 
 ############################################
 # set NET RUN
@@ -76,6 +68,11 @@ export jobid=${job}.${pid}
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
 export PDY=20240522
+
+export cyc=${cyc:-00}
+
+# wafs_blending for blending icing turbulence of US and UK
+export job=wafs_blending_0p25_${cyc}
 
 USER=`whoami`
 
@@ -98,7 +95,7 @@ export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
 export COMPATH=$COMROOT/wafs
 
-export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs.new/$jobid
+export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/blending.$jobid
 
 ############################################
 # run the job

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #PBS -j oe
-#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs.new/log.wafs_grib2_0p25
+#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib2_0p25
 #PBS -N wafs_grib2_0p25
 #PBS -l walltime=00:30:00
 #PBS -l select=1:ncpus=39:mem=150GB
@@ -21,14 +21,9 @@ export OMP_NUM_THREADS=$threads
 export MP_LABELIO=yes
 
 ############################################
-# Define ROOT directories
+# Set up the HOME directory
 ############################################
 export NWROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao/git
-export DBNROOT=${UTILROOT}/fakedbn
-
-################################
-# Set up the HOME directory
-################################
 export HOMEwafs=${HOMEwafs:-${NWROOT}/WAFS.fork}
 
 ############################################
@@ -45,15 +40,15 @@ module load cfp/$cfp_ver
 module list
 
 ############################################
-# required exports!
+# Modify ROOT after loading modules
+############################################
+export DBNROOT=${UTILROOT}/fakedbn
+
+############################################
+# Define envir
 ############################################
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
 export envir=para
-
-export cyc=${cyc:-00}
-
-# wafs_grib2 for generating global WAFS on grid 45
-export job=wafs_grib2_0p25_${cyc}
 
 ############################################
 # set NET RUN
@@ -71,6 +66,11 @@ export jobid=${job}.${pid}
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
 export PDY=20240522
+
+export cyc=${cyc:-00}
+
+# wafs_grib2 for generating global WAFS on grid 45
+export job=wafs_grib2_0p25_${cyc}
 
 USER=`whoami`
 
@@ -93,7 +93,7 @@ export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
 export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}:/lfs/h2/emc/vpppg/noscrub/yali.mao/separation/prod/com/wafs
 
-export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs.new/$jobid
+export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/grib2_0p25.$jobid
 
 ############################################
 # run the job
