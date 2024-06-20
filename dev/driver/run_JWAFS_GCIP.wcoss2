@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #PBS -j oe
-#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs.new/log.wafs_gcip
+#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_gcip
 #PBS -N wafs_gcip
 #PBS -l walltime=00:30:00
 #PBS -l select=1:ncpus=2:mem=50GB
@@ -22,20 +22,9 @@ export MP_LABELIO=yes
 export MPIRUN="mpiexec -np 2 -cpu-bind verbose,core cfp"
 
 ############################################
-# Define ROOT directories
+# Set up the HOME directory
 ############################################
 export NWROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao/git
-echo $DCOMROOT
-# for satellite data
-#export DCOMROOT=/gpfs/gp1/nco/ops/dcom
-
-# For canned data:
-#export DCOMROOT=/gpfs/dell2/emc/modeling/noscrub/Hui-Ya.Chuang/2018impl/datainput/dcom
-export DCOMROOT=/lfs/h1/ops/prod/dcom
-
-################################
-# Set up the HOME directory
-################################
 export HOMEwafs=${HOMEwafs:-${NWROOT}/WAFS.fork}
 
 ############################################
@@ -54,15 +43,16 @@ module load bufr_dump/$bufr_dump_ver
 module list
 
 ############################################
-# required exports!
+# Modify ROOT after loading modules
+############################################
+echo $DCOMROOT
+export DCOMROOT=/lfs/h1/ops/prod/dcom
+
+############################################
+# Define envir
 ############################################
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
 export envir=para
-
-export cyc=${cyc:-00}
-
-# wafs_gcip for generating global icing analysis for every 3 hours
-export job=wafs_gcip_${cyc}
 
 ############################################
 # set NET RUN
@@ -74,10 +64,15 @@ export RUN=wafs
 ############################################
 # user defined
 ############################################
+export PDY=20240522
+
+export cyc=${cyc:-00}
+
+# wafs_gcip for generating global icing analysis for every 3 hours
+export job=wafs_gcip_${cyc}
+
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
-
-export PDY=20240522
 
 USER=`whoami`
 
@@ -101,7 +96,7 @@ export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
 export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}:${COMPATHradar:-/lfs/h1/ops/prod/com/radarl2}
 
-export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs.new/$jobid
+export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/gcip.$jobid
 
 ############################################
 # run the job
