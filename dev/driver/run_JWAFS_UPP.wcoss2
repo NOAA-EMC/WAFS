@@ -7,7 +7,7 @@
 #PBS -l walltime=00:20:00
 #PBS -l select=1:mpiprocs=126:ompthreads=1:ncpus=126
 #PBS -l place=vscatter:exclhost
-#PBS -q debug=true
+#PBS -q debug
 #PBS -A GFS-DEV
 ##PBS -V
 
@@ -17,7 +17,7 @@ set -xa
 export threads=1
 export MP_LABELIO=yes
 export OMP_NUM_THREADS=$threads
-export APRUN='mpiexec -l -n 126 -ppn 126 --cpu-bind depth --depth 1'
+export MPIRUN='mpiexec -l -n 126 -ppn 126 --cpu-bind depth --depth 1'
 
 echo "starting time $PBS_JOBNAME"
 
@@ -30,8 +30,8 @@ export HOMEwafs=${HOMEwafs:-${NWROOT}/WAFS.fork}
 # specify user's own post working directory for testing
 export EXECwafs=$HOMEwafs/exec
 # specify variables if testing post in non gfs structure environment
-export POSTGRB2TBL=$HOMEwafs/parm/params_grib2_tbl_new
-export PARMwafs=$HOMEwafs/parm/upp
+#export PARMwafs=$HOMEwafs/parm/upp
+#export POSTGRB2TBL=$PARMwafs/params_grib2_tbl_new
 
 ############################################
 # Loading module
@@ -53,7 +53,7 @@ export DBNROOT=${UTILROOT}/fakedbn
 # Define envir
 ############################################
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
-export envir=para
+export envir=prod
 
 ############################################
 # set NET RUN
@@ -62,15 +62,14 @@ export envir=para
 export NET=wafs
 export RUN=wafs
 
+export RUNupp=gfs
+
 ############################################
 # user defined
 ############################################
-export pid=${pid:-$$}
-export jobid=${job}.${pid}
-
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20240522
+export PDY=20240617
 
 export cyc=${cyc:-00}
 export cycle=t${cyc}z
@@ -79,6 +78,9 @@ fhours="018"
 
 # wafs_grib2 for generating global WAFS on grid 45
 export job=wafs_upp_${cyc}
+
+export pid=${pid:-$$}
+export jobid=${job}.${pid}
 
 USER=`whoami`
 
@@ -103,7 +105,7 @@ export OUTPUT_FILE=netcdf
 
 export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
-export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}
+export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/$RUNupp}
 
 DATAroot=/lfs/h2/emc/ptmp/$USER/working_wafs
 
@@ -115,73 +117,8 @@ for fhr in $fhours ; do
     export DATA=$DATAroot/upp.f$fhr.${jobid}
     export fhr
 
-    $HOMEwafs/jobs/JWAFS_GRIB2_0P25
+    $HOMEwafs/jobs/JWAFS_UPP
     echo $?
 
 done
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-##############################################
-# Define COM directories
-##############################################
-#export COMIN=$COMINP/gfs.${PDY}/${cyc}
-export COMIN=${COMIN:-$COMINP/gfs.${PDY}/${cyc}/atmos}
-# specify my own COMOUT dir to mimic operations
-export COMOUT=$rundir/com/${RUN}.$PDY/${cyc}.$ncpus
-mkdir -p $COMOUT
-
-# specify variables if testing post in non gfs structure environment
-export POSTGRB2TBL=${HOMEgfs}/parm/params_grib2_tbl_new
-export PARMpost=${HOMEgfs}/parm
-
-export PGBF=NO
-export PGB1F=NO
-export FLXF=NO
-export GOESF=NO
-export WAFSF=YES
-export KEEPDATA=YES
-export OUTPUT_FILE=netcdf
-
-
-#############################################################
-
-for post_times in $allfhr; do
-
-    export DATA=$rundir/working.upp.$post_times.$ncpus
-    rm -rf ${DATA}
-    mkdir -p $DATA
-    cd $DATA
-
-    export post_times
-
-    date
-
-    $HOMEgfs/jobs/J_NCEPPOST
-
-    echo $?
-
-    date
-
-done
-
-#############################################################
 

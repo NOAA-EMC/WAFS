@@ -64,15 +64,15 @@ export RUN=wafs
 ############################################
 # user defined
 ############################################
-export pid=${pid:-$$}
-export jobid=${job}.${pid}
-
 export PDY=20240522
 
 export cyc=${cyc:-00}
 
 # wafs_gcip for generating global icing analysis for every 3 hours
 export job=wafs_gcip_${cyc}
+
+export pid=${pid:-$$}
+export jobid=${job}.${pid}
 
 USER=`whoami`
 

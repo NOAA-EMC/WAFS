@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 ########################################
 # WAFS UPP PRODUCT GENERATION
@@ -6,7 +6,7 @@
 
 export PS4='$SECONDS + '
 date
-set -xa
+set -x
 
 # keep the working directory or not
 export KEEPDATA=${KEEPDATA:-NO}
@@ -23,6 +23,8 @@ env
 ####################################
 export NET=${NET:-wafs}
 export RUN=${RUN:-wafs}
+
+export RUNupp=${RUNupp:-gfs}
 
 ####################################
 # obtain unique process id (pid) and make temp directory
@@ -67,14 +69,14 @@ export PARMwafs=$HOMEwafs/parm/upp
 export USHwafs=$HOMEwafs/ush
 export SCRIPTSwafs=$HOMEwafs/scripts
 
-export POSTGPEXEC=${POSTGPEXEC:-$EXECwafs/upp.x}
+export POSTGPEXEC=${POSTGPEXEC:-$EXECwafs/ncep_post}
 export POSTGRB2TBL=${POSTGRB2TBL:-${g2tmpl_ROOT}/share/params_grib2_tbl_new}
 
 ##############################################
 # Define COM directories
 ##############################################
 export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${wafs_ver})/${RUN}.${PDY}/${cyc}}
-export COMINgfs=${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})/gfs.${PDY}/${cyc}/atmos}
+export COMINgfs=${COMINgfs:-$(compath.py ${envir}/$RUNupp/${gfs_ver})/gfs.${PDY}/${cyc}/atmos}
 
 export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc} 
 mkdir -p $COMOUT
@@ -83,11 +85,6 @@ mkdir -p $COMOUT
 # Specify Special Post Vars
 ####################################
 numx=${numx:-1}
-
-#######################################
-# Specify Restart File Name to Key Off
-#######################################
-restart_file=$COMINgfs/gfs.t${cyc}z.logf
 
 ####################################
 # Specify Timeout Behavior of Post
@@ -104,6 +101,7 @@ export SLEEP_INT=5
 #########################################################
 # Execute the Script
 #########################################################
+export MPIRUN=${MPIRUN:-'mpiexec -l -n 126 -ppn 126 --cpu-bind depth --depth 1'}
 $SCRIPTSwafs/exwafs_upp.sh
 
 ##############################

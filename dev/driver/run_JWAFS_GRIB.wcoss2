@@ -56,9 +56,6 @@ export RUN=wafs
 ############################################
 # user defined
 ############################################
-export pid=${pid:-$$}
-export jobid=${job}.${pid}
-
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
 export PDY=20240522
@@ -69,6 +66,9 @@ export fcsthrs=36
 
 # wafs for octants (8 WAFS files)
 export job=wafs_f${fcsthrs}_${cyc}
+
+export pid=${pid:-$$}
+export jobid=${job}.${pid}
 
 USER=`whoami`
 
