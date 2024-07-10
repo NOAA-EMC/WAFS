@@ -57,7 +57,7 @@ export SCRIPTSwafs=$HOMEwafs/scripts
 ################################################
 # Set up the INPUT and OUTPUT directories
 ################################################
-export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${wafs_ver})/${RUN}.${PDY}/${cyc}}
+export COMIN=${COMIN:-$(compath.py $envir/$NET/$wafs_ver)/$RUN.$PDY/$cyc}
 export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc}
 export PCOM=${PCOM:-$COMOUT/wmo}
 

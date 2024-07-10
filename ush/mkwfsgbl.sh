@@ -43,7 +43,7 @@ else
 fi
 
 echo " ------------------------------------------"
-echo " BEGIN MAKING ${NET} WAFS PRODUCTS"
+echo " BEGIN MAKING gfs WAFS PRODUCTS"
 echo " ------------------------------------------"
 
 echo "Enter Make WAFS utility."
@@ -98,7 +98,7 @@ do
 
    export FORT11="pgrbf${hour}"
    export FORT31="pgrbif${hour}"
-   export FORT51="xtrn.wfs${NET}${hour}${sets}"
+   export FORT51="xtrn.wfsgfs${hour}${sets}"
    export FORT53="com.wafs${hour}${sets}"
 
    startmsg
@@ -112,7 +112,7 @@ do
 
    if test "$SENDCOM" = 'YES'
    then
-      cp xtrn.wfs${NET}${hour}${sets} $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$jobsuffix
+      cp xtrn.wfsgfs${hour}${sets} $PCOM/xtrn.wfsgfs${cyc}${hour}${sets}.$jobsuffix
    fi
 
    ##############################
@@ -120,9 +120,9 @@ do
    ##############################
 
    if [ "$SENDDBN_NTC" = 'YES' ] ; then
-      $DBNROOT/bin/dbn_alert GRIB_LOW $NET $job $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$jobsuffix
+      $DBNROOT/bin/dbn_alert GRIB_LOW gfs $job $PCOM/xtrn.wfsgfs${cyc}${hour}${sets}.$jobsuffix
    else
-      echo "xtrn.wfs${NET}${cyc}${hour}${sets}.$job file not posted to db_net."
+      echo "xtrn.wfsgfs${cyc}${hour}${sets}.$job file not posted to db_net."
    fi
 
    echo "Wafs Processing $hour hour completed normally"

@@ -49,8 +49,8 @@ cd $DATA
 master2=$COMINgfs/gfs.${cycle}.master.grb2f${fcsthrs}
 master2i=$COMINgfs/gfs.${cycle}.master.grb2if${fcsthrs}
 # 3D data
-wafs2=$COMIN/${RUN}.${cycle}.grb2f${fcsthrs}
-wafs2i=$COMIN/${RUN}.${cycle}.grb2f${fcsthrs}.idx
+wafs2=$COMIN/${RUN}.${cycle}.master.grb2f${fcsthrs}
+wafs2i=$COMIN/${RUN}.${cycle}.master.grb2f${fcsthrs}.idx
 
 icnt=1
 while [ $icnt -lt 1000 ]

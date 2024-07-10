@@ -44,7 +44,7 @@ export DBNROOT=${UTILROOT}/fakedbn
 # Define envir
 ############################################
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
-export envir=para
+export envir=prod
 
 ############################################run
 # set NET RUN
@@ -58,14 +58,12 @@ export RUN=wafs
 ############################################
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20240522
+export PDY=20240703
 
 export cyc=${cyc:-00}
-# 00 06 12 30 33
-export fcsthrs=36
 
 # wafs for octants (8 WAFS files)
-export job=wafs_f${fcsthrs}_${cyc}
+export job=wafs_grib_${cyc}
 
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
