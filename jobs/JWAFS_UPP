@@ -75,10 +75,9 @@ export POSTGRB2TBL=${POSTGRB2TBL:-${g2tmpl_ROOT}/share/params_grib2_tbl_new}
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${wafs_ver})/${RUN}.${PDY}/${cyc}}
-export COMINgfs=${COMINgfs:-$(compath.py ${envir}/$RUNupp/${gfs_ver})/gfs.${PDY}/${cyc}/atmos}
+export COMINgfs=${COMINgfs:-$(compath.py $envir/$RUNupp/$gfs_ver)/gfs.$PDY/$cyc/atmos}
 
-export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc} 
+export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc}
 mkdir -p $COMOUT
 
 ####################################

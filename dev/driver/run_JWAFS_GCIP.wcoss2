@@ -52,7 +52,7 @@ export DCOMROOT=/lfs/h1/ops/prod/dcom
 # Define envir
 ############################################
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
-export envir=para
+export envir=prod
 
 ############################################
 # set NET RUN
@@ -64,7 +64,7 @@ export RUN=wafs
 ############################################
 # user defined
 ############################################
-export PDY=20240522
+export PDY=20240703
 
 export cyc=${cyc:-00}
 

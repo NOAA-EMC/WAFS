@@ -52,7 +52,7 @@ export DBNROOT=${UTILROOT}/fakedbn
 # Define envir
 ############################################
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
-export envir=para
+export envir=prod
 
 ############################################
 # set NET RUN
@@ -64,7 +64,7 @@ export RUN=wafs
 ############################################
 # user defined
 ############################################
-export PDY=20240522
+export PDY=20240703
 
 export cyc=${cyc:-00}
 
@@ -94,7 +94,7 @@ export KEEPDATA=YES
 
 export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
-export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}:/lfs/h2/emc/vpppg/noscrub/yali.mao/separation/prod/com/wafs
+export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}:/lfs/h2/emc/ptmp/yali.mao/wafs_dwn/prod/com/wafs
 
 export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/grib2.$jobid
 

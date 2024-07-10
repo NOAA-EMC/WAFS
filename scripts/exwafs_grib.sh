@@ -24,7 +24,7 @@ echo "         May 2024 - WAFS separation"
 echo " "
 #####################################################################
 set +x
-fcsthrs_list="$1"
+fcsthrs="$1"
 num=$#
 
 if test "$num" -ge 1
@@ -45,7 +45,7 @@ cd $DATA
 set -x
 
 # To fix bugzilla 628 ( removing 'j' ahead of $job )
-export jobsuffix=wafs_f${fcsthrs}_$cyc
+export jobsuffix=gfs_atmos_wafs_f${fcsthrs}_$cyc
 
 ###############################################
 # Wait for the availability of the pgrib file

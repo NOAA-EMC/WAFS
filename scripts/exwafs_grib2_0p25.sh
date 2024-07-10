@@ -50,8 +50,8 @@ fi
 ##########################################################
 
 # 3D data (on new ICAO model pressure levels) and 2D data (CB)
-wafs2=$COMIN/${RUN}.${cycle}.grb2f${ffhr}
-wafs2i=$COMIN/${RUN}.${cycle}.grb2f${ffhr}.idx
+wafs2=$COMIN/${RUN}.${cycle}.master.grb2f${ffhr}
+wafs2i=$COMIN/${RUN}.${cycle}.master.grb2f${ffhr}.idx
 
 # 2D data from master file (U/V/H on max wind level, T/H at tropopause)
 master2=$COMINgfs/gfs.${cycle}.master.grb2f${ffhr}

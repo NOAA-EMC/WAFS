@@ -33,6 +33,7 @@ export ic_uk=1
 
 while test $ffhr -le $EHOUR
 do
+    ffhr2="$(printf "%02d" $(( 10#$ffhr )) )"
     ffhr="$(printf "%03d" $(( 10#$ffhr )) )"
 ##########################
 # look for US WAFS data
@@ -65,14 +66,14 @@ do
      while [ $ic_uk -le $SLEEP_LOOP_MAX_UK ]
      do
        # Three(3) unblended UK files for each cycle+fhour: icing, turb, cb
-       ukfiles=`ls $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 | wc -l`
+       ukfiles=`ls $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr2}.grib2 | wc -l`
        if [ $ukfiles -ge 3 ] ; then
            break
        fi
 
        if [ $ic_uk -eq $SLEEP_LOOP_MAX_UK ] ; then
-          echo "UK WAFS GRIB2 file  $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2  not found"
-	  echo "UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found"
+          echo "UK WAFS GRIB2 file  $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr2}.grib2  not found"
+	  echo "UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr2}.grib2 " not found"
           export SEND_US_WAFS=YES
 	  break
        else
@@ -103,11 +104,11 @@ do
 	 echo "turning back on dbn alert for unblended UK WAFS product"
 	 # retrieve UK products
 	 # Three(3) unblended UK files for each cycle+fhour: icing, turb, cb
-	 cat $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 > EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
+	 cat $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr2}.grib2 > EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
      else # elif [ $SEND_US_WAFS = "NO" -a $SEND_UK_WAFS = "NO" ] ; then
 	 # retrieve UK products
 	 # Three(3) unblended UK files for each cycle+fhour: icing, turb, cb
-	 cat $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 > EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
+	 cat $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr2}.grib2 > EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${ffhr}.grib2
 
 	 # pick up US data
 	 cp ${COMINus}/wafs.t${cyc}z.0p25_unblended.f${ffhr}.grib2 .
