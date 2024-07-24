@@ -1,0 +1,90 @@
+#!/bin/sh
+
+########################################
+# GFS manager
+########################################
+
+export PS4='$SECONDS + '
+date
+set -x
+
+# keep the working directory or not
+export KEEPDATA=${KEEPDATA:-NO}
+
+############################################
+# Specify it is production or developmen
+############################################
+export envir=${envir:-prod}
+# print current environment
+env
+
+############################################
+# Working Directory
+############################################
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+############################################
+# Output for executables
+############################################
+export pgmout=OUTPUT.$$
+
+############################################
+# Load the UTILITIES module
+############################################
+#### module load prod_util
+#### module load grib_util
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+export cycle=t${cyc}z
+setpdy.sh
+. ./PDY
+
+############################################
+# Set up the NET and RUN
+############################################
+export NET=${NET:-wafs}
+export RUN=${RUN:-wafs}
+
+############################################
+# Specify HOME Directory
+############################################
+export HOMEwafs=${HOMEwafs:-${NWROOT}/wafs.${wafs_ver}}
+export EXECwafs=$HOMEwafs/exec
+export FIXwafs=$HOMEwafs/fix/wafs
+export PARMwafs=$HOMEwafs/parm/wafs
+export USHwafs=$HOMEwafs/ush
+export SCRIPTSwafs=$HOMEwafs/scripts
+
+################################################
+# Set up the input/output directory
+################################################
+
+export COMIN=${COMIN:-$(compath.py $envir/$NET/$wafs_ver)/$RUN.$PDY/$cyc}
+export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc}
+export COMINgfs=${COMINgfs:-$(compath.py $envir/gfs/$gfs_ver)/gfs.$PDY/$cyc/atmos}
+
+########################################################
+# Execute the script.
+$HOMEwafs/scripts/exwafs_gfs_manager.sh
+########################################################
+
+############################################
+# print exec output
+############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+############################################
+# remove temporary working directory
+############################################
+if [ $KEEPDATA != YES ] ; then
+    rm -rf $DATA
+fi
+
+date
+
