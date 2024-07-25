@@ -1,10 +1,11 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_grib_%FHR%_%CYC%
+#PBS -N %RUN%_upp_%FHR%_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:05:00
-#PBS -l select=1:mpiprocs=1:ompthreads=1:ncpus=1:mem=1GB
+# TODO: Adjust resources for UPP job
+#PBS -l walltime=00:30:00  # TODO: Adjustment needed here
+#PBS -l select=1:mpiprocs=39:ompthreads=1:ncpus=39:mem=200GB  # TODO: Adjustment needed here
 #PBS -l place=vscatter
 #PBS -l debug=true
 
@@ -16,7 +17,6 @@ set -x
 
 export NET=%NET%
 export RUN=%RUN%
-export CDUMP=%RUN%
 export cyc=%CYC%
 export cycle=t%CYC%z
 export FHR=%FHR%
@@ -27,9 +27,8 @@ export FHR=%FHR%
 module load PrgEnv-intel/${PrgEnv_intel_ver}
 module load craype/${craype_ver}
 module load intel/${intel_ver}
-module load libjpeg/${libjpeg_ver}
-module load grib_util/$grib_util_ver
-module load wgrib2/${wgrib2_ver}
+module load cray-pals/${cray_pals_ver}
+# TODO: add runtime UPP required modules
 
 module list
 
@@ -40,7 +39,7 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEwafs}/jobs/JWAFS_GRIB
+${HOMEwafs}/jobs/JWAFS_UPP
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort

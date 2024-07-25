@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_grib2_0p25_%CYC%
+#PBS -N %RUN%_grib2_0p25_%FHR%_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -17,6 +17,9 @@ set -x
 export NET=%NET%
 export RUN=%RUN%
 export CDUMP=%RUN%
+export cyc=%CYC%
+export cycle=t%CYC%z
+export FHR=%FHR%
 
 ############################################################
 # Load modules
@@ -35,9 +38,8 @@ module list
 #############################################################
 # WCOSS environment settings
 #############################################################
-export cyc=%CYC%
-export cycle=t%CYC%z
 export USE_CFP=YES
+
 ############################################################
 # CALL executable job script here
 ############################################################
