@@ -59,7 +59,7 @@ for ((iter = 1; iter <= MAX_ITER; iter++)); do
         set +x
         echo "Releasing JWAFS_GCIP job for fhr=${fhr3}"
         set -x
-        ecflow_client --event release_wafs_gcip
+        ecflow_client --event "release_wafs_gcip_${fhr3}"
       fi
 
       if [[ " ${jwafs_grib_fhrs} " == *" ${fhr} "* ]]; then
