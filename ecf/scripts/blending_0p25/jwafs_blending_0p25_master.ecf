@@ -16,7 +16,6 @@ set -x
 
 export NET=%NET%
 export RUN=%RUN%
-export CDUMP=%RUN%
 export cyc=%CYC%
 export cycle=t%CYC%z
 export FHR=%FHR%
