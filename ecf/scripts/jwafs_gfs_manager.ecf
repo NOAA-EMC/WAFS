@@ -1,10 +1,10 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_blending_0p25_%CYC%
+#PBS -N %RUN%_gfs_manager_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:30:00
-#PBS -l select=1:mpiprocs=1:ompthreads=1:ncpus=1:mem=15GB
+#PBS -l walltime=03:00:00
+#PBS -l select=1:ncpus=1:mem=1GB
 #PBS -l place=vscatter
 #PBS -l debug=true
 
@@ -16,30 +16,18 @@ set -x
 
 export NET=%NET%
 export RUN=%RUN%
-export CDUMP=%RUN%
+export cyc=%CYC%
 
 ############################################################
 # Load modules
 ############################################################
-module load PrgEnv-intel/${PrgEnv_intel_ver}
-module load craype/${craype_ver}
-module load intel/${intel_ver}
-module load libjpeg/${libjpeg_ver}
-module load grib_util/${grib_util_ver}
-module load util_shared/${util_shared_ver}
 
 module list
 
-#############################################################
-# WCOSS environment settings
-#############################################################
-export cyc=%CYC%
-export cycle=t%CYC%z
-
 ############################################################
-# CALL executable job script here
+# CALL executable job script
 ############################################################
-${HOMEwas}/jobs/JWAFS_BLENDING_0P25
+${HOMEwafs}/jobs/JWAFS_GFS_MANAGER
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

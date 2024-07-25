@@ -1,10 +1,10 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_grib_%FHR%_%CYC%
+#PBS -N %RUN%_grib2_0p25_%FHR%_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:05:00
-#PBS -l select=1:mpiprocs=1:ompthreads=1:ncpus=1:mem=1GB
+#PBS -l walltime=00:30:00
+#PBS -l select=1:mpiprocs=39:ompthreads=1:ncpus=39:mem=200GB
 #PBS -l place=vscatter
 #PBS -l debug=true
 
@@ -26,20 +26,23 @@ export FHR=%FHR%
 module load PrgEnv-intel/${PrgEnv_intel_ver}
 module load craype/${craype_ver}
 module load intel/${intel_ver}
+module load cray-pals/${cray_pals_ver}
 module load libjpeg/${libjpeg_ver}
-module load grib_util/$grib_util_ver
+module load grib_util/${grib_util_ver}
 module load wgrib2/${wgrib2_ver}
+module load cfp/${cfp_ver}
 
 module list
 
 #############################################################
 # WCOSS environment settings
 #############################################################
+export USE_CFP=YES
 
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEwafs}/jobs/JWAFS_GRIB
+${HOMEwafs}/jobs/JWAFS_GRIB2_0P25
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
