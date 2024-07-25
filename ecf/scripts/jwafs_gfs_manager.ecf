@@ -1,0 +1,40 @@
+#PBS -S /bin/bash
+#PBS -N %RUN%_gfs_manager_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=03:00:00
+#PBS -l select=1:ncpus=1:mem=1GB
+#PBS -l place=vscatter
+#PBS -l debug=true
+
+model=wafs
+%include <head.h>
+%include <envir-p1.h>
+
+set -x
+
+export NET=%NET%
+export RUN=%RUN%
+export cyc=%CYC%
+
+############################################################
+# Load modules
+############################################################
+
+module list
+
+############################################################
+# CALL executable job script
+############################################################
+${HOMEwafs}/jobs/JWAFS_GFS_MANAGER
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+%end
