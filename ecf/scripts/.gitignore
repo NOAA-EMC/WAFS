@@ -2,7 +2,7 @@
 upp/jwafs_upp_f*.ecf
 upp/jwafs_upp_anl.ecf
 grib2/1p25/jwafs_grib2_1p25_f*.ecf
-grib2/0p25/ncep/jwafs_grib2_0p25_ncep_f*.ecf
+grib2/0p25/jwafs_grib2_0p25_f*.ecf
 grib2/0p25/blending/jwafs_grib2_0p25_blending_f*.ecf
 gcip/jwafs_gcip_f*.ecf
 grib/jwafs_grib_f*.ecf
