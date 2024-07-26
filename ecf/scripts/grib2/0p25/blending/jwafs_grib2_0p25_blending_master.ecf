@@ -39,7 +39,7 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEwas}/jobs/JWAFS_GRIB2_0P25_BLENDING
+${HOMEwafs}/jobs/JWAFS_GRIB2_0P25_BLENDING
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
