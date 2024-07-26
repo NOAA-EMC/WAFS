@@ -32,5 +32,5 @@ Compile the executable files:
 sh sorc/build_all.sh
 ```
 
-`build_all.sh` will build WAFS executables and offline UPP executable.
+`build_all.sh` will copy the right files, build WAFS executables and offline UPP executable.
 
