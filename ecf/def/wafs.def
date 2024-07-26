@@ -11,7 +11,7 @@ suite wafs_suite
     family 00
       edit CYC '00'
       task jwafs_gfs_manager
-        trigger  /00/gfs/jgfs_forecast == started  # TODO: Correct the path and Need to ask NCO if this is correct?
+        trigger  /00/gfs/jgfs_forecast == active or /00/gfs/jgfs_forecast == complete
         event 1 release_wafs_upp_anl
         event 2 release_wafs_upp_000
         event 3 release_wafs_upp_001

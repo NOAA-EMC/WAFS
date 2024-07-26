@@ -42,7 +42,7 @@ export USE_CFP=YES
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEwafs}/jobs/JWAFS_GRIB2
+${HOMEwafs}/jobs/JWAFS_GRIB2_1P25
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
