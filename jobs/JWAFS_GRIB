@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 ########################################
 # WAFS GRIB  AWIPS PRODUCT GENERATION
 ########################################
 date
 export PS4='$SECONDS + ' 
-set -xa
+set -x
 
 export KEEPDATA=${KEEPDATA:-NO}
 
@@ -62,7 +62,7 @@ export SCRIPTSwafs=$HOMEwafs/scripts
 ################################################
 # Set up the input/output directory
 ################################################
-export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc} 
+export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc/grib}
 export PCOM=${PCOM:-$COMOUT/wmo}
 
 export COMINgfs=${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})/gfs.${PDY}/${cyc}/atmos}
@@ -71,19 +71,10 @@ if [ $SENDCOM = YES ] ; then
   mkdir -p $COMOUT $PCOM
 fi
 
-##############################################
-# Set up the forecast hours
-##############################################
-export FHOURS=${FHOURS:-"06 12 18 24 30 36 42 48 54 60 66 72"}
-
 ############################################
 # Execute the script.
 ############################################
-
-ic=0
-for fhr in $FHOURS ; do
-    ${SCRIPTSwafs}/exwafs_grib.sh $fhr
-done
+${SCRIPTSwafs}/exwafs_grib.sh $fhr
 
 export err=$?; err_chk
 

@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 #PBS -j oe
-#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_octant
+#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib
 #PBS -N wafs_octant
 #PBS -l walltime=00:30:00
 #PBS -l select=1:ncpus=1:mem=2GB
@@ -13,7 +13,7 @@
 
 # 8 means octants
 
-set -xa
+set -x
 
 # specify computation resource
 export threads=1
@@ -61,6 +61,8 @@ export PDY=`cut -c 7-14 $COMROOT/date/t00z`
 export PDY=20240703
 
 export cyc=${cyc:-00}
+
+export fhr=006
 
 # wafs for octants (8 WAFS files)
 export job=wafs_grib_${cyc}

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ############################################
 # WAFS GCIP PRODUCT GENERATION
@@ -6,7 +6,7 @@
 
 date
 export PS4='$SECONDS + ' 
-set -xa
+set -x
 
 # keep the working directory or not
 export KEEPDATA=${KEEPDATA:-NO}
@@ -60,7 +60,7 @@ export USHwafs=$HOMEwafs/ush
 export SCRIPTSwafs=$HOMEwafs/scripts
 
 # For BUFR dump, TMPDIR must be defined
-export TMPDIR=$DATA  # will be overwritten in exwafs script for parallel runs on ffhr
+export TMPDIR=$DATA  # will be overwritten in exwafs script for parallel runs on fhr
 # For BUFR dump, these two environment variables are defined by module load
 # HOMEobsproc_shared_bufr_dumplist <= module load bufr_dumplist/1.5.0
 # HOMEobsproc_dump   <= module load dumpjb/4.0.0
@@ -86,7 +86,7 @@ export COMINradar=${COMINradar:-$(compath.py ${envir}/radarl2/$radarl2_ver)/rada
 #
 
 # COMOUT
-export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc}
+export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc/gcip}
 
 mkdir -p $COMOUT
 
@@ -103,22 +103,9 @@ export SLEEP_INT=10
 ############################################
 # Execute the script, parallel run for 000 003
 ############################################
-export MPIRUN=${MPIRUN:-"mpiexec -l -np 2 --cpu-bind verbose,core cfp"}
-
-# GCIP runs f000 f003 for each cycle, 4 times/day,
-# to make the output valid every 3 hours 
-if [ `echo $MPIRUN | cut -d " " -f1` = 'srun' ] ; then
-  echo 0 ${SCRIPTSwafs}/exwafs_gcip.sh 000 >> gcip.cmdfile
-  echo 1 ${SCRIPTSwafs}/exwafs_gcip.sh 003 >> gcip.cmdfile
-else
-  echo ${SCRIPTSwafs}/exwafs_gcip.sh 000 >> gcip.cmdfile
-  echo ${SCRIPTSwafs}/exwafs_gcip.sh 003 >> gcip.cmdfile
-  export MP_PGMMODEL=mpmd
-fi
-
-$MPIRUN gcip.cmdfile
-
+${SCRIPTSwafs}/exwafs_gcip.sh $fhr
 export err=$?
+
 if [ $err -eq 0 ] ; then
   echo "JOB $job HAS COMPLETED NORMALLY!"
 elif [ $err -eq 1 ] ; then

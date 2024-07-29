@@ -1,10 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 #PBS -j oe
-#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib2
+#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib2_1p25
 #PBS -N wafs_grib2
 #PBS -l walltime=00:30:00
-#PBS -l select=1:ncpus=18:mem=80GB
 #PBS -q debug
 #PBS -A GFS-DEV
 ##PBS -V
@@ -13,7 +12,7 @@
 #As first line, cd to current working directory where the job was submitted from
 #cd $PBS_O_WORKDIR
 
-set -xa
+set -x
 
 # specify computation resource
 #OpenMP
@@ -36,10 +35,6 @@ export HOMEwafs=${HOMEwafs:-${NWROOT}/WAFS.fork}
 source $HOMEwafs/versions/run.ver
 module reset
 source $HOMEwafs/dev/modulefiles/wafs.sh
-
-# For MPMD
-module load cray-pals/$craypals_ver
-module load cfp/$cfp_ver
 
 module list
 
@@ -67,8 +62,9 @@ export RUN=wafs
 export PDY=20240703
 
 export cyc=${cyc:-00}
+export fhr=006
 
-export job=wafs_grib2_${cyc}
+export job=wafs_grib2_1p25_${cyc}
 
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
@@ -96,14 +92,11 @@ export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
 export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}:/lfs/h2/emc/ptmp/yali.mao/wafs_dwn/prod/com/wafs
 
-export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/grib2.$jobid
+export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/grib2_1p25.$jobid
 
 ############################################
 # run the job
 #############################################
-
-export FHOURS=
-
-sh $HOMEwafs/jobs/JWAFS_GRIB2
+sh $HOMEwafs/jobs/JWAFS_GRIB2_1P25
 
 exit

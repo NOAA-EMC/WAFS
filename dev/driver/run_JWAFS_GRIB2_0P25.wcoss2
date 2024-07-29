@@ -1,10 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 #PBS -j oe
 #PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib2_0p25
 #PBS -N wafs_grib2_0p25
 #PBS -l walltime=00:30:00
-#PBS -l select=1:ncpus=39:mem=150GB
 #PBS -q debug
 #PBS -A GFS-DEV
 ##PBS -V
@@ -13,7 +12,7 @@
 #As first line, cd to current working directory where the job was submitted from
 #cd $PBS_O_WORKDIR
 
-set -xa
+set -x
 
 # specify computation resource
 export threads=1
@@ -32,10 +31,6 @@ export HOMEwafs=${HOMEwafs:-${NWROOT}/WAFS.fork}
 source $HOMEwafs/versions/run.ver
 module reset
 source $HOMEwafs/dev/modulefiles/wafs.sh
-
-# For MPMD
-module load cray-pals/$craypals_ver
-module load cfp/$cfp_ver
 
 module list
 
@@ -65,6 +60,8 @@ export PDY=`cut -c 7-14 $COMROOT/date/t00z`
 export PDY=20240703
 
 export cyc=${cyc:-00}
+
+export fhr=006
 
 # wafs_grib2 for generating global WAFS on grid 45
 export job=wafs_grib2_0p25_${cyc}
@@ -99,10 +96,6 @@ export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/grib2_0p25.$jobid
 ############################################
 # run the job
 #############################################
-
-export FHOUT_GFS=
-export FHOURS=
-
 sh $HOMEwafs/jobs/JWAFS_GRIB2_0P25
 
 exit

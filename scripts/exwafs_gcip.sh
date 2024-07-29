@@ -1,4 +1,5 @@
-#!/bin/ksh
+#!/bin/bash
+
 ######################################################################
 #  UTILITY SCRIPT NAME :  exwafs_gcip.sh
 #         DATE WRITTEN :  01/28/2015
@@ -28,11 +29,11 @@ echo "May 2024 - WAFS separation"
 echo " "
 #####################################################################
 
-set -xa
+set -x
 
-# Set up working dir for parallel runs based on ffhr
-ffhr=$1
-DATA=$DATA/$ffhr
+# Set up working dir for parallel runs based on fhr
+fhr=$1
+DATA=$DATA/$fhr
 mkdir -p $DATA
 cd $DATA
 # Overwrite TMPDIR for dumpjb
@@ -45,14 +46,14 @@ configFile=gcip.config
 echo 'before preparing data' `date`
 
 # valid time. no worry, it won't be across to another date
-vhour=$(( $ffhr + $cyc ))
+vhour=$(( $fhr + $cyc ))
 vhour="$(printf "%02d" $(( 10#$vhour )) )"
 
 ########################################################
 # Preparing data
 
 # model data
-masterFile=$COMINgfs/gfs.t${cyc}z.master.grb2f$ffhr
+masterFile=$COMINgfs/gfs.t${cyc}z.master.grb2f$fhr
 
 # check the availability of model file
 icnt=1

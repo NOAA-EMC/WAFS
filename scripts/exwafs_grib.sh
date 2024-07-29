@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 ######################################################################
 #  UTILITY SCRIPT NAME :  exwafs_grib.sh
 #         DATE WRITTEN :  10/04/2004
@@ -8,9 +9,9 @@
 #     Input:  1 arguments are passed to this script.
 #             1st argument - Forecast Hour - format of 2I
 #
-#     Logic:   If we are processing fcsthrss 12-30, we have the
+#     Logic:   If we are processing fhrs 12-30, we have the
 #              added variable of the a or b in the process accordingly.
-#              The other fcsthrss, the a or b  is dropped.
+#              The other fhrs, the a or b  is dropped.
 #
 #####################################################################
 echo "------------------------------------------------"
@@ -24,7 +25,7 @@ echo "         May 2024 - WAFS separation"
 echo " "
 #####################################################################
 set +x
-fcsthrs="$1"
+fhr="$1"
 num=$#
 
 if test "$num" -ge 1
@@ -35,7 +36,7 @@ then
 #   export job=${job:-interactive}
 else
    echo ""
-   echo "Usage: exwafs_grib.sh  \$fcsthrs "
+   echo "Usage: exwafs_grib.sh  \$fhr "
    echo ""
    exit 16
 fi
@@ -45,18 +46,18 @@ cd $DATA
 set -x
 
 # To fix bugzilla 628 ( removing 'j' ahead of $job )
-export jobsuffix=gfs_atmos_wafs_f${fcsthrs}_$cyc
+export jobsuffix=gfs_atmos_wafs_f${fhr}_$cyc
 
 ###############################################
 # Wait for the availability of the pgrib file
 ###############################################
 # file name and forecast hour of GFS model data in Grib2 are 3 digits
-export fcsthrs000="$(printf "%03d" $(( 10#$fcsthrs )) )"
+export fhr000="$(printf "%03d" $(( 10#$fhr )) )"
 icnt=1
 while [ $icnt -lt 1000 ]
 do
-#  if [ -s $COMIN/${RUN}.${cycle}.pgrbf$fcsthrs ]
-  if [ -s $COMINgfs/gfs.${cycle}.pgrb2.1p00.f$fcsthrs000 ]
+#  if [ -s $COMIN/${RUN}.${cycle}.pgrbf$fhr ]
+  if [ -s $COMINgfs/gfs.${cycle}.pgrb2.1p00.f$fhr000 ]
   then
      break
   fi
@@ -96,39 +97,39 @@ echo "#####################################"
 echo " "
 set -x
 
-if test $fcsthrs -eq 0
+if test $fhr -eq 0
 then
     echo "  "
 fi
 
-#    If we are processing fcsthrss 12-30, we have the
+#    If we are processing fhrs 12-30, we have the
 #    added variable of the a  or b in the process.
-#    The other fcsthrss, the a or b  is dropped.
+#    The other fhrs, the a or b  is dropped.
 
-if test $fcsthrs -ge 12 -a $fcsthrs -le 24
+if test $fhr -ge 12 -a $fhr -le 24
 then
-    sh $USHwafs/mkwfsgbl.sh ${fcsthrs} a
+    sh $USHwafs/mkwfsgbl.sh ${fhr} a
 fi
 
-if test $fcsthrs -eq 30
+if test $fhr -eq 30
 then
-    sh $USHwafs/mkwfsgbl.sh ${fcsthrs} a
-    for fcsthrs in 12 18 24 30
+    sh $USHwafs/mkwfsgbl.sh ${fhr} a
+    for fhr in 12 18 24 30
     do
-       sh $USHwafs/mkwfsgbl.sh ${fcsthrs} b
+       sh $USHwafs/mkwfsgbl.sh ${fhr} b
     done
     sh $USHwafs/mkwfsgbl.sh 00 x
     sh $USHwafs/mkwfsgbl.sh 06 x
 fi
 
-if test $fcsthrs -gt 30 -a $fcsthrs -le 48
+if test $fhr -gt 30 -a $fhr -le 48
 then
-    sh $USHwafs/mkwfsgbl.sh ${fcsthrs} x
+    sh $USHwafs/mkwfsgbl.sh ${fhr} x
 fi
 
-if test $fcsthrs -eq 60 -o $fcsthrs -eq 72
+if test $fhr -eq 60 -o $fhr -eq 72
 then
-    sh $USHwafs/mkwfsgbl.sh ${fcsthrs} x
+    sh $USHwafs/mkwfsgbl.sh ${fhr} x
 fi
 
 ################################################################################
