@@ -108,7 +108,7 @@ fi
 
 if test $fhr -ge 12 -a $fhr -le 24
 then
-    sh $USHwafs/mkwfsgbl.sh ${fhr} a
+    $USHwafs/mkwfsgbl.sh ${fhr} a
 fi
 
 if test $fhr -eq 30
