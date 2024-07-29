@@ -68,7 +68,7 @@ while [ $ic_uk -le $SLEEP_LOOP_MAX_UK ]
 do
     # Three(3) unblended UK files for each cycle+fhour: icing, turb, cb
     #ukfiles=`ls $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${fhr2}.grib2 | wc -l`
-    ukfiles=`ls $COMINuk/egrr_wafshzds_unblended_*_0p25_${YYYY}-${MM}-${DD}T${cyc}:00Z_t$fhr.grib2`
+    ukfiles=`ls $COMINuk/egrr_wafshzds_unblended_*_0p25_${YYYY}-${MM}-${DD}T${cyc}:00Z_t$fhr.grib2 | wc -l`
     if [ $ukfiles -ge 3 ] ; then
         break
     fi
@@ -257,7 +257,7 @@ else
     #   Distribute US WAFS unblend Data to NCEP FTP Server (WOC) and TOC
     #
     if [ $SENDCOM = YES ]; then
-	cp 0p25_blended_${PDY}${cyc}f${fhr}.grib2 $COMOUT/WAFS_0p25_blended_${PDY}${cyc}f${fhr}.grib2
+	cp 0p25_blended_${PDY}${cyc}f${fhr}.grib2 $COMOUT/wafs.t${cyc}z.blended.0p25.f${fhr}.grib2
 	## cp grib2.t${cyc}z.WAFS_0p25_blended_f${fhr}  $PCOM/grib2.t${cyc}z.WAFS_0p25_blended_f${fhr}
     fi
 
@@ -268,7 +268,7 @@ else
     fi
 
     if [ $SENDDBN = "YES" ] ; then
-	$DBNROOT/bin/dbn_alert MODEL WAFS_0P25_BL_GB2 $job $COMOUT/WAFS_0p25_blended_${PDY}${cyc}f${fhr}.grib2
+	$DBNROOT/bin/dbn_alert MODEL WAFS_0P25_BL_GB2 $job $COMOUT/wafs.t${cyc}z.blended.0p25.f${fhr}.grib2
     fi 
 fi
 

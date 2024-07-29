@@ -42,7 +42,7 @@ module list
 export DBNROOT=${UTILROOT}/fakedbn
 # for UK (canned)  data
 export DCOMROOT=/lfs/h1/ops/prod/dcom
-#export DCOMROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao/separation/dcom
+export DCOMROOT=/lfs/h1/ops/dev/dcom/test
 
 ############################################
 # Define envir
@@ -100,6 +100,6 @@ export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/blending.$jobid
 ############################################
 # run the job
 #############################################
-sh $HOMEwafs/jobs/JWAFS_BLENDING_0P25
+sh $HOMEwafs/jobs/JWAFS_GRIB2_0P25_BLENDING
 
 exit
