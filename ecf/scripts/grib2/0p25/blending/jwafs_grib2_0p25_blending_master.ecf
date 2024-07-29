@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_blending_0p25_%FHR%_%CYC%
+#PBS -N %RUN%_grib2_0p25_blending_%FHR%_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -17,8 +17,7 @@ set -x
 export NET=%NET%
 export RUN=%RUN%
 export cyc=%CYC%
-export cycle=t%CYC%z
-export FHR=%FHR%
+export fhr=%FHR%
 
 ############################################################
 # Load modules
@@ -39,7 +38,7 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEwas}/jobs/JWAFS_BLENDING_0P25
+${HOMEwafs}/jobs/JWAFS_GRIB2_0P25_BLENDING
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort

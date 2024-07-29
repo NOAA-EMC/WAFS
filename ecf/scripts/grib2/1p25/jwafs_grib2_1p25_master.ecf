@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_grib2_%FHR%_%CYC%
+#PBS -N %RUN%_grib2_1p25_%FHR%_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -17,8 +17,7 @@ set -x
 export NET=%NET%
 export RUN=%RUN%
 export cyc=%CYC%
-export cycle=t%CYC%z
-export FHR=%FHR%
+export fhr=%FHR%
 
 ############################################################
 # Load modules
@@ -42,7 +41,7 @@ export USE_CFP=YES
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEwafs}/jobs/JWAFS_GRIB2
+${HOMEwafs}/jobs/JWAFS_GRIB2_1P25
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
