@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 
 #PBS -j oe
 #PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_gcip
 #PBS -N wafs_gcip
 #PBS -l walltime=00:30:00
-#PBS -l select=1:ncpus=2:mem=50GB
+#PBS -l select=1:ncpus=1
 #PBS -q debug
 #PBS -A GFS-DEV
 ##PBS -V
@@ -13,13 +13,12 @@
 #As first line, cd to current working directory where the job was submitted from
 #cd $PBS_O_WORKDIR
 
-set -xa
+set -x
 
 # specify computation resource
 export threads=1
 export OMP_NUM_THREADS=$threads
 export MP_LABELIO=yes
-export MPIRUN="mpiexec -np 2 -cpu-bind verbose,core cfp"
 
 ############################################
 # Set up the HOME directory
@@ -33,10 +32,6 @@ export HOMEwafs=${HOMEwafs:-${NWROOT}/WAFS.fork}
 source $HOMEwafs/versions/run.ver
 module reset
 source $HOMEwafs/dev/modulefiles/wafs.sh
-
-# For MPMD
-module load cray-pals/$craypals_ver
-module load cfp/$cfp_ver
 
 module load bufr_dump/$bufr_dump_ver
 
@@ -67,6 +62,7 @@ export RUN=wafs
 export PDY=20240703
 
 export cyc=${cyc:-00}
+export fhr=000
 
 # wafs_gcip for generating global icing analysis for every 3 hours
 export job=wafs_gcip_${cyc}

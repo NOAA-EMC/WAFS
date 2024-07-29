@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #PBS -S /bin/bash
 #PBS -j oe
@@ -11,7 +11,7 @@
 #PBS -A GFS-DEV
 ##PBS -V
 
-set -xa
+set -x
 
 # specify computation resource
 export threads=1
@@ -74,7 +74,7 @@ export PDY=20240617
 export cyc=${cyc:-00}
 export cycle=t${cyc}z
 
-fhours="018"
+export fhr="018"
 
 # wafs_grib2 for generating global WAFS on grid 45
 export job=wafs_upp_${cyc}
@@ -112,13 +112,8 @@ DATAroot=/lfs/h2/emc/ptmp/$USER/working_wafs
 ############################################
 # run the job
 #############################################
+export DATA=$DATAroot/upp.f$fhr.${jobid}
 
-for fhr in $fhours ; do
-    export DATA=$DATAroot/upp.f$fhr.${jobid}
-    export fhr
-
-    $HOMEwafs/jobs/JWAFS_UPP
-    echo $?
-
-done
+$HOMEwafs/jobs/JWAFS_UPP
+echo $?
 

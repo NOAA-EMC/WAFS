@@ -1,10 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 #PBS -j oe
-#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_blending_0p25
+#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib2_0p25_blending
 #PBS -N wafs_blending_0p25
 #PBS -l walltime=00:30:00
-#PBS -l select=1:ncpus=1:mem=15GB
 #PBS -q debug
 #PBS -A GFS-DEV
 ##PBS -V
@@ -12,13 +11,12 @@
 
 #cd $PBS_O_WORKDIR
 
-set -xa
+set -x
 
 # specify computation resource
 export threads=1
 export OMP_NUM_THREADS=$threads
 export MP_LABELIO=yes
-#export MPIRUN="mpiexec -ppn 1 -n 1"
 
 ############################################
 # Set up the HOME directory
@@ -44,7 +42,7 @@ module list
 export DBNROOT=${UTILROOT}/fakedbn
 # for UK (canned)  data
 export DCOMROOT=/lfs/h1/ops/prod/dcom
-#export DCOMROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao/separation/dcom
+export DCOMROOT=/lfs/h1/ops/dev/dcom/test
 
 ############################################
 # Define envir
@@ -67,6 +65,8 @@ export PDY=`cut -c 7-14 $COMROOT/date/t00z`
 export PDY=20240703
 
 export cyc=${cyc:-00}
+
+export fhr=006
 
 # wafs_blending for blending icing turbulence of US and UK
 export job=wafs_blending_0p25_${cyc}
@@ -100,11 +100,6 @@ export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/blending.$jobid
 ############################################
 # run the job
 #############################################
-export SHOUR=${SHOUR:-06}
-# Will change from 36 to 48 for 2023 ICAO standard
-export EHOUR=${EHOUR:-48}
-export FHOUT_GFS=${FHOUT_GFS:-1}
-
-sh $HOMEwafs/jobs/JWAFS_BLENDING_0P25
+sh $HOMEwafs/jobs/JWAFS_GRIB2_0P25_BLENDING
 
 exit

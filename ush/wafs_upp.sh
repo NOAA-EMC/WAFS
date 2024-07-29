@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set -x
 
 # making the time stamp format for ncep post

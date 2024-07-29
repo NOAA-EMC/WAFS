@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #  UTILITY SCRIPT NAME :  mkwfsgbl.sh
 #               AUTHOR :  Mary Jacobs
 #         DATE WRITTEN :  11/06/96

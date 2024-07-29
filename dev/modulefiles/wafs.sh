@@ -6,11 +6,6 @@ module load intel/${intel_ver}
 module load PrgEnv-intel/${PrgEnvintel_ver}
 module load craype/$craype_ver
 
-# To access mpiexec
-# module load cray-pals/$craypals_ver
-# For MPMD
-# module load cftp/$cfp_ver
-
 module load libjpeg/$libjpeg_ver
 module load prod_util/$prod_util_ver
 module load prod_envir/$prod_envir_ver

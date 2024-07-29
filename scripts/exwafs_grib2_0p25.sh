@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 ######################################################################
 #  UTILITY SCRIPT NAME :  exwafs_grib2_0p25.sh
 #         DATE WRITTEN :  03/20/2020
@@ -8,7 +9,7 @@
 #             grib2 files are pushed via dbnet to TOC to WAFS (ICSC).  
 #             This is a joint project of WAFC London and WAFC Washington.
 #
-#             We are processing WAFS grib2 for ffhr:
+#             We are processing WAFS grib2 for fhr:
 #             hourly: 006 - 024
 #             3 hour: 027 - 048
 #             6 hour: 054 - 120 (for U/V/T/RH, not for turbulence/icing/CB)
@@ -20,7 +21,7 @@ echo "JWAFS_GRIB2_0P25 at 00Z/06Z/12Z/18Z GFS&WAFS postprocessing"
 echo "-----------------------------------------------------"
 echo "History: MARCH  2020 - First implementation of this new script."
 echo "Oct 2021 - Remove jlogfile"
-echo "Aug 2022 - ffhr expanded from 36 to 120"
+echo "Aug 2022 - fhr expanded from 36 to 120"
 echo "May 2024 - WAFS separation"
 echo " "
 #####################################################################
@@ -30,15 +31,15 @@ cd $DATA
 set -x
 
 
-ffhr=$1
-export ffhr="$(printf "%03d" $(( 10#$ffhr )) )"
+fhr=$1
+export fhr="$(printf "%03d" $(( 10#$fhr )) )"
 
-DATA=$DATA/$ffhr
+DATA=$DATA/$fhr
 mkdir -p $DATA
 cd $DATA
 
 
-if [ $ffhr -le 48 ] ; then
+if [ $fhr -le 48 ] ; then
     hazard_timewindow=yes
 else
     hazard_timewindow=no
@@ -50,12 +51,12 @@ fi
 ##########################################################
 
 # 3D data (on new ICAO model pressure levels) and 2D data (CB)
-wafs2=$COMIN/${RUN}.${cycle}.master.grb2f${ffhr}
-wafs2i=$COMIN/${RUN}.${cycle}.master.grb2f${ffhr}.idx
+wafs2=$COMIN/${RUN}.${cycle}.master.f$fhr.grib2
+wafs2i=$COMIN/${RUN}.${cycle}.master.f$fhr.grib2.idx
 
 # 2D data from master file (U/V/H on max wind level, T/H at tropopause)
-master2=$COMINgfs/gfs.${cycle}.master.grb2f${ffhr}
-master2i=$COMINgfs/gfs.${cycle}.master.grb2if${ffhr}
+master2=$COMINgfs/gfs.${cycle}.master.grb2f${fhr}
+master2i=$COMINgfs/gfs.${cycle}.master.grb2if${fhr}
 
 icnt=1
 while [ $icnt -lt 1000 ]
@@ -108,34 +109,34 @@ $WGRIB2 tmp_master.grb2 $opt1 $opt21 ":(UGRD|VGRD):max wind" $opt23 $opt24 -new_
 # Product 1: WAFS u/v/t/rh wafs.tHHz.0p25.fFFF.grib2
 #---------------------------
 $WGRIB2 tmp_wafs_0p25.grb2 | egrep "UGRD|VGRD|TMP|HGT|RH" \
-    | $WGRIB2 -i tmp_wafs_0p25.grb2 -set master_table 25 -grib tmp.${RUN}.t${cyc}z.0p25.f${ffhr}.grib2
-cat tmp_master_0p25.grb2 >> tmp.${RUN}.t${cyc}z.0p25.f${ffhr}.grib2
+    | $WGRIB2 -i tmp_wafs_0p25.grb2 -set master_table 25 -grib tmp.${RUN}.t${cyc}z.0p25.f${fhr}.grib2
+cat tmp_master_0p25.grb2 >> tmp.${RUN}.t${cyc}z.0p25.f${fhr}.grib2
 # Convert template 5 to 5.40
-#$WGRIB2 tmp.${RUN}.t${cyc}z.0p25.f${ffhr}.grib2 -set_grib_type jpeg -grib_out ${RUN}.t${cyc}z.0p25.f${ffhr}.grib2
-mv tmp.${RUN}.t${cyc}z.0p25.f${ffhr}.grib2 ${RUN}.t${cyc}z.0p25.f${ffhr}.grib2
-$WGRIB2 -s ${RUN}.t${cyc}z.0p25.f${ffhr}.grib2 > ${RUN}.t${cyc}z.0p25.f${ffhr}.grib2.idx
+#$WGRIB2 tmp.${RUN}.t${cyc}z.0p25.f${fhr}.grib2 -set_grib_type jpeg -grib_out ${RUN}.t${cyc}z.0p25.f${fhr}.grib2
+mv tmp.${RUN}.t${cyc}z.0p25.f${fhr}.grib2 ${RUN}.t${cyc}z.0p25.f${fhr}.grib2
+$WGRIB2 -s ${RUN}.t${cyc}z.0p25.f${fhr}.grib2 > ${RUN}.t${cyc}z.0p25.f${fhr}.grib2.idx
 
 if [ $hazard_timewindow = 'yes' ] ; then
 #---------------------------
-# Product 2: For AWC and Delta airline: EDPARM CAT MWT ICESEV CB  wafs.tHHz.awf_0p25.fFFF.grib2
+# Product 2: For AWC and Delta airline: EDPARM CAT MWT ICESEV CB  wafs.tHHz.awf.0p25.fFFF.grib2
 #---------------------------
     criteria1=":EDPARM:|:ICESEV:|parm=37:"
     criteria2=":CATEDR:|:MWTURB:"
     criteria3=":CBHE:|:ICAHT:"
     $WGRIB2 tmp_wafs_0p25.grb2 | egrep "${criteria1}|$criteria2|$criteria3" \
-	| $WGRIB2 -i tmp_wafs_0p25.grb2 -grib ${RUN}.t${cyc}z.awf_0p25.f${ffhr}.grib2
-    $WGRIB2 -s ${RUN}.t${cyc}z.awf_0p25.f${ffhr}.grib2 > ${RUN}.t${cyc}z.awf_0p25.f${ffhr}.grib2.idx
+	| $WGRIB2 -i tmp_wafs_0p25.grb2 -grib ${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2
+    $WGRIB2 -s ${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2 > ${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2.idx
 
 #---------------------------
-# Product 3: WAFS unblended EDPARM, ICESEV, CB (No CAT MWT) wafs.tHHz.0p25_unblended.fFF.grib2
+# Product 3: WAFS unblended EDPARM, ICESEV, CB (No CAT MWT) wafs.tHHz.unblended.0p25.fFFF.grib2
 #---------------------------
     $WGRIB2 tmp_wafs_0p25.grb2 | grep -F -f $FIXwafs/grib2_0p25_wafs_hazard.list \
 	| $WGRIB2 -i tmp_wafs_0p25.grb2 -set master_table 25 -grib tmp_wafs_0p25.grb2.forblend
 
     # Convert template 5 to 5.40
-    #$WGRIB2 tmp_wafs_0p25.grb2.forblend -set_grib_type jpeg -grib_out ${RUN}.t${cyc}z.0p25_unblended.f${ffhr}.grib2
-    mv tmp_wafs_0p25.grb2.forblend ${RUN}.t${cyc}z.0p25_unblended.f${ffhr}.grib2
-    $WGRIB2 -s ${RUN}.t${cyc}z.0p25_unblended.f${ffhr}.grib2 > ${RUN}.t${cyc}z.0p25_unblended.f${ffhr}.grib2.idx
+    #$WGRIB2 tmp_wafs_0p25.grb2.forblend -set_grib_type jpeg -grib_out ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2
+    mv tmp_wafs_0p25.grb2.forblend ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2
+    $WGRIB2 -s ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2 > ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2.idx
 fi
 
 if [ $SENDCOM = "YES" ] ; then
@@ -144,15 +145,15 @@ if [ $SENDCOM = "YES" ] ; then
    # Post Files to COM
    ##############################
 
-    mv ${RUN}.t${cyc}z.0p25.f${ffhr}.grib2 $COMOUT/${RUN}.t${cyc}z.0p25.f${ffhr}.grib2
-    mv ${RUN}.t${cyc}z.0p25.f${ffhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.0p25.f${ffhr}.grib2.idx
+    cpfs ${RUN}.t${cyc}z.0p25.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.0p25.f${fhr}.grib2
+    mv ${RUN}.t${cyc}z.0p25.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.0p25.f${fhr}.grib2.idx
 
    if [ $hazard_timewindow = 'yes' ] ; then
-       mv ${RUN}.t${cyc}z.awf_0p25.f${ffhr}.grib2 $COMOUT/${RUN}.t${cyc}z.awf_0p25.f${ffhr}.grib2
-       mv ${RUN}.t${cyc}z.awf_0p25.f${ffhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.awf_0p25.f${ffhr}.grib2.idx
+       mv ${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2
+       mv ${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2.idx
        
-       mv ${RUN}.t${cyc}z.0p25_unblended.f${ffhr}.grib2 $COMOUT/${RUN}.t${cyc}z.0p25_unblended.f${ffhr}.grib2
-       mv ${RUN}.t${cyc}z.0p25_unblended.f${ffhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.0p25_unblended.f${ffhr}.grib2.idx
+       mv ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2
+       mv ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2.idx
    fi
 
 fi
@@ -164,14 +165,14 @@ if [ $SENDDBN = "YES" ] ; then
 
     if [ $hazard_timewindow = 'yes' ] ; then
 	# Hazard WAFS data (ICESEV EDR CAT MWT on 100mb to 1000mb or on new ICAO levels) sent to AWC and to NOMADS for US stakeholders
-	$DBNROOT/bin/dbn_alert MODEL WAFS_AWF_0P25_GB2 $job $COMOUT/${RUN}.t${cyc}z.awf_0p25.f${ffhr}.grib2
+	$DBNROOT/bin/dbn_alert MODEL WAFS_AWF.0P25_GB2 $job $COMOUT/${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2
 
 	# Unblended US WAFS data sent to UK for blending, to the same server as 1.25 deg unblended data: wmo/grib2.tCCz.wafs_grb_wifsfFF.45
-	$DBNROOT/bin/dbn_alert MODEL WAFS_0P25_UBL_GB2 $job $COMOUT/${RUN}.t${cyc}z.0p25_unblended.f${ffhr}.grib2
+	$DBNROOT/bin/dbn_alert MODEL WAFS_0P25_UBL_GB2 $job $COMOUT/${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2
     fi
 
     # WAFS U/V/T/RH data sent to the same server as the unblended data as above
-    $DBNROOT/bin/dbn_alert MODEL WAFS_0P25_GB2 $job $COMOUT/${RUN}.t${cyc}z.0p25.f${ffhr}.grib2
+    $DBNROOT/bin/dbn_alert MODEL WAFS_0P25_GB2 $job $COMOUT/${RUN}.t${cyc}z.0p25.f${fhr}.grib2
 
 fi
 

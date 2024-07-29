@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ########################################################
 # This job runs the code to blend US's and UK's WAFS products at 0.25 deg 
 ########################################################
@@ -57,23 +57,16 @@ export SCRIPTSwafs=$HOMEwafs/scripts
 ################################################
 # Set up the INPUT and OUTPUT directories
 ################################################
-export COMIN=${COMIN:-$(compath.py $envir/$NET/$wafs_ver)/$RUN.$PDY/$cyc}
-export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc}
+export COMIN=${COMIN:-$(compath.py $envir/$NET/$wafs_ver)/$RUN.$PDY/$cyc/grib2/0p25}
+export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc/grib2/0p25/blending}
 export PCOM=${PCOM:-$COMOUT/wmo}
 
 if [ $SENDCOM = YES ] ; then
-  mkdir -p $COMOUT $PCOM
+  mkdir -p $COMOUT # $PCOM
 fi
 
 export COMINus=${COMINus:-$COMIN}
 export COMINuk=${COMINuk:-$DCOMROOT/$PDY/wgrbbul/ukmet_wafs}
-
-##############################################
-# Set up the forecast hours
-##############################################
-export SHOUR=${SHOUR:-06}
-export EHOUR=${EHOUR:-48}
-export FHOUT_GFS=${FHOUT_GFS:-1}
 
 ###############################################
 # Specify Timeout Behavior of WAFS blending
@@ -88,50 +81,10 @@ export FHOUT_GFS=${FHOUT_GFS:-1}
 export SLEEP_TIME=900
 export SLEEP_INT=10
 
-####################################
-# Check if this is a restart
-####################################
-if test -f $COMOUT/$RUN.t${cyc}z.control.wafsblending_0p25
-then
-  modelrecvy=`cat < $COMOUT/${RUN}.t${cyc}z.control.wafsblending_0p25`
-  recvy_pdy=`echo $modelrecvy | cut -c1-8`
-  recvy_cyc=`echo $modelrecvy | cut -c9-10`
-  recvy_shour=`echo $modelrecvy | cut -c11-`
-
-  if [ $FHOUT_GFS -eq 3 ] ; then
-      FHINC=03
-  else
-      if [ $recvy_shour -lt 24 ] ; then
-	  FHINC=01
-      else
-	  FHINC=03
-      fi
-  fi
-
-  if test $RERUN = "NO"
-  then
-    if [ $recvy_shour -lt $EHOUR ]
-    then
-      new_shour=`expr $recvy_shour + $FHINC`
-    fi
-    if test $new_shour -ge $SHOUR
-    then
-      export SHOUR=$new_shour
-      if [ $SHOUR -lt 10 ]; then SHOUR=0$SHOUR; fi
-    fi
-    if test $recvy_shour -ge $EHOUR
-    then
-      echo "WAFS blending Already Completed to $EHOUR"
-    else
-      echo "Starting: PDY=$PDY cycle=t${recvy_cyc}z SHOUR=$SHOUR      ."
-    fi
-  fi
-fi
-
 ############################################
 # Execute the script.
 ############################################
-${SCRIPTSwafs}/exwafs_blending_0p25.sh
+${SCRIPTSwafs}/exwafs_grib2_0p25_blending.sh
 export err=$?; err_chk
 
 echo "JOB $job HAS COMPLETED NORMALLY."
