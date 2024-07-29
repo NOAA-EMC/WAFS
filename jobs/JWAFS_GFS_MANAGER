@@ -75,16 +75,15 @@ $HOMEwafs/scripts/exwafs_gfs_manager.sh
 ############################################
 # print exec output
 ############################################
-if [ -e "$pgmout" ] ; then
+if [ -e "$pgmout" ]; then
   cat $pgmout
 fi
 
 ############################################
 # remove temporary working directory
 ############################################
-if [ $KEEPDATA != YES ] ; then
-    rm -rf $DATA
+if [ $KEEPDATA != YES ]; then
+  rm -rf $DATA
 fi
 
 date
-

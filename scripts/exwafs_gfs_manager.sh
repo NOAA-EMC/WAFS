@@ -36,7 +36,7 @@ for ((iter = 1; iter <= MAX_ITER; iter++)); do
     fhr3=$(printf "%03d" "${fhr}")
 
     # Trigger jobs based on GFS forecast output availability
-    if [[ -s "${COMINgfs}/gfs.t${cyc}z.logf${fhr3}.txt" ]]; then
+    if [[ -s "${COMINgfs}/gfs.${cycle}.logf${fhr3}.txt" ]]; then
 
       # Release the JWAFS_UPP analysis job if this is f000
       if ((fhr == 0)); then
