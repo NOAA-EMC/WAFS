@@ -3,9 +3,8 @@
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:30:00
-#PBS -l select=1:mpiprocs=2:ompthreads=1:ncpus=2:mem=50GB
-#PBS -l place=vscatter
+#PBS -l walltime=00:15:00
+#PBS -l select=1:ncpus=1:mem=25GB
 #PBS -l debug=true
 
 model=wafs
@@ -27,7 +26,6 @@ module load craype/${craype_ver}
 module load intel/${intel_ver}
 module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
-module load cfp/${cfp_ver}
 module load libjpeg/${libjpeg_ver}
 module load grib_util/${grib_util_ver}
 module load bufr_dump/${bufr_dump_ver}
@@ -38,7 +36,6 @@ module list
 #############################################################
 # WCOSS environment settings
 #############################################################
-export USE_CFP=YES
 
 ############################################################
 # CALL executable job script here
