@@ -48,29 +48,6 @@ set -x
 # To fix bugzilla 628 ( removing 'j' ahead of $job )
 export jobsuffix=gfs_atmos_wafs_f${fhr}_$cyc
 
-###############################################
-# Wait for the availability of the pgrib file
-###############################################
-# file name and forecast hour of GFS model data in Grib2 are 3 digits
-export fhr000="$(printf "%03d" $(( 10#$fhr )) )"
-icnt=1
-while [ $icnt -lt 1000 ]
-do
-#  if [ -s $COMIN/${RUN}.${cycle}.pgrbf$fhr ]
-  if [ -s $COMINgfs/gfs.${cycle}.pgrb2.1p00.f$fhr000 ]
-  then
-     break
-  fi
-
-  sleep 10
-  icnt=$((icnt + 1))
-  if [ $icnt -ge 180 ]
-  then
-      msg="ABORTING after 30 min of waiting for the pgrib filei!"
-      err_exit $msg
-  fi
-done
-
 ########################################
 echo "HAS BEGUN!"
 ########################################
