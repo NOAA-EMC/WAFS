@@ -84,7 +84,7 @@ if [ ${stime} = "anl" ]; then
 
 	    if test $SENDCOM = "YES"
 	    then
-		cp ${PGBOUT}.tmp $COMOUT/$RUN.t${cyc}z.0p25.anl.grib2
+		cpfs ${PGBOUT}.tmp $COMOUT/$RUN.t${cyc}z.0p25.anl.grib2
 		$WGRIB2 -s ${PGBOUT}.tmp > $COMOUT/$RUN.t${cyc}z.0p25.anl.grib2.idx
 	    fi
 	    rm $PGBOUT ${PGBOUT}.tmp
@@ -149,9 +149,9 @@ else
 	   else
 	       if [ -e $PGBOUT ] ; then
 		   if [  $SENDCOM = "YES" ] ; then
-		       cp $PGBOUT $COMOUT/$RUN.t${cyc}z.master.f$fhr.grib2
+		       cpfs $PGBOUT $COMOUT/$RUN.t${cyc}z.master.f$fhr.grib2
 		       $WGRIB2 -s $PGBOUT > $PGIOUT # WAFS products exist from ush/gfs_nceppost.sh before running anything else
-		       cp $PGIOUT $COMOUT/$RUN.t${cyc}z.master.f$fhr.grib2.idx
+		       cpfs $PGIOUT $COMOUT/$RUN.t${cyc}z.master.f$fhr.grib2.idx
 		   fi
                fi
 	   fi

@@ -151,23 +151,23 @@ if [ $SENDCOM = "YES" ] ; then
     ##############################
 
     # FAA data
-    mv ${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2
-    mv ${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2.idx
+    cpfs ${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2
+    cpfs ${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2.idx
 
     # WAFS data
     if [ $wafs_timewindow = 'yes' ] ; then
-	mv ${RUN}.t${cyc}z.grid45.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.grid45.f${fhr}.grib2
-	mv ${RUN}.t${cyc}z.grid45.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.grid45.f${fhr}.grib2.idx
+	cpfs ${RUN}.t${cyc}z.grid45.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.grid45.f${fhr}.grib2
+	cpfs ${RUN}.t${cyc}z.grid45.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.grid45.f${fhr}.grib2.idx
     fi
 
     ##############################
     # Post Files to PCOM
     ##############################
 
-    mv grib2.wafs.t${cyc}z.awf_grid45.f${fhr}  $PCOM/grib2.wafs.t${cyc}z.awf_grid45.f${fhr}
+    cpfs grib2.wafs.t${cyc}z.awf_grid45.f${fhr}  $PCOM/grib2.wafs.t${cyc}z.awf_grid45.f${fhr}
 
     if [ $wafs_timewindow = 'yes' ] ; then
-	mv grib2.wafs.t${cyc}z.grid45.f${fhr}  $PCOM/grib2.wafs.t${cyc}z.grid45.f${fhr}
+	cpfs grib2.wafs.t${cyc}z.grid45.f${fhr}  $PCOM/grib2.wafs.t${cyc}z.grid45.f${fhr}
     fi
 fi
 
