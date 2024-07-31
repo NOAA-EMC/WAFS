@@ -90,16 +90,6 @@ export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc/gcip}
 
 mkdir -p $COMOUT
 
-###############################################
-# Specify Timeout Behavior of WAFS GCIP
-#
-# SLEEP_TIME - how long to wait for inputs before exiting
-# SLEEP_INT  - time interval for checking for inputs
-###############################################
-# JY export SLEEP_TIME=300
-export SLEEP_TIME=600
-export SLEEP_INT=10
-
 ############################################
 # Execute the script, parallel run for 000 003
 ############################################

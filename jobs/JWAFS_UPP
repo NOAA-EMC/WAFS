@@ -80,23 +80,6 @@ export COMINgfs=${COMINgfs:-$(compath.py $envir/$RUNupp/$gfs_ver)/gfs.$PDY/$cyc/
 export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc/upp}
 mkdir -p $COMOUT
 
-####################################
-# Specify Special Post Vars
-####################################
-numx=${numx:-1}
-
-####################################
-# Specify Timeout Behavior of Post
-#
-# SLEEP_TIME - Amount of time to wait for
-#              a restart file before exiting
-# SLEEP_INT  - Amount of time to wait between
-#              checking for restart files
-####################################
-export SLEEP_TIME=900
-export SLEEP_INT=5
-
-
 #########################################################
 # Execute the Script
 #########################################################

@@ -94,28 +94,6 @@ if [ ${stime} = "anl" ]; then
 ##########################  WAFS U/V/T analysis end  ##########################
 else
 ##########################  WAFS forecast  start ##########################
-   SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
-
-   # Start Looping for the existence of the restart files
-   echo 'Start processing fhr='$fhr
-   set -x
-   ic=1
-   while [ $ic -le $SLEEP_LOOP_MAX ]
-   do
-       if [  -f $COMINgfs/$PREFIX.logf${fhr}.txt ] ; then
-           break
-       else
-           ic=`expr $ic + 1`
-           sleep $SLEEP_INT
-       fi
-       if [ $ic -eq $SLEEP_LOOP_MAX ] ; then
-           echo " *** FATAL ERROR: No model output in nemsio for f${fhr} "
-           export err=9
-           err_chk
-       fi
-   done
-   set -x
-
    export VDATE=`${NDATE} +${fhr} ${PDY}${cyc}`
    [[ -f flxfile ]] && rm flxfile ; [[ -f nemsfile ]] && rm nemsfile
    if [ $OUTTYP -eq 4 ] ; then

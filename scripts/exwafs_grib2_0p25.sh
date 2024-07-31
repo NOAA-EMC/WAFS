@@ -58,22 +58,6 @@ wafs2i=$COMIN/${RUN}.${cycle}.master.f$fhr.grib2.idx
 master2=$COMINgfs/gfs.${cycle}.master.grb2f${fhr}
 master2i=$COMINgfs/gfs.${cycle}.master.grb2if${fhr}
 
-icnt=1
-while [ $icnt -lt 1000 ]
-do
-    if [[ -s $master2i && -s $wafs2i ]] ; then
-      break
-    fi
-
-    sleep 10
-    icnt=$((icnt + 1))
-    if [ $icnt -ge 180 ] ;    then
-        msg="ABORTING after 30 min of waiting for the gfs wafs file!"
-        err_exit $msg
-    fi
-done
-
-
 ########################################
 echo "HAS BEGUN!"
 ########################################
