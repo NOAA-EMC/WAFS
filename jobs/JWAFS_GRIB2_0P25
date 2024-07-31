@@ -66,18 +66,6 @@ if [ $SENDCOM = YES ] ; then
   mkdir -p $COMOUT # $PCOM
 fi
 
-###############################################
-# Specify Timeout Behavior of WAFS blending
-#
-# SLEEP_TIME - Amount of time to wait for
-#              a input file before exiting
-# SLEEP_INT  - Amount of time to wait between
-#              checking for input files
-###############################################
-# export SLEEP_TIME=300   # changed to 60 to avoid hitting wall_clock when miss umket wafs files ... 
-export SLEEP_TIME=600
-export SLEEP_INT=10
-
 ############################################
 # Execute the script.
 ############################################

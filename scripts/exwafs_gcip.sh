@@ -39,8 +39,6 @@ cd $DATA
 # Overwrite TMPDIR for dumpjb
 export TMPDIR=$DATA
 
-SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
-
 configFile=gcip.config
 
 echo 'before preparing data' `date`
@@ -54,21 +52,6 @@ vhour="$(printf "%02d" $(( 10#$vhour )) )"
 
 # model data
 masterFile=$COMINgfs/gfs.t${cyc}z.master.grb2f$fhr
-
-# check the availability of model file
-icnt=1
-while [ $icnt -lt $SLEEP_LOOP_MAX ] ; do
-    if [ -s $masterFile ] ; then
-	break
-    fi
-    sleep $SLEEP_INT
-    icnt=$((icnt + 1))
-    if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
-        msg="ABORTING after $SLEEP_TIME seconds of waiting for gfs master file!"
-        err_exit $msg
-    fi
-done
-
 cp $PARMwafs/wafs_gcip_gfs.cfg $configFile
 
 modelFile=modelfile.grb
@@ -96,41 +79,32 @@ for channel in $channels ; do
 	curl -O $COMINsat/$satFile
     else
         # check the availability of satellite data file
-	icnt=1
-	while [ $icnt -lt $SLEEP_LOOP_MAX ] ; do
-	    if [ -s $COMINsat/$satFile ] ; then
-		break
-	    fi
-	    sleep $SLEEP_INT
-	    icnt=$((icnt + 1))
-	    if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
-		msg="GCIP at ${vhour}z ABORTING after $SLEEP_TIME seconds of waiting for satellite $channel file!"
-		echo "$msg"
-		rc=1
-		echo $msg >> $COMOUT/${RUN}.gcip.log
+	if [ -s $COMINsat/$satFile ] ; then
+	    cp $COMINsat/$satFile .
+	else
+	    msg="GCIP at ${vhour}z ABORTING, no satellite $channel file!"
+	    echo "$msg"
+	    echo $msg >> $COMOUT/${RUN}.gcip.log
             
-		if [ $envir != prod ]; then
-		    export maillist='nco.spa@noaa.gov'
-		fi
-		export maillist=${maillist:-'nco.spa@noaa.gov,ncep.sos@noaa.gov'}
-
-		export subject="Missing GLOBCOMPVIS Satellite Data for $PDY t${cyc}z $job"
-		echo "*************************************************************" > mailmsg
-		echo "*** WARNING !! COULD NOT FIND GLOBCOMPVIS Satellite Data  *** " >> mailmsg
-		echo "*************************************************************" >> mailmsg
-		echo >> mailmsg
-		echo "One or more GLOBCOMPVIS Satellite Data files are missing, including " >> mailmsg
-		echo "   $COMINsat/$satFile " >> mailmsg
-		echo >> mailmsg
-		echo "$job will gracfully exited" >> mailmsg
-		cat mailmsg > $COMOUT/${RUN}.t${cyc}z.gcip.emailbody
-		cat $COMOUT/${RUN}.t${cyc}z.gcip.emailbody | mail.py -s "$subject" $maillist -v
-
-		exit $rc
+	    if [ $envir != prod ]; then
+		export maillist='nco.spa@noaa.gov'
 	    fi
-	done
+	    export maillist=${maillist:-'nco.spa@noaa.gov,ncep.sos@noaa.gov'}
 
-	cp $COMINsat/$satFile .
+	    export subject="Missing GLOBCOMPVIS Satellite Data for $PDY t${cyc}z $job"
+	    echo "*************************************************************" > mailmsg
+	    echo "*** WARNING !! COULD NOT FIND GLOBCOMPVIS Satellite Data  *** " >> mailmsg
+	    echo "*************************************************************" >> mailmsg
+	    echo >> mailmsg
+	    echo "One or more GLOBCOMPVIS Satellite Data files are missing, including " >> mailmsg
+	    echo "   $COMINsat/$satFile " >> mailmsg
+	    echo >> mailmsg
+	    echo "$job will gracfully exited" >> mailmsg
+	    cat mailmsg > $COMOUT/${RUN}.t${cyc}z.gcip.emailbody
+	    cat $COMOUT/${RUN}.t${cyc}z.gcip.emailbody | mail.py -s "$subject" $maillist -v
+
+	    exit 1
+	fi
     fi
     if [[ -s $satFile ]] ; then
 	satFiles="$satFiles $satFile"
@@ -142,20 +116,6 @@ done
 
 # radar data
 sourceRadar=$COMINradar/refd3d.t${vhour}z.grb2f00
-
-# check the availability of radar data file
-icnt=1
-while [ $icnt -lt $SLEEP_LOOP_MAX ] ; do
-    if [ -s $sourceRadar ] ; then
-	break
-    fi
-    sleep $SLEEP_INT
-    icnt=$((icnt + 1))
-    if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
-        echo "WARNING: radar data is not available after $SLEEP_TIME seconds of waiting!"
-    fi
-done
-
 radarFile=radarFile.grb
 if [ -s $sourceRadar ] ; then
     cp $sourceRadar $radarFile
