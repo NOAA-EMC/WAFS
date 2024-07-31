@@ -129,7 +129,7 @@ export err=$?;err_chk
 
 if test "$SENDCOM" = 'YES'
 then
-    cp xtrn.wfsgfs${fhr}${sets} $PCOM/xtrn.wfsgfs${cyc}${fhr}${sets}.$jobsuffix
+    cpfs xtrn.wfsgfs${fhr}${sets} $PCOM/xtrn.wfsgfs${cyc}${fhr}${sets}.$jobsuffix
 fi
 
 ##############################

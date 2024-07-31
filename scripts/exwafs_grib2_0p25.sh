@@ -130,14 +130,14 @@ if [ $SENDCOM = "YES" ] ; then
    ##############################
 
     cpfs ${RUN}.t${cyc}z.0p25.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.0p25.f${fhr}.grib2
-    mv ${RUN}.t${cyc}z.0p25.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.0p25.f${fhr}.grib2.idx
+    cpfs ${RUN}.t${cyc}z.0p25.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.0p25.f${fhr}.grib2.idx
 
    if [ $hazard_timewindow = 'yes' ] ; then
-       mv ${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2
-       mv ${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2.idx
+       cpfs ${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2
+       cpfs ${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2.idx
        
-       mv ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2
-       mv ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2.idx
+       cpfs ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2
+       cpfs ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2.idx
    fi
 
 fi

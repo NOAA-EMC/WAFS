@@ -15,7 +15,7 @@
 #         - Nesdis composite global satellite data 
 #              /dcom (ftp?)
 #         - Metar/ships/lightning/pireps
-#              ksh /nwprod/ush/dumpjb YYYYMMDDHH hours output >/dev/null
+#              dumpjb YYYYMMDDHH hours output >/dev/null
 #         - Radar data over CONUS
 #              /com/hourly/prod/radar.YYYYMMDD/refd3d.tHHz.grbf00
 #         - output of current icing potential
@@ -62,8 +62,7 @@ $WGRIB2 $masterFile | egrep ":HGT:|:VVEL:|:CLWMR:|:TMP:|:SPFH:|:RWMR:|:SNMR:|:GR
 # dumped data files' suffix is ".ibm"
 obsfiles="metar ships ltngsr pirep"
 for obsfile in $obsfiles ; do 
-#      ksh $USHobsproc_dump/dumpjb ${PDY}${vhour} 1.5 $obsfile >/dev/null
-    ksh $DUMPJB ${PDY}${vhour} 1.5 $obsfile 
+    $DUMPJB ${PDY}${vhour} 1.5 $obsfile 
 done
 metarFile=metar.ibm
 shipFile=ships.ibm
@@ -172,7 +171,7 @@ if [[ -s $outputfile ]] ; then
     # Post Files to COM
     ##############################
     if [ $SENDCOM = "YES" ] ; then
-      cp $outputfile $COMOUT/$outputfile
+      cpfs $outputfile $COMOUT/$outputfile
       if [ $SENDDBN = "YES" ] ; then
 	  :
       fi

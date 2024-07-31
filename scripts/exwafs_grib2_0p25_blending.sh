@@ -257,7 +257,7 @@ else
     #   Distribute US WAFS unblend Data to NCEP FTP Server (WOC) and TOC
     #
     if [ $SENDCOM = YES ]; then
-	cp 0p25_blended_${PDY}${cyc}f${fhr}.grib2 $COMOUT/wafs.t${cyc}z.blended.0p25.f${fhr}.grib2
+	cpfs 0p25_blended_${PDY}${cyc}f${fhr}.grib2 $COMOUT/wafs.t${cyc}z.blended.0p25.f${fhr}.grib2
 	## cp grib2.t${cyc}z.WAFS_0p25_blended_f${fhr}  $PCOM/grib2.t${cyc}z.WAFS_0p25_blended_f${fhr}
     fi
 

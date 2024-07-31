@@ -85,28 +85,28 @@ fi
 
 if test $fhr -ge 12 -a $fhr -le 24
 then
-    $USHwafs/mkwfsgbl.sh ${fhr} a
+    $USHwafs/mkwfsgbl.sh $fhr a
 fi
 
 if test $fhr -eq 30
 then
-    sh $USHwafs/mkwfsgbl.sh ${fhr} a
+    $USHwafs/mkwfsgbl.sh $fhr a
     for fhr in 12 18 24 30
     do
-       sh $USHwafs/mkwfsgbl.sh ${fhr} b
+       $USHwafs/mkwfsgbl.sh $fhr b
     done
-    sh $USHwafs/mkwfsgbl.sh 00 x
-    sh $USHwafs/mkwfsgbl.sh 06 x
+    $USHwafs/mkwfsgbl.sh 00 x
+    $USHwafs/mkwfsgbl.sh 06 x
 fi
 
 if test $fhr -gt 30 -a $fhr -le 48
 then
-    sh $USHwafs/mkwfsgbl.sh ${fhr} x
+    $USHwafs/mkwfsgbl.sh $fhr x
 fi
 
 if test $fhr -eq 60 -o $fhr -eq 72
 then
-    sh $USHwafs/mkwfsgbl.sh ${fhr} x
+    $USHwafs/mkwfsgbl.sh $fhr x
 fi
 
 ################################################################################
