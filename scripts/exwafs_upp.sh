@@ -10,53 +10,34 @@ set -x
 
 cd $DATA
 
-# specify model output format type: 4 for nemsio, 3 for sigio
 msg="HAS BEGUN on `hostname`"
 postmsg "$msg"
 
 POSTGPSH=${POSTGPSH:-$USHwafs/wafs_upp.sh}
 PREFIX=${PREFIX:-${RUNupp}.t${cyc}z}
 
-export OUTTYP=${OUTTYP:-4}
-
-if [ $OUTTYP -eq 4 ] ; then
-  if [ $OUTPUT_FILE = "netcdf" ]; then
-      SUFFIX=".nc"
-      export MODEL_OUT_FORM=${MODEL_OUT_FORM:-netcdfpara}
-  else
-      SUFFIX=".nemsio"
-      export MODEL_OUT_FORM=${MODEL_OUT_FORM:-binarynemsiompiio}
-  fi
-else
-    SUFFIX=
-fi
+SUFFIX=".nc"
+export MODEL_OUT_FORM=${MODEL_OUT_FORM:-netcdfpara}
 
 export PGBOUT=wafsfile # For UPP Fortran code
 export PGIOUT=wafsifile
 
-stime=`echo $fhr | cut -c1-3`
 ############################################################
 # Post Analysis Files before starting the Forecast Post
 ############################################################
-if [ ${stime} = "anl" ]; then
+if [ $fhr = "anl" ]; then
 #----------------------------------
     export VDATE=${PDY}${cyc}
 
-   if [ $OUTTYP -eq 4 ] ; then
-       loganl=$COMINgfs/${PREFIX}.atmanl${SUFFIX}
-   else
-       loganl=$COMINgfs/${PREFIX}.sanl
-   fi
+    loganl=$COMINgfs/${PREFIX}.atmanl${SUFFIX}
 
    if test -f $loganl ; then
 
-      [[ -f flxfile ]] && rm flxfile ; [[ -f nemsfile ]] && rm nemsfile
-      if [ $OUTTYP -eq 4 ] ; then
-	  ln -fs $COMINgfs/${PREFIX}.atmanl${SUFFIX} nemsfile
-	  export NEMSINP=nemsfile
-	  ln -fs $COMINgfs/${PREFIX}.sfcanl${SUFFIX} flxfile
-	  export FLXINP=flxfile
-      fi
+      [[ -f flxfile ]] && rm flxfile ; [[ -f atmfile ]] && rm atmfile
+      ln -fs $COMINgfs/${PREFIX}.atmanl${SUFFIX} atmfile
+      export ATMINP=atmfile
+      ln -fs $COMINgfs/${PREFIX}.sfcanl${SUFFIX} flxfile
+      export FLXINP=flxfile
 
 ##########################  WAFS U/V/T analysis start ##########################
 # U/V/T on ICAO pressure levels for WAFS verification
@@ -95,69 +76,53 @@ if [ ${stime} = "anl" ]; then
 else
 ##########################  WAFS forecast  start ##########################
    export VDATE=`${NDATE} +${fhr} ${PDY}${cyc}`
-   [[ -f flxfile ]] && rm flxfile ; [[ -f nemsfile ]] && rm nemsfile
-   if [ $OUTTYP -eq 4 ] ; then
-       ln -fs $COMINgfs/${PREFIX}.atmf${fhr}${SUFFIX} nemsfile
-       export NEMSINP=nemsfile
-       ln -fs $COMINgfs/${PREFIX}.sfcf${fhr}${SUFFIX} flxfile
-       export FLXINP=flxfile
-   fi
+   [[ -f flxfile ]] && rm flxfile ; [[ -f atmfile ]] && rm atmfile
+   ln -fs $COMINgfs/${PREFIX}.atmf${fhr}${SUFFIX} atmfile
+   export ATMINP=atmfile
+   ln -fs $COMINgfs/${PREFIX}.sfcf${fhr}${SUFFIX} flxfile
+   export FLXINP=flxfile
     
    # Generate WAFS products on ICAO standard level.
    # Do not need to be sent out to public, WAFS package will process the data.
-   if [ $fhr -le 120 ] ; then
-       if [[ $RUNupp = gfs  || $RUNupp = gefs ]] ; then
+   if [[ $RUNupp = gfs  || $RUNupp = gefs ]] ; then
 
-	   #For MDL2P.f, WAFS pressure levels are different from master file
-	   export POSTGPVARS="KPO=58,PO=97720.,90810.,84310.,81200.,78190.,75260.,72430.,69680.,67020.,64440.,61940.,59520.,57180.,54920.,52720.,50600.,48550.,46560.,44650.,42790.,41000.,39270.,37600.,35990.,34430.,32930.,31490.,30090.,28740.,27450.,26200.,25000.,23840.,22730.,21660.,20650.,19680.,18750.,17870.,17040.,16240.,15470.,14750.,14060.,13400.,12770.,12170.,11600.,11050.,10530.,10040.,9570.,9120.,8700.,8280.,7900.,7520.,7170.,popascal=.true.,"
+       #For MDL2P.f, WAFS pressure levels are different from master file
+       export POSTGPVARS="KPO=58,PO=97720.,90810.,84310.,81200.,78190.,75260.,72430.,69680.,67020.,64440.,61940.,59520.,57180.,54920.,52720.,50600.,48550.,46560.,44650.,42790.,41000.,39270.,37600.,35990.,34430.,32930.,31490.,30090.,28740.,27450.,26200.,25000.,23840.,22730.,21660.,20650.,19680.,18750.,17870.,17040.,16240.,15470.,14750.,14060.,13400.,12770.,12170.,11600.,11050.,10530.,10040.,9570.,9120.,8700.,8280.,7900.,7520.,7170.,popascal=.true.,"
 
-	   run=`echo $RUNupp | tr '[a-z]' '[A-Z]'`
-	   # Extend WAFS u/v/t up to 120 hours
-           if [  $fhr -le 48  ] ; then
-	       export PostFlatFile=$PARMwafs/postxconfig-NT-${run}-WAFS.txt
-	       export CTLFILE=$PARMwafs/postcntrl_${RUNupp}_wafs.xml
-	   else
-	       export PostFlatFile=$PARMwafs/postxconfig-NT-GFS-WAFS-EXT.txt
-	       export CTLFILE=$PARMwafs/postcntrl_gfs_wafs_ext.xml
-	   fi
-
-           # gtg has its own configurations
-           #cp $HOMEwafs/sorc/ncep_post.fd/post_gtg.fd/gtg.config.$RUNupp .
-           #cp $HOMEwafs/sorc/ncep_post.fd/post_gtg.fd/imprintings.gtg_${RUNupp}.txt .
-	   #cp $HOMEwafs/sorc/ncep_post.fd/post_gtg.fd/gtg.input.$RUNupp .
-           cp $PARMwafs/gtg.config.$RUNupp gtg.config
-           cp $PARMwafs/gtg_imprintings.txt gtg_imprintings.txt
-
-           # WAFS data is processed:
-           #   hourly if fhr<=24
-           #   every 3 forecast hour if 24<fhr<=48
-           #   every 6 forecast hour if 48<fhr<=120
-	   if [  $fhr -le 24  ] ; then
-	       $POSTGPSH
-           elif [  $fhr -le 48  ] ; then
-	       if [  $((10#$fhr%3)) -eq 0  ] ; then
-		   $POSTGPSH
-	       fi
-           elif [  $((10#$fhr%6)) -eq 0  ] ; then
-	       $POSTGPSH
-	   fi
-
-           export err=$?
-
-	   if [ $err -ne 0 ] ; then
-	       echo " *** GFS POST WARNING: WAFS output failed for f${fhr}, err=$err"
-	   else
-	       if [ -e $PGBOUT ] ; then
-		   if [  $SENDCOM = "YES" ] ; then
-		       cpfs $PGBOUT $COMOUT/$RUN.t${cyc}z.master.f$fhr.grib2
-		       $WGRIB2 -s $PGBOUT > $PGIOUT # WAFS products exist from ush/gfs_nceppost.sh before running anything else
-		       cpfs $PGIOUT $COMOUT/$RUN.t${cyc}z.master.f$fhr.grib2.idx
-		   fi
-               fi
-	   fi
+       run=`echo $RUNupp | tr '[a-z]' '[A-Z]'`
+       # Extend WAFS u/v/t up to 120 hours
+       if [  $fhr -le 48  ] ; then
+	   export PostFlatFile=$PARMwafs/postxconfig-NT-${run}-WAFS.txt
+	   export CTLFILE=$PARMwafs/postcntrl_${RUNupp}_wafs.xml
+       else
+	   export PostFlatFile=$PARMwafs/postxconfig-NT-GFS-WAFS-EXT.txt
+	   export CTLFILE=$PARMwafs/postcntrl_gfs_wafs_ext.xml
        fi
-       [[ -f wafsfile ]] && rm wafsfile ; [[ -f wafsifile ]] && rm wafsifile
+
+       # gtg has its own configurations
+       #cp $HOMEwafs/sorc/ncep_post.fd/post_gtg.fd/gtg.config.$RUNupp .
+       #cp $HOMEwafs/sorc/ncep_post.fd/post_gtg.fd/imprintings.gtg_${RUNupp}.txt .
+       #cp $HOMEwafs/sorc/ncep_post.fd/post_gtg.fd/gtg.input.$RUNupp .
+       cp $PARMwafs/gtg.config.$RUNupp gtg.config
+       cp $PARMwafs/gtg_imprintings.txt gtg_imprintings.txt
+
+       $POSTGPSH
+
+       export err=$?
+
+       if [ $err -ne 0 ] ; then
+	   echo " *** GFS POST WARNING: WAFS output failed for f${fhr}, err=$err"
+       else
+	   if [ -e $PGBOUT ] ; then
+	       if [  $SENDCOM = "YES" ] ; then
+		   cpfs $PGBOUT $COMOUT/$RUN.t${cyc}z.master.f$fhr.grib2
+		   $WGRIB2 -s $PGBOUT > $PGIOUT # WAFS products exist from ush/gfs_nceppost.sh before running anything else
+		   cpfs $PGIOUT $COMOUT/$RUN.t${cyc}z.master.f$fhr.grib2.idx
+	       fi
+           fi
+       fi
    fi
+   [[ -f wafsfile ]] && rm wafsfile ; [[ -f wafsifile ]] && rm wafsifile
 
 fi
 ###########################  WAFS forecast end ###########################

@@ -86,18 +86,13 @@ USER=`whoami`
 
 ############################################
 # SENDCOM=YES--Copy output file to /com
-# SENDECF=YES--Allow to talk back to ECF
 # SENDDBN=YES--Alert output file to TOC
 # KEEPDATA=NO--Remove temporary working
 ############################################
 export SENDCOM=YES
 export SENDDBN=NO
-export RERUN=NO
-export VERBOSE=YES
 
 export KEEPDATA=YES
-
-export OUTPUT_FILE=netcdf
 
 ############################################
 # Define DATA, COMOUT and COMIN
