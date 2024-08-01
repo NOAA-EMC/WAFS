@@ -10,7 +10,7 @@ export HH=`echo $VDATE | cut -c9-10`
 
 run=`echo $RUNupp | tr '[a-z]' '[A-Z]'`
 cat > itag <<EOF
-$NEMSINP
+$ATMINP
 ${MODEL_OUT_FORM}
 grib2
 ${YY}-${MM}-${DD}_${HH}:00:00
