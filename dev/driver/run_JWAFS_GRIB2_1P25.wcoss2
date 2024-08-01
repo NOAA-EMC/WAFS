@@ -3,8 +3,10 @@
 #PBS -j oe
 #PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib2_1p25
 #PBS -N wafs_grib2
-#PBS -l walltime=00:30:00
+#PBS -l walltime=00:05:00
+#PBS -l select=1:ncpus=1
 #PBS -q debug
+#PBS -l debug=true
 #PBS -A GFS-DEV
 ##PBS -V
 ##PBS -W umask=022
@@ -13,15 +15,6 @@
 #cd $PBS_O_WORKDIR
 
 set -x
-
-# specify computation resource
-#OpenMP
-#export OMP_NUM_THREADS=128
-#export OMP_PLACES=cores
-#Serial
-export threads=1
-export OMP_NUM_THREADS=$threads
-export MP_LABELIO=yes
 
 ############################################
 # Set up the HOME directory
