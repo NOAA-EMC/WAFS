@@ -3,8 +3,9 @@
 #PBS -j oe
 #PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib
 #PBS -N wafs_octant
-#PBS -l walltime=00:30:00
-#PBS -l select=1:ncpus=1:mem=2GB
+#PBS -l walltime=00:05:00
+#PBS -l select=1:ncpus=1
+#PBS -l debug=true
 #PBS -q debug
 #PBS -A GFS-DEV
 ##PBS -V
@@ -14,12 +15,6 @@
 # 8 means octants
 
 set -x
-
-# specify computation resource
-export threads=1
-export OMP_NUM_THREADS=$threads
-export MP_LABELIO=yes
-#export MPIRUN="mpiexec -ppn 1 -n 1"
 
 ############################################
 # Set up the HOME directory
