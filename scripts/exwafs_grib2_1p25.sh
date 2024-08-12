@@ -128,14 +128,14 @@ if [ $wafs_timewindow = 'yes' ] ; then
             -set master_table 6 \
             -new_grid_winds earth -set_grib_type jpeg \
             -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
-            -new_grid latlon 0:288:1.25 90:145:-1.25 ${RUN}.t${cyc}z.grid45.f${fhr}.grib2
-    $WGRIB2 -s ${RUN}.t${cyc}z.grid45.f${fhr}.grib2 > ${RUN}.t${cyc}z.grid45.f${fhr}.grib2.idx
+            -new_grid latlon 0:288:1.25 90:145:-1.25 gfs.t${cyc}z.wafs_grb45f${fhr}.grib2
+    $WGRIB2 -s gfs.t${cyc}z.wafs_grb45f${fhr}.grib2 > gfs.t${cyc}z.wafs_grb45f${fhr}.grib2.idx
 
     # For WAFS, add WMO header. Processing WAFS GRIB2 grid 45 for ISCS and WIFS
     export pgm=$TOCGRIB2
     . prep_step
     startmsg
-    export FORT11=${RUN}.t${cyc}z.grid45.f${fhr}.grib2
+    export FORT11=gfs.t${cyc}z.wafs_grb45f${fhr}.grib2
     export FORT31=" "
     export FORT51=grib2.wafs.t${cyc}z.grid45.f${fhr}
     $TOCGRIB2 < wafs_wmo_header45 >> $pgmout 2> errfile
@@ -156,8 +156,8 @@ if [ $SENDCOM = "YES" ] ; then
 
     # WAFS data
     if [ $wafs_timewindow = 'yes' ] ; then
-	cpfs ${RUN}.t${cyc}z.grid45.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.grid45.f${fhr}.grib2
-	cpfs ${RUN}.t${cyc}z.grid45.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.grid45.f${fhr}.grib2.idx
+	cpfs gfs.t${cyc}z.wafs_grb45f${fhr}.grib2 $COMOUT/gfs.t${cyc}z.wafs_grb45f${fhr}.grib2
+	cpfs gfs.t${cyc}z.wafs_grb45f${fhr}.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_grb45f${fhr}.grib2.idx
     fi
 
     ##############################
@@ -181,7 +181,7 @@ if [ $SENDDBN = "YES" ] ; then
 #    Distribute Data to WOC
 #  
     if [ $wafs_timewindow = 'yes' ] ; then
-	$DBNROOT/bin/dbn_alert MODEL WAFS_1P25_GB2 $job $COMOUT/${RUN}.t${cyc}z.grid45.f${fhr}.grib2
+	$DBNROOT/bin/dbn_alert MODEL WAFS_1P25_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fhr}.grib2
 #
 #       Distribute Data to TOC TO WIFS FTP SERVER (AWC)
 #
