@@ -1,13 +1,21 @@
 suite wafs_suite
   family wafs
+    edit ENVIR 'prod'
     edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/%USER%/src/wafs'
     edit OUTPUTDIR '/lfs/h2/emc/ptmp/%USER%/output/wafs'
     edit QUEUE 'dev'
     edit QUEUE_ARCH 'dev_transfer'
     edit PROJENVIR 'DEV'
-    edit PROJ 'WAFS'
+    edit PROJ 'GFS'  # TODO: Change to 'WAFS' when ready
     edit NET 'wafs'
     edit RUN 'wafs'
+    # Developer settings
+    edit PDY '20240617'
+    edit SENDDBN 'NO'
+    edit SENDDBN_NTC 'NO'
+    edit KEEPDATA 'NO'
+    edit RUN_ENVIR 'dev'
+
     family 00
       edit CYC '00'
       task jwafs_gfs_manager

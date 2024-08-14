@@ -15,8 +15,3 @@ fi
 export DBNROOT=$SIPHONROOT
 
 if [[ ! " prod para test " =~ " ${envir} " && " ops.prod ops.para " =~ " $(whoami) " ]]; then err_exit "ENVIR must be prod, para, or test [envir-p1.h]"; fi
-
-if [ -n "%PDY:%" ]; then
-  export PDY=${PDY:-%PDY:%}
-  export CDATE=${PDY}%CYC:%
-fi
