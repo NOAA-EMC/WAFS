@@ -8,7 +8,8 @@
 #PBS -l place=vscatter:exclhost
 #PBS -l debug=true
 
-model=wafs
+export model=wafs
+
 %include <head.h>
 %include <envir-p1.h>
 
