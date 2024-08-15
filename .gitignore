@@ -9,6 +9,9 @@ log*
 
 *.sw[a-p]
 
+# Ignore the upp parm files so they do not get added to this repo
+parm/upp
+
 # Ignore the symlinked files in the ecf/scripts directory
 ecf/scripts/upp/jwafs_upp_f*.ecf
 ecf/scripts/upp/jwafs_upp_anl.ecf

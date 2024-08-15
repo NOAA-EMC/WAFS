@@ -10,6 +10,16 @@ if [[ ! -d "${DIR_ROOT}/exec" ]]; then
   mkdir -p "${DIR_ROOT}/exec"
 fi
 
+# upp_v8.3.0:
+cd "${DIR_ROOT}/sorc/upp.fd"
+
+# copy UPP parm/ to the main vertical structure
+cp -r parm "${DIR_ROOT}/parm/upp"
+
+# copy GTG code to UPP
+cp sorc/post_gtg.fd/*f90 sorc/ncep_post.fd/.
+cp sorc/post_gtg.fd/gtg.config.gfs parm/gtg.config.gfs
+
 # Build upp executable file
 cd "${DIR_ROOT}/sorc/upp.fd/sorc"
 ./build_ncep_post.sh
