@@ -43,12 +43,12 @@ fhr="$(printf "%03d" $(( 10#$fhr )) )"
 export ic=1
 while [ $ic -le $SLEEP_LOOP_MAX ]
 do 
-    if [ -s ${COMINus}/wafs.t${cyc}z.unblended.0p25.f${fhr}.grib2 ] ; then
+    if [ -s ${COMINus}/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2 ] ; then
         break
     fi
     if [ $ic -eq $SLEEP_LOOP_MAX ] ; then
-        echo "US WAFS GRIB2 file  $COMINus/wafs.t${cyc}z.unblended.0p25.f${fhr}.grib2 not found after waiting over $SLEEP_TIME seconds"
-	echo "US WAFS GRIB2 file " $COMINus/wafs.t${cyc}z.unblended.0p25.f${fhr}.grib2 "not found after waiting ",$SLEEP_TIME, "exitting"
+        echo "US WAFS GRIB2 file  $COMINus/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2 not found after waiting over $SLEEP_TIME seconds"
+	echo "US WAFS GRIB2 file " $COMINus/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2 "not found after waiting ",$SLEEP_TIME, "exitting"
 	SEND_UK_WAFS=YES
 	break
     else
@@ -112,14 +112,14 @@ else # elif [ $SEND_US_WAFS = "NO" -a $SEND_UK_WAFS = "NO" ] ; then
     cat $COMINuk/egrr_wafshzds_unblended_*_0p25_${YYYY}-${MM}-${DD}T${cyc}:00Z_t$fhr.grib2 > EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${fhr}.grib2
     
     # pick up US data
-    cp ${COMINus}/wafs.t${cyc}z.unblended.0p25.f${fhr}.grib2 .
+    cp ${COMINus}/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2 .
 
     # run blending code
     export pgm=wafs_blending_0p25.x
     . prep_step
 
     startmsg
-    $EXECwafs/$pgm wafs.t${cyc}z.unblended.0p25.f${fhr}.grib2 \
+    $EXECwafs/$pgm WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2 \
                    EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${fhr}.grib2 \
                    0p25_blended_${PDY}${cyc}f${fhr}.grib2 > f${fhr}.out
 
@@ -171,16 +171,16 @@ if [ $SEND_US_WAFS = "YES" ] ; then
     #
     #   Distribute US WAFS unblend Data to NCEP FTP Server (WOC) and TOC
     #
-    echo "altering the unblended US WAFS products - $COMINus/wafs.t${cyc}z.unblended.0p25.f${fhr}.grib2 "
-    echo "and $COMINus/wafs.t${cyc}z.unblended.0p25.f${fhr}.grib2.idx "
+    echo "altering the unblended US WAFS products - $COMINus/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2 "
+    echo "and $COMINus/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2.idx "
 
     if [ $SENDDBN = "YES" ] ; then
-	$DBNROOT/bin/dbn_alert MODEL WAFS_0P25_UBL_GB2 $job $COMINus/wafs.t${cyc}z.unblended.0p25.f${fhr}.grib2
-	$DBNROOT/bin/dbn_alert MODEL WAFS_0P25_UBL_GB2_WIDX $job $COMINus/wafs.t${cyc}z.unblended.0p25.f${fhr}.grib2.idx
+	$DBNROOT/bin/dbn_alert MODEL WAFS_0P25_UBL_GB2 $job $COMINus/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2
+	$DBNROOT/bin/dbn_alert MODEL WAFS_0P25_UBL_GB2_WIDX $job $COMINus/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2.idx
     fi
 
 #	 if [ $SENDDBN_NTC = "YES" ] ; then
-#	     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $COMOUT/wafs.t${cyc}z.unblended.0p25.f${fhr}.grib2
+#	     $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $COMOUT/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2
 #	 fi
 
 
@@ -257,7 +257,7 @@ else
     #   Distribute US WAFS unblend Data to NCEP FTP Server (WOC) and TOC
     #
     if [ $SENDCOM = YES ]; then
-	cpfs 0p25_blended_${PDY}${cyc}f${fhr}.grib2 $COMOUT/wafs.t${cyc}z.blended.0p25.f${fhr}.grib2
+	cpfs 0p25_blended_${PDY}${cyc}f${fhr}.grib2 $COMOUT/WAFS_0p25_blended_$PDY${cyc}f$fhr.grib2
 	## cp grib2.t${cyc}z.WAFS_0p25_blended_f${fhr}  $PCOM/grib2.t${cyc}z.WAFS_0p25_blended_f${fhr}
     fi
 
@@ -268,7 +268,7 @@ else
     fi
 
     if [ $SENDDBN = "YES" ] ; then
-	$DBNROOT/bin/dbn_alert MODEL WAFS_0P25_BL_GB2 $job $COMOUT/wafs.t${cyc}z.blended.0p25.f${fhr}.grib2
+	$DBNROOT/bin/dbn_alert MODEL WAFS_0P25_BL_GB2 $job $COMOUT/WAFS_0p25_blended_$PDY${cyc}f$fhr.grib2
     fi 
 fi
 

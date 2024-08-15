@@ -93,12 +93,12 @@ $WGRIB2 tmp_master.grb2 $opt1 $opt21 ":(UGRD|VGRD):max wind" $opt23 $opt24 -new_
 # Product 1: WAFS u/v/t/rh wafs.tHHz.0p25.fFFF.grib2
 #---------------------------
 $WGRIB2 tmp_wafs_0p25.grb2 | egrep "UGRD|VGRD|TMP|HGT|RH" \
-    | $WGRIB2 -i tmp_wafs_0p25.grb2 -set master_table 25 -grib tmp.${RUN}.t${cyc}z.0p25.f${fhr}.grib2
-cat tmp_master_0p25.grb2 >> tmp.${RUN}.t${cyc}z.0p25.f${fhr}.grib2
+    | $WGRIB2 -i tmp_wafs_0p25.grb2 -set master_table 25 -grib tmp.gfs.t${cyc}z.wafs_0p25.f${fhr}.grib2
+cat tmp_master_0p25.grb2 >> tmp.gfs.t${cyc}z.wafs_0p25.f${fhr}.grib2
 # Convert template 5 to 5.40
-#$WGRIB2 tmp.${RUN}.t${cyc}z.0p25.f${fhr}.grib2 -set_grib_type jpeg -grib_out ${RUN}.t${cyc}z.0p25.f${fhr}.grib2
-mv tmp.${RUN}.t${cyc}z.0p25.f${fhr}.grib2 ${RUN}.t${cyc}z.0p25.f${fhr}.grib2
-$WGRIB2 -s ${RUN}.t${cyc}z.0p25.f${fhr}.grib2 > ${RUN}.t${cyc}z.0p25.f${fhr}.grib2.idx
+#$WGRIB2 tmp.gfs.t${cyc}z.wafs_0p25.f${fhr}.grib2 -set_grib_type jpeg -grib_out gfs.t${cyc}z.wafs_0p25.f${fhr}.grib2
+mv tmp.gfs.t${cyc}z.wafs_0p25.f${fhr}.grib2 gfs.t${cyc}z.wafs_0p25.f${fhr}.grib2
+$WGRIB2 -s gfs.t${cyc}z.wafs_0p25.f${fhr}.grib2 > gfs.t${cyc}z.wafs_0p25.f${fhr}.grib2.idx
 
 if [ $hazard_timewindow = 'yes' ] ; then
 #---------------------------
@@ -118,9 +118,9 @@ if [ $hazard_timewindow = 'yes' ] ; then
 	| $WGRIB2 -i tmp_wafs_0p25.grb2 -set master_table 25 -grib tmp_wafs_0p25.grb2.forblend
 
     # Convert template 5 to 5.40
-    #$WGRIB2 tmp_wafs_0p25.grb2.forblend -set_grib_type jpeg -grib_out ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2
-    mv tmp_wafs_0p25.grb2.forblend ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2
-    $WGRIB2 -s ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2 > ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2.idx
+    #$WGRIB2 tmp_wafs_0p25.grb2.forblend -set_grib_type jpeg -grib_out WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2
+    mv tmp_wafs_0p25.grb2.forblend WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2
+    $WGRIB2 -s WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2 > WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2.idx
 fi
 
 if [ $SENDCOM = "YES" ] ; then
@@ -129,15 +129,15 @@ if [ $SENDCOM = "YES" ] ; then
    # Post Files to COM
    ##############################
 
-    cpfs ${RUN}.t${cyc}z.0p25.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.0p25.f${fhr}.grib2
-    cpfs ${RUN}.t${cyc}z.0p25.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.0p25.f${fhr}.grib2.idx
+    cpfs gfs.t${cyc}z.wafs_0p25.f${fhr}.grib2 $COMOUT/gfs.t${cyc}z.wafs_0p25.f${fhr}.grib2
+    cpfs gfs.t${cyc}z.wafs_0p25.f${fhr}.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_0p25.f${fhr}.grib2.idx
 
    if [ $hazard_timewindow = 'yes' ] ; then
        cpfs ${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2
        cpfs ${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2.idx
        
-       cpfs ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2 $COMOUT/${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2
-       cpfs ${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2.idx $COMOUT/${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2.idx
+       cpfs WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2 $COMOUT/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2
+       cpfs WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2.idx $COMOUT/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2.idx
    fi
 
 fi
@@ -152,11 +152,11 @@ if [ $SENDDBN = "YES" ] ; then
 	$DBNROOT/bin/dbn_alert MODEL WAFS_AWF.0P25_GB2 $job $COMOUT/${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2
 
 	# Unblended US WAFS data sent to UK for blending, to the same server as 1.25 deg unblended data: wmo/grib2.tCCz.wafs_grb_wifsfFF.45
-	$DBNROOT/bin/dbn_alert MODEL WAFS_0P25_UBL_GB2 $job $COMOUT/${RUN}.t${cyc}z.unblended.0p25.f${fhr}.grib2
+	$DBNROOT/bin/dbn_alert MODEL WAFS_0P25_UBL_GB2 $job $COMOUT/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2
     fi
 
     # WAFS U/V/T/RH data sent to the same server as the unblended data as above
-    $DBNROOT/bin/dbn_alert MODEL WAFS_0P25_GB2 $job $COMOUT/${RUN}.t${cyc}z.0p25.f${fhr}.grib2
+    $DBNROOT/bin/dbn_alert MODEL WAFS_0P25_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_0p25.f${fhr}.grib2
 
 fi
 
