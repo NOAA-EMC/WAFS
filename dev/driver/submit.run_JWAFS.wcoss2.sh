@@ -1,11 +1,12 @@
 job=$1
 JOB=`echo $job | tr 'a-z' 'A-Z'`
 
-tmpdir=/lfs/h2/emc/ptmp/yali.mao/working_wafs.$job
+PDY=20240819
+cyc=18
+
+tmpdir=/lfs/h2/emc/ptmp/yali.mao/working_wafs.$job.$PDY
 mkdir -p $tmpdir
 cd $tmpdir
-
-PDY=20240729
 
 jobcard=run_JWAFS_$JOB.wcoss2
 cp /lfs/h2/emc/vpppg/noscrub/yali.mao/git/WAFS.fork/dev/driver/$jobcard .
@@ -38,8 +39,9 @@ fi
 for fhr in $FHOURS ; do
     sed -e "s/log.wafs_$job/log.wafs_$job.$fhr/g" \
 	-e "s/PDY=.*/PDY=$PDY/g" \
+	-e "s/cyc=.*/cyc=$cyc/g" \
 	-e "s/fhr=.*/fhr=$fhr/g" \
-	-e "s/working_wafs/working_wafs.$job/g" \
+	-e "s/working_wafs/working_wafs.$job.$PDY/g" \
 	$jobcard > $jobcard.$fhr
     qsub $jobcard.$fhr
 done
