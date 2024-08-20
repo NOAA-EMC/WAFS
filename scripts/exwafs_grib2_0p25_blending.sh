@@ -43,7 +43,7 @@ fhr="$(printf "%03d" $(( 10#$fhr )) )"
 export ic=1
 while [ $ic -le $SLEEP_LOOP_MAX ]
 do 
-    if [ -s ${COMINus}/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2 ] ; then
+    if [ -s $COMINus/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2 ] ; then
         break
     fi
     if [ $ic -eq $SLEEP_LOOP_MAX ] ; then
@@ -62,7 +62,7 @@ done
 ##########################
 
 SLEEP_LOOP_MAX_UK=$SLEEP_LOOP_MAX
-     
+
 #  export ic=1
 while [ $ic_uk -le $SLEEP_LOOP_MAX_UK ]
 do
@@ -74,7 +74,14 @@ do
     fi
 
     if [ $ic_uk -eq $SLEEP_LOOP_MAX_UK ] ; then
-	echo "UK WAFS GRIB2 file " $COMINuk/egrr_wafshzds_unblended_*_0p25_${YYYY}-${MM}-${DD}T${cyc}:00Z_t$fhr.grib2 " not found"
+	echo "UK WAFS GRIB2 unblended data is not completed"
+	products="cb ice turb"
+	for prod in $products ; do
+	    ukfile=egrr_wafshzds_unblended_${prod}_0p25_${YYYY}-${MM}-${DD}T${cyc}:00Z_t$fhr.grib2
+	    if [ ! -f $COMINuk/$ukfile ] ; then
+		echo $ukfile >> missing_uk_files
+	    fi
+	done
         export SEND_US_WAFS=YES
 	break
     else
@@ -92,7 +99,7 @@ if [ $SEND_UK_WAFS = 'YES' -a $SEND_US_WAFS = 'YES' ] ; then
     SEND_UK_WAFS=NO
     echo "BOTH UK and US data are missing, no blended for $PDY$cyc$fhr"
     export err=1; err_chk
-    continue
+    exit 1
 fi
  
 ##########################
@@ -112,7 +119,7 @@ else # elif [ $SEND_US_WAFS = "NO" -a $SEND_UK_WAFS = "NO" ] ; then
     cat $COMINuk/egrr_wafshzds_unblended_*_0p25_${YYYY}-${MM}-${DD}T${cyc}:00Z_t$fhr.grib2 > EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${fhr}.grib2
     
     # pick up US data
-    cp ${COMINus}/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2 .
+    cp $COMINus/WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2 .
 
     # run blending code
     export pgm=wafs_blending_0p25.x
@@ -143,7 +150,7 @@ if [ $SEND_US_WAFS = "YES" ] ; then
     #  (Alert once for all forecast hours)
     #
     if [ $SEND_AWC_US_ALERT = "NO" ] ; then
-	echo "WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending. Send alert message to AWC ......"
+	echo "WARNING! Missing UK data for WAFS GRIB2 0P25 blending. Send alert message to AWC ......"
 	make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXwafs/wafs_blending_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
 	make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXwafs/wafs_blending_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
 	if [ $SENDDBN_NTC = "YES" ] ; then
@@ -155,15 +162,17 @@ if [ $SEND_US_WAFS = "YES" ] ; then
 	    export maillist='nco.spa@noaa.gov'
         fi
         export maillist=${maillist:-'nco.spa@noaa.gov,ncep.sos@noaa.gov'}
-        export subject="WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending, $PDY t${cyc}z $job"
+        export subject="WARNING! Missing UK data for WAFS GRIB2 0P25 blending, $PDY t${cyc}z f$fhr $job"
         echo "*************************************************************" > mailmsg
-        echo "*** WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending ***" >> mailmsg
+        echo "*** WARNING! Missing UK data for WAFS GRIB2 0P25 blending ***" >> mailmsg
         echo "*************************************************************" >> mailmsg
+        echo "Missing data at $COMINuk:" >> mailmsg
+        cat missing_uk_files >> mailmsg
         echo >> mailmsg
         echo "Send alert message to AWC ...... " >> mailmsg
         echo >> mailmsg
-        cat mailmsg > $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_usonly.emailbody
-        cat $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_usonly.emailbody | mail.py -s "$subject" $maillist -v
+        cat mailmsg > $COMOUT/${RUN}.t${cyc}z.f${fhr}.wafs_blend_0p25_usonly.emailbody
+        cat $COMOUT/${RUN}.t${cyc}z.f${fhr}.wafs_blend_0p25_usonly.emailbody | mail.py -s "$subject" $maillist -v
 
 	export SEND_AWC_US_ALERT=YES
     fi
@@ -193,7 +202,7 @@ elif [ $SEND_UK_WAFS = "YES" ] ; then
     #  (Alert once for all forecast hours)
     #
     if [ $SEND_AWC_UK_ALERT = "NO" ] ; then
-	echo "WARNING: No US WAFS GRIB2 0P25 file for WAFS blending. Send alert message to AWC ......"
+	echo "WARNING: Missing US data for WAFS GRIB2 0P25 blending. Send alert message to AWC ......"
 	make_NTC_file.pl NOXX10 KKCI $PDY$cyc NONE $FIXwafs/wafs_blending_0p25_admin_msg $PCOM/wifs_0p25_admin_msg
 	make_NTC_file.pl NOXX10 KWBC $PDY$cyc NONE $FIXwafs/wafs_blending_0p25_admin_msg $PCOM/iscs_0p25_admin_msg
 	if [ $SENDDBN_NTC = "YES" ] ; then
@@ -205,15 +214,17 @@ elif [ $SEND_UK_WAFS = "YES" ] ; then
             export maillist='nco.spa@noaa.gov'
         fi
         export maillist=${maillist:-'nco.spa@noaa.gov,ncep.sos@noaa.gov'}
-        export subject="WARNING! No US WAFS GRIB2 0P25 file for WAFS blending, $PDY t${cyc}z $job"
+        export subject="WARNING! Missing US data for WAFS GRIB2 0P25 blending, $PDY t${cyc}z $fhr $job"
         echo "*************************************************************" > mailmsg
-        echo "*** WARNING! No US WAFS GRIB2 0P25 file for WAFS blending ***" >> mailmsg
+        echo "*** WARNING! Missing US data for WAFS GRIB2 0P25 blending ***" >> mailmsg
         echo "*************************************************************" >> mailmsg
+        echo "Missing data at $COMINus:" >> mailmsg
+        echo WAFS_0p25_unblended_$PDY${cyc}f${fhr}.grib2 >> mailmsg
         echo >> mailmsg
         echo "Send alert message to AWC ...... " >> mailmsg
         echo >> mailmsg
-        cat mailmsg > $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_ukonly.emailbody
-        cat $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_ukonly.emailbody | mail.py -s "$subject" $maillist -v
+        cat mailmsg > $COMOUT/${RUN}.t${cyc}z.f${fhr}.wafs_blend_0p25_ukonly.emailbody
+        cat $COMOUT/${RUN}.t${cyc}z.f${fhr}.wafs_blend_0p25_ukonly.emailbody | mail.py -s "$subject" $maillist -v
 	     
 	export SEND_AWC_UK_ALERT=YES
     fi

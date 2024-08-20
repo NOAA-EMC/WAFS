@@ -62,7 +62,7 @@ export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc/grib2/0p2
 export PCOM=${PCOM:-$COMOUT/wmo}
 
 if [ $SENDCOM = YES ] ; then
-  mkdir -p $COMOUT # $PCOM
+  mkdir -p $COMOUT $PCOM
 fi
 
 export COMINus=${COMINus:-$COMIN}
