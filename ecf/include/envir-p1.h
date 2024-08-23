@@ -19,6 +19,9 @@ else
     export SIPHONROOT=${UTILROOT}/fakedbn
 fi
 
+export COMROOT="/lfs/h2/emc/ptmp/rahul.mahajan/com"
+export DATAROOT="/lfs/h2/emc/stmp/rahul.mahajan/tmp"
+
 export DBNROOT=$SIPHONROOT
 export TMPDIR=$DATAROOT
 export SITE=$(cat /etc/cluster_name)

@@ -1,0 +1,52 @@
+suite wafs
+  edit USER 'rahul.mahajan'
+  edit wafs_ver 'v7.0.0'
+  edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/%USER%/wafs'
+  edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+  edit ECF_INCLUDE '/lfs/h2/emc/global/noscrub/rahul.mahajan/wafs/ecf/include'
+  family primary
+    edit ENVIR 'prod'
+    edit MACHINE_SITE 'cactus'
+    edit OUTPUTDIR '/lfs/h2/emc/ptmp/%USER%/output/wafs'
+    edit QUEUE 'dev'
+    edit QUEUE_ARCH 'dev_transfer'
+    edit PROJENVIR 'DEV'
+    edit PROJ 'GFS'  # TODO: Change to 'WAFS' when ready
+    edit NET 'wafs'
+    edit RUN 'wafs'
+    # Developer settings - BEGIN
+    edit PDY '20240815'
+    edit PARATEST 'NO'
+    edit SENDDBN 'NO'
+    edit SENDDBN_NTC 'NO'
+    edit SENDCANNEDDBN 'NO'
+    edit KEEPDATA 'NO'
+    edit RUN_ENVIR 'dev'
+    # Developer settings - END
+    family 00
+      edit CYC '00'
+      task jwafs_gfs_manager
+        #trigger  /00/gfs/jgfs_forecast == active or /00/gfs/jgfs_forecast == complete
+        event 1 release_wafs_upp_anl
+        event 2 release_wafs_upp_000
+        event 47 release_wafs_gcip_000
+        event 48 release_wafs_gcip_003
+      family upp
+        task jwafs_upp_anl
+          trigger ../jwafs_gfs_manager:release_wafs_upp_anl
+          edit FHR anl
+        task jwafs_upp_f000
+          trigger ../jwafs_gfs_manager:release_wafs_upp_000
+          edit FHR 000
+      endfamily  # endfamily upp
+      family gcip
+        task jwafs_gcip_f000
+          trigger ../jwafs_gfs_manager:release_wafs_gcip_000
+          edit FHR 000
+        task jwafs_gcip_f003
+          trigger ../jwafs_gfs_manager:release_wafs_gcip_003
+          edit FHR 003
+      endfamily  # endfamily gcip
+    endfamily  # endfamily 00
+  endfamily  # endfamily wafs
+endsuite  # endsuite wafs_suite
