@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_grib_%FHR%_%CYC%
+#PBS -N %RUN%_grib_f%FHR%_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
