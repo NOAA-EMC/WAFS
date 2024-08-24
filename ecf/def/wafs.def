@@ -4,13 +4,13 @@ suite wafs
   edit wafs_ver 'v7.0.0'
   edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/%USER%/wafs/%wafs_ver%'
   edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
-  edit ECF_INCLUDE '/lfs/h2/emc/global/noscrub/<my_username>/wafs/v7.0.0/ecf/include'  # Cannot use %USER% or %NAME% here
+  edit ECF_INCLUDE '/lfs/h2/emc/global/noscrub/rahul.mahajan/wafs/v7.0.0/ecf/include'  # Cannot use %USER% or %NAME% here
   edit ENVIR 'prod'
   edit QUEUE 'dev'
   edit QUEUE_ARCH 'dev_transfer'
   edit PROJENVIR 'DEV'
   edit PROJ 'GFS'  # TODO: Change to 'WAFS' when ready
-  edit PDY '20240815'
+  edit PDY '20240824'
   edit PARATEST 'NO'
   edit SENDDBN 'NO'
   edit SENDDBN_NTC 'NO'
@@ -28,7 +28,7 @@ suite wafs
         family 00
           edit CYC '00'
           task jwafs_gfs_manager
-            trigger  /00/gfs/jgfs_forecast == active or /00/gfs/jgfs_forecast == complete
+            #trigger  /00/gfs/jgfs_forecast == active or /00/gfs/jgfs_forecast == complete
             event 1 release_wafs_upp_anl
             event 2 release_wafs_upp_000
             event 3 release_wafs_upp_001
@@ -108,10 +108,10 @@ suite wafs
             task jwafs_upp_f004
               trigger ../jwafs_gfs_manager:release_wafs_upp_004
               edit FHR 004
-            task jwafs_upp_f001
+            task jwafs_upp_f005
               trigger ../jwafs_gfs_manager:release_wafs_upp_005
               edit FHR 005
-            task jwafs_upp_f005
+            task jwafs_upp_f006
               trigger ../jwafs_gfs_manager:release_wafs_upp_006
               edit FHR 006
             task jwafs_upp_f007
@@ -447,90 +447,90 @@ suite wafs
               task jwafs_grib2_0p25_f120
                 trigger ../../upp/jwafs_upp_f120 == complete
                 edit FHR 120
+              family blending
+                task jwafs_grib2_0p25_blending_f006
+                  trigger ../jwafs_grib2_0p25_f006 == complete
+                  edit FHR 006
+                task jwafs_grib2_0p25_blending_f007
+                  trigger ../jwafs_grib2_0p25_f007 == complete
+                  edit FHR 007
+                task jwafs_grib2_0p25_blending_f008
+                  trigger ../jwafs_grib2_0p25_f008 == complete
+                  edit FHR 008
+                task jwafs_grib2_0p25_blending_f009
+                  trigger ../jwafs_grib2_0p25_f009 == complete
+                  edit FHR 009
+                task jwafs_grib2_0p25_blending_f010
+                  trigger ../jwafs_grib2_0p25_f010 == complete
+                  edit FHR 010
+                task jwafs_grib2_0p25_blending_f011
+                  trigger ../jwafs_grib2_0p25_f011 == complete
+                  edit FHR 011
+                task jwafs_grib2_0p25_blending_f012
+                  trigger ../jwafs_grib2_0p25_f012 == complete
+                  edit FHR 012
+                task jwafs_grib2_0p25_blending_f013
+                  trigger ../jwafs_grib2_0p25_f013 == complete
+                  edit FHR 013
+                task jwafs_grib2_0p25_blending_f014
+                  trigger ../jwafs_grib2_0p25_f014 == complete
+                  edit FHR 014
+                task jwafs_grib2_0p25_blending_f015
+                  trigger ../jwafs_grib2_0p25_f015 == complete
+                  edit FHR 015
+                task jwafs_grib2_0p25_blending_f016
+                  trigger ../jwafs_grib2_0p25_f016 == complete
+                  edit FHR 016
+                task jwafs_grib2_0p25_blending_f017
+                  trigger ../jwafs_grib2_0p25_f017 == complete
+                  edit FHR 017
+                task jwafs_grib2_0p25_blending_f018
+                  trigger ../jwafs_grib2_0p25_f018 == complete
+                  edit FHR 018
+                task jwafs_grib2_0p25_blending_f019
+                  trigger ../jwafs_grib2_0p25_f019 == complete
+                  edit FHR 019
+                task jwafs_grib2_0p25_blending_f020
+                  trigger ../jwafs_grib2_0p25_f020 == complete
+                  edit FHR 020
+                task jwafs_grib2_0p25_blending_f021
+                  trigger ../jwafs_grib2_0p25_f021 == complete
+                  edit FHR 021
+                task jwafs_grib2_0p25_blending_f022
+                  trigger ../jwafs_grib2_0p25_f022 == complete
+                  edit FHR 022
+                task jwafs_grib2_0p25_blending_f023
+                  trigger ../jwafs_grib2_0p25_f023 == complete
+                  edit FHR 023
+                task jwafs_grib2_0p25_blending_f024
+                  trigger ../jwafs_grib2_0p25_f024 == complete
+                  edit FHR 024
+                task jwafs_grib2_0p25_blending_f027
+                  trigger ../jwafs_grib2_0p25_f027 == complete
+                  edit FHR 027
+                task jwafs_grib2_0p25_blending_f030
+                  trigger ../jwafs_grib2_0p25_f030 == complete
+                  edit FHR 030
+                task jwafs_grib2_0p25_blending_f033
+                  trigger ../jwafs_grib2_0p25_f033 == complete
+                  edit FHR 033
+                task jwafs_grib2_0p25_blending_f036
+                  trigger ../jwafs_grib2_0p25_f036 == complete
+                  edit FHR 036
+                task jwafs_grib2_0p25_blending_f039
+                  trigger ../jwafs_grib2_0p25_f039 == complete
+                  edit FHR 039
+                task jwafs_grib2_0p25_blending_f042
+                  trigger ../jwafs_grib2_0p25_f042 == complete
+                  edit FHR 042
+                task jwafs_grib2_0p25_blending_f045
+                  trigger ../jwafs_grib2_0p25_f045 == complete
+                  edit FHR 045
+                task jwafs_grib2_0p25_blending_f048
+                  trigger ../jwafs_grib2_0p25_f048 == complete
+                  edit FHR 048
+              endfamily  # endfamily blending
             endfamily  # endfamily 0p25
-            family blending
-              task jwafs_grib2_0p25_blending_f006
-                trigger ../jwafs_grib2_0p25_f006 == complete
-                edit FHR 006
-              task jwafs_grib2_0p25_blending_f007
-                trigger ../jwafs_grib2_0p25_f007 == complete
-                edit FHR 007
-              task jwafs_grib2_0p25_blending_f008
-                trigger ../jwafs_grib2_0p25_f008 == complete
-                edit FHR 008
-              task jwafs_grib2_0p25_blending_f009
-                trigger ../jwafs_grib2_0p25_f009 == complete
-                edit FHR 009
-              task jwafs_grib2_0p25_blending_f010
-                trigger ../jwafs_grib2_0p25_f010 == complete
-                edit FHR 010
-              task jwafs_grib2_0p25_blending_f011
-                trigger ../jwafs_grib2_0p25_f011 == complete
-                edit FHR 011
-              task jwafs_grib2_0p25_blending_f012
-                trigger ../jwafs_grib2_0p25_f012 == complete
-                edit FHR 012
-              task jwafs_grib2_0p25_blending_f013
-                trigger ../jwafs_grib2_0p25_f013 == complete
-                edit FHR 013
-              task jwafs_grib2_0p25_blending_f014
-                trigger ../jwafs_grib2_0p25_f014 == complete
-                edit FHR 014
-              task jwafs_grib2_0p25_blending_f015
-                trigger ../jwafs_grib2_0p25_f015 == complete
-                edit FHR 015
-              task jwafs_grib2_0p25_blending_f016
-                trigger ../jwafs_grib2_0p25_f016 == complete
-                edit FHR 016
-              task jwafs_grib2_0p25_blending_f017
-                trigger ../jwafs_grib2_0p25_f017 == complete
-                edit FHR 017
-              task jwafs_grib2_0p25_blending_f018
-                trigger ../jwafs_grib2_0p25_f018 == complete
-                edit FHR 018
-              task jwafs_grib2_0p25_blending_f019
-                trigger ../jwafs_grib2_0p25_f019 == complete
-                edit FHR 019
-              task jwafs_grib2_0p25_blending_f020
-                trigger ../jwafs_grib2_0p25_f020 == complete
-                edit FHR 020
-              task jwafs_grib2_0p25_blending_f021
-                trigger ../jwafs_grib2_0p25_f021 == complete
-                edit FHR 021
-              task jwafs_grib2_0p25_blending_f022
-                trigger ../jwafs_grib2_0p25_f022 == complete
-                edit FHR 022
-              task jwafs_grib2_0p25_blending_f023
-                trigger ../jwafs_grib2_0p25_f023 == complete
-                edit FHR 023
-              task jwafs_grib2_0p25_blending_f024
-                trigger ../jwafs_grib2_0p25_f024 == complete
-                edit FHR 024
-              task jwafs_grib2_0p25_blending_f027
-                trigger ../jwafs_grib2_0p25_f027 == complete
-                edit FHR 027
-              task jwafs_grib2_0p25_blending_f030
-                trigger ../jwafs_grib2_0p25_f030 == complete
-                edit FHR 030
-              task jwafs_grib2_0p25_blending_f033
-                trigger ../jwafs_grib2_0p25_f033 == complete
-                edit FHR 033
-              task jwafs_grib2_0p25_blending_f036
-                trigger ../jwafs_grib2_0p25_f036 == complete
-                edit FHR 036
-              task jwafs_grib2_0p25_blending_f039
-                trigger ../jwafs_grib2_0p25_f039 == complete
-                edit FHR 039
-              task jwafs_grib2_0p25_blending_f042
-                trigger ../jwafs_grib2_0p25_f042 == complete
-                edit FHR 042
-              task jwafs_grib2_0p25_blending_f045
-                trigger ../jwafs_grib2_0p25_f045 == complete
-                edit FHR 045
-              task jwafs_grib2_0p25_blending_f048
-                trigger ../jwafs_grib2_0p25_f048 == complete
-                edit FHR 048
-            endfamily  # endfamily blending
           endfamily  # endfamily grib2
         endfamily  # endfamily 00
       endfamily  # endfamily v7.0
