@@ -2,9 +2,9 @@ suite wafs
   edit MACHINE_SITE 'cactus'
   edit USER 'rahul.mahajan'
   edit wafs_ver 'v7.0.0'
-  edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/%USER%/wafs/%wafs_ver%'
+  edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/%USER%/wafs.%wafs_ver%'
   edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
-  edit ECF_INCLUDE '/lfs/h2/emc/global/noscrub/rahul.mahajan/wafs/v7.0.0/ecf/include'  # Cannot use %USER% or %NAME% here
+  edit ECF_INCLUDE '/lfs/h2/emc/global/noscrub/rahul.mahajan/wafs.v7.0.0/ecf/include'  # Cannot use %NAME% here
   edit ENVIR 'prod'
   edit QUEUE 'dev'
   edit QUEUE_ARCH 'dev_transfer'
@@ -17,9 +17,9 @@ suite wafs
   edit SENDCANNEDDBN 'NO'
   edit KEEPDATA 'NO'
   edit RUN_ENVIR 'dev'
-  edit DATAROOT '/lfs/h2/emc/stmp/%USER%/tmp/wafs/%wafs_ver%'
-  edit COMROOT '/lfs/h2/emc/ptmp/%USER%/com/wafs/%wafs_ver%'
-  edit OUTPUTDIR '/lfs/h2/emc/ptmp/%USER%/output/wafs/%wafs_ver%'
+  edit COMROOT '/lfs/h2/emc/ptmp/%USER%/%ENVIR%/com'
+  edit DATAROOT '/lfs/h2/emc/stmp/%USER%/tmp'
+  edit OUTPUTDIR '/lfs/h2/emc/stmp/%USER%/output'
   family primary
     family wafs
       edit NET 'wafs'
