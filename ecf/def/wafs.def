@@ -18,6 +18,7 @@ suite wafs
   edit KEEPDATA 'NO'
   edit RUN_ENVIR 'dev'
   edit COMROOT '/lfs/h2/emc/ptmp/%USER%/%ENVIR%/com'
+  edrt COMPATH '%COMROOT%/wafs'
   edit DATAROOT '/lfs/h2/emc/stmp/%USER%/tmp'
   edit OUTPUTDIR '/lfs/h2/emc/stmp/%USER%/output'
   family primary
