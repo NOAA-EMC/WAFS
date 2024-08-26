@@ -1,10 +1,10 @@
 suite wafs
-  edit MACHINE_SITE 'cactus'
-  edit USER 'rahul.mahajan'
-  edit wafs_ver 'v7.0.0'
-  edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/%USER%/wafs.%wafs_ver%'
+  edit MACHINE_SITE '@MACHINE_SITE@'
+  edit USER '@USER@'
+  edit wafs_ver '@MODELVER@'
+  edit PACKAGEHOME '@PACKAGEROOT@/wafs.%wafs_ver%'
+  edit ECF_INCLUDE '@PACKAGEROOT@/wafs.@MODELVER@/ecf/include'
   edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
-  edit ECF_INCLUDE '/lfs/h2/emc/global/noscrub/rahul.mahajan/wafs.v7.0.0/ecf/include'  # Cannot use %NAME% here
   edit ENVIR 'prod'
   edit QUEUE 'dev'
   edit QUEUE_ARCH 'dev_transfer'

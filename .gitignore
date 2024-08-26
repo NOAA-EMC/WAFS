@@ -20,3 +20,6 @@ ecf/scripts/grib2/0p25/jwafs_grib2_0p25_f*.ecf
 ecf/scripts/grib2/0p25/blending/jwafs_grib2_0p25_blending_f*.ecf
 ecf/scripts/gcip/jwafs_gcip_f*.ecf
 ecf/scripts/grib/jwafs_grib_f*.ecf
+
+# Ignore wafs.def
+ecf/def/wafs.def
