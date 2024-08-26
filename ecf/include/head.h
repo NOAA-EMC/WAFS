@@ -59,6 +59,7 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
     echo "Allow over-riding defaults for developers"
     if [ -n "%COMROOT:%" ]; then export COMROOT=${COMROOT:-%COMROOT:%}; fi
     if [ -n "%DATAROOT:%" ]; then export DATAROOT=${DATAROOT:-%DATAROOT:%}; fi
+    if [ -n "%DCOMROOT:%" ]; then export DCOMROOT=${DCOMROOT:-%DCOMROOT:%}; fi
   fi
   set +x
   module load prod_util/${prod_util_ver}

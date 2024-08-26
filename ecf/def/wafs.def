@@ -18,9 +18,10 @@ suite wafs
   edit KEEPDATA 'NO'
   edit RUN_ENVIR 'dev'
   edit COMROOT '/lfs/h2/emc/ptmp/%USER%/%ENVIR%/com'
-  edrt COMPATH '%COMROOT%/wafs'
   edit DATAROOT '/lfs/h2/emc/stmp/%USER%/tmp'
+  edit DCOMROOT '/lfs/h1/ops/dev/dcom/test'
   edit OUTPUTDIR '/lfs/h2/emc/stmp/%USER%/output'
+  edit COMPATH '%COMROOT%/wafs'
   family primary
     family wafs
       edit NET 'wafs'
@@ -241,40 +242,40 @@ suite wafs
           family grib
             task jwafs_grib_f006
               trigger ../jwafs_gfs_manager:release_wafs_grib_006
-              edit FHR 006
+              edit FHR 06
             task jwafs_grib_f012
               trigger ../jwafs_gfs_manager:release_wafs_grib_012
-              edit FHR 012
+              edit FHR 12
             task jwafs_grib_f018
               trigger ../jwafs_gfs_manager:release_wafs_grib_018
-              edit FHR 018
+              edit FHR 18
             task jwafs_grib_f024
               trigger ../jwafs_gfs_manager:release_wafs_grib_024
-              edit FHR 024
+              edit FHR 24
             task jwafs_grib_f030
               trigger ../jwafs_gfs_manager:release_wafs_grib_030
-              edit FHR 030
+              edit FHR 30
             task jwafs_grib_f036
               trigger ../jwafs_gfs_manager:release_wafs_grib_036
-              edit FHR 036
+              edit FHR 36
             task jwafs_grib_f042
               trigger ../jwafs_gfs_manager:release_wafs_grib_042
-              edit FHR 042
+              edit FHR 42
             task jwafs_grib_f048
               trigger ../jwafs_gfs_manager:release_wafs_grib_048
-              edit FHR 048
+              edit FHR 48
             task jwafs_grib_f054
               trigger ../jwafs_gfs_manager:release_wafs_grib_054
-              edit FHR 054
+              edit FHR 54
             task jwafs_grib_f060
               trigger ../jwafs_gfs_manager:release_wafs_grib_060
-              edit FHR 060
+              edit FHR 60
             task jwafs_grib_f066
               trigger ../jwafs_gfs_manager:release_wafs_grib_066
-              edit FHR 066
+              edit FHR 66
             task jwafs_grib_f072
               trigger ../jwafs_gfs_manager:release_wafs_grib_072
-              edit FHR 072
+              edit FHR 72
           endfamily  # endfamily grib
           family grib2
             family 1p25
