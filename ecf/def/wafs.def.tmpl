@@ -279,6 +279,9 @@ suite wafs
           endfamily  # endfamily grib
           family grib2
             family 1p25
+              task jwafs_grib2_1p25_f000
+                trigger ../../upp/jwafs_upp_f000 == complete
+                edit FHR 000
               task jwafs_grib2_1p25_f006
                 trigger ../../upp/jwafs_upp_f006 == complete
                 edit FHR 006
