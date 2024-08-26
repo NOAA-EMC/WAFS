@@ -29,8 +29,8 @@ export ECF_OUTPUTDIR=${ECF_ROOT}/output
 export LFS_OUTPUTDIR=${ECF_ROOT}/submit
 export ECF_COMDIR=${ECF_ROOT}/com
 mkdir -p ${ECF_ROOT}
-#server_check.sh ${ECF_ROOT}
 ```
+
 You are now ready to start the `ecflow_server`.
 ```bash
 server_check.sh ${ECF_ROOT}
