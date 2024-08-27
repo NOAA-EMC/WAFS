@@ -36,9 +36,11 @@ export SENDECF=${SENDECF:-YES}
 export SENDCOM=${SENDCOM:-YES}
 if [ -n "%PDY:%" ]; then export PDY=${PDY:-%PDY:%}; fi
 if [ -n "%PARATEST:%" ]; then export PARATEST=${PARATEST:-%PARATEST:%}; fi
+export PARATEST=${PARATEST:-"NO"}
 if [ -n "%COMPATH:%" ]; then export COMPATH=${COMPATH:-%COMPATH:%}; fi
 if [ -n "%MAILTO:%" ]; then export MAILTO=${MAILTO:-%MAILTO:%}; fi
 if [ -n "%DBNLOG:%" ]; then export DBNLOG=${DBNLOG:-%DBNLOG:%}; fi
+if [ -n "%DATAFS:%" ]; then export DATAFS=${DATAFS:-%DATAFS:%}; fi
 export KEEPDATA=${KEEPDATA:-%KEEPDATA:NO%}
 export SENDDBN=${SENDDBN:-%SENDDBN:YES%}
 export SENDDBN_NTC=${SENDDBN_NTC:-%SENDDBN_NTC:YES%}
@@ -53,6 +55,12 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   echo "ecflow module location: $(module display ecflow |& head -2 | tail -1 | sed 's/:$//')"
   set -x
   . ${ECF_ROOT}/versions/run.ver
+  if [[ ! " ops.prod ops.para " =~ " $(whoami) " ]]; then
+    echo "Allow over-riding defaults for developers"
+    if [ -n "%COMROOT:%" ]; then export COMROOT=${COMROOT:-%COMROOT:%}; fi
+    if [ -n "%DATAROOT:%" ]; then export DATAROOT=${DATAROOT:-%DATAROOT:%}; fi
+    if [ -n "%DCOMROOT:%" ]; then export DCOMROOT=${DCOMROOT:-%DCOMROOT:%}; fi
+  fi
   set +x
   module load prod_util/${prod_util_ver}
   module load prod_envir/${prod_envir_ver}
@@ -63,15 +71,15 @@ fi
 
 timeout 300 ecflow_client --init=${ECF_RID}
 
-if [[ " ops.prod ops.para " =~ " $(whoami) " ]]; then
-  POST_OUT=${POST_OUT:-/lfs/h1/ops/%ENVIR%/tmp/posts/ecflow_post_in.${ECF_RID}}
-  echo 'export ECF_NAME=${ECF_NAME}' > $POST_OUT
-  echo 'export ECF_HOST=${ECF_HOST}' >> $POST_OUT
-  echo 'export ECF_PORT=${ECF_PORT}' >> $POST_OUT
-  echo 'export ECF_PASS=${ECF_PASS}' >> $POST_OUT
-  echo 'export ECF_TRYNO=${ECF_TRYNO}' >> $POST_OUT
-  echo 'export ECF_RID=${ECF_RID}' >> $POST_OUT
-fi
+#if [[ " ops.prod ops.para " =~ " $(whoami) " ]]; then
+#  POST_OUT=${POST_OUT:-/lfs/h1/ops/%ENVIR%/tmp/posts/ecflow_post_in.${ECF_RID}}
+#  echo 'export ECF_NAME=${ECF_NAME}' > $POST_OUT
+#  echo 'export ECF_HOST=${ECF_HOST}' >> $POST_OUT
+#  echo 'export ECF_PORT=${ECF_PORT}' >> $POST_OUT
+#  echo 'export ECF_PASS=${ECF_PASS}' >> $POST_OUT
+#  echo 'export ECF_TRYNO=${ECF_TRYNO}' >> $POST_OUT
+#  echo 'export ECF_RID=${ECF_RID}' >> $POST_OUT
+#fi
 
 # Define error handler
 ERROR() {
@@ -83,11 +91,10 @@ ERROR() {
   fi
   ecflow_client --abort="$msg"
   echo $msg
-  if [[ " ops.prod ops.para " =~ " $(whoami) " ]]; then
-    echo "# Trap Caught" >>$POST_OUT
-  fi
+#  if [[ " ops.prod ops.para " =~ " $(whoami) " ]]; then
+#    echo "# Trap Caught" >>$POST_OUT
+#  fi
   trap $1; exit $1
 }
 # Trap all error and exit signals
 trap 'ERROR $?' ERR EXIT
-

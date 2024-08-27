@@ -10,9 +10,10 @@ ECF_DIR="${DIR_ROOT}/ecf"
 # Function that loops over forecast hours and
 # creates link between the master and target
 function link_master_to_fhr() {
-  tmpl=$1               # Name of the master template
-  fhrs=$2               # Array of forecast hours
-  clean_only=${3:-"NO"} # Clean only flag to remove existing links
+  local tmpl=$1               # Name of the master template
+  local fhrs=$2               # Array of forecast hours
+  local clean_only=${3:-"NO"} # Clean only flag to remove existing links
+  local fhr3 master target
   for fhr in ${fhrs[@]}; do
     fhr3=$(printf %03d $fhr)
     master=${tmpl}_master.ecf
