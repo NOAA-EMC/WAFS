@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.19)
 
 # Get the version from the VERSION file.
 #file(STRINGS "VERSION" pVersion)
-set(pVersion 1.0.0)
+set(pVersion 7.0.0)
 
 project(
   wafs
