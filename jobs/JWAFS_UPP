@@ -4,19 +4,27 @@
 # WAFS UPP PRODUCT GENERATION
 ########################################
 
-export PS4='$SECONDS + '
 date
+export PS4='$SECONDS + '
 set -x
 
-# keep the working directory or not
-export KEEPDATA=${KEEPDATA:-NO}
+####################################
+# make temp directory
+####################################
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p "${DATA}" && cd "${DATA}"
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+export cycle=${cycle:-"t${cyc}z"}
+setpdy.sh
+. ./PDY
 
 ####################################
-# Specify whether the run is production or development
+# SENDCOM  - Copy Files From TMPDIR to $COMOUT
 ####################################
-export envir=${envir:-prod}
-# print current environment
-env
+export SENDCOM=${SENDCOM:-"YES"}
 
 ####################################
 # Specify NET and RUN Name and model
@@ -24,73 +32,50 @@ env
 export NET=${NET:-wafs}
 export RUN=${RUN:-wafs}
 
-export RUNupp=${RUNupp:-gfs}
-
-####################################
-# obtain unique process id (pid) and make temp directory
-####################################
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
+##############################################
+# Define COM directories
+##############################################
+export COMINgfs=${COMINgfs:-$(compath.py "${envir}/gfs/${gfs_ver})/gfs.${PDY}/${cyc}/atmos")}
+export COMOUT=${COMOUT:-$(compath.py -o "${NET}/${wafs_ver})/${RUN}.${PDY}/${cyc}/upp")}
+mkdir -p "${COMOUT}"
 
 ####################################
 # Determine Job Output Name on System
 ####################################
-export pgmout="OUTPUT.${pid}"
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-export cycle=t${cyc}z
-setpdy.sh
-. ./PDY
-
-
-####################################
-# SENDCOM  - Copy Files From TMPDIR to $COMOUT
-# SENDDBN  - Issue DBNet Client Calls
-# RERUN    - Rerun posts from beginning (default no)
-# VERBOSE  - Specify Verbose Output in global_postgp.sh
-####################################
-export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-YES}
-export RERUN=${RERUN:-NO}
-export VERBOSE=${VERBOSE:-YES}
+export pgmout="OUTPUT.$$"
 
 ####################################
 # Specify Execution Areas
 ####################################
-export HOMEwafs=${HOMEwafs:-${NWROOT}/wafs.${wafs_ver}}
-export EXECwafs=$HOMEwafs/exec
-export FIXwafs=$HOMEwafs/fix/upp
-export PARMwafs=$HOMEwafs/parm/upp
-export USHwafs=$HOMEwafs/ush
-export SCRIPTSwafs=$HOMEwafs/scripts
+export EXECwafs="${HOMEwafs}/exec"
+export PARMwafs="${HOMEwafs}/parm"
 
-export POSTGPEXEC=${POSTGPEXEC:-$EXECwafs/ncep_post}
-export POSTGRB2TBL=${POSTGRB2TBL:-${g2tmpl_ROOT}/share/params_grib2_tbl_new}
+export UPPEXEC=${UPPEXEC:-"${EXECwafs}/ncep_post"}
+export POSTGRB2TBL=${POSTGRB2TBL:-"${g2tmpl_ROOT}/share/params_grib2_tbl_new"}
 
-##############################################
-# Define COM directories
-##############################################
-export COMINgfs=${COMINgfs:-$(compath.py $envir/$RUNupp/$gfs_ver)/gfs.$PDY/$cyc/atmos}
+export MPIRUN=${MPIRUN:-'mpiexec -l -n 126 -ppn 126 --cpu-bind depth --depth 1'}
 
-export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc/upp}
-mkdir -p $COMOUT
+#########################################################
+# print current environment
+#########################################################
+env
 
 #########################################################
 # Execute the Script
 #########################################################
-export MPIRUN=${MPIRUN:-'mpiexec -l -n 126 -ppn 126 --cpu-bind depth --depth 1'}
-$SCRIPTSwafs/exwafs_upp.sh
+"${HOMEwafs}/exwafs_upp.sh"
+export err=$?
+err_chk
+
+if [[ -e "${pgmout}" ]]; then
+  cat "${pgmout}"
+fi
 
 ##############################
 # Remove the Temporary working directory
 ##############################
-if [ $KEEPDATA = NO ]; then
-  rm -rf $DATA
+if [[ "${KEEPDATA^^}" != "YES" ]]; then
+  rm -rf "${DATA}"
 fi
 
 date

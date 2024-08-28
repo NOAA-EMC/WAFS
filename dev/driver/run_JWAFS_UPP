@@ -15,9 +15,7 @@
 set -x
 
 # specify computation resource
-export threads=1
 export MP_LABELIO=yes
-export OMP_NUM_THREADS=$threads
 export MPIRUN='mpiexec -l -n 126 -ppn 126 --cpu-bind depth --depth 1'
 
 echo "starting time $PBS_JOBNAME"
@@ -63,13 +61,11 @@ export envir=prod
 export NET=wafs
 export RUN=wafs
 
-export RUNupp=gfs
-
 ############################################
 # user defined
 ############################################
 #export PDY=`$NDATE -24 | cut -c 1-8`
-export PDY=`cut -c 7-14 $COMROOT/date/t00z`
+export PDY=$(cut -c 7-14 $COMROOT/date/t00z)
 export PDY=20240617
 
 export cyc=${cyc:-00}
@@ -83,7 +79,7 @@ export job=wafs_upp_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 
-USER=`whoami`
+USER=$(whoami)
 
 ############################################
 # SENDCOM=YES--Copy output file to /com
@@ -101,7 +97,7 @@ export KEEPDATA=YES
 
 export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
-export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/$RUNupp}
+export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}
 
 DATAroot=/lfs/h2/emc/ptmp/$USER/working_wafs
 
@@ -112,4 +108,3 @@ export DATA=$DATAroot/upp.f$fhr.${jobid}
 
 $HOMEwafs/jobs/JWAFS_UPP
 echo $?
-
