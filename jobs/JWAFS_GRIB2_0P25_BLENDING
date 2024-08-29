@@ -1,107 +1,80 @@
 #!/bin/bash
 ########################################################
-# This job runs the code to blend US's and UK's WAFS products at 0.25 deg 
+# This job runs the code to blend US's and UK's WAFS products at 0.25 deg
 ########################################################
 
 date
-export PS4='$SECONDS + ' 
+export PS4='$SECONDS + '
 set -x
 
-# keep the working directory or not
-export KEEPDATA=${KEEPDATA:-NO}
-
-############################################
-# Specify it is production or developmen
-############################################
-export envir=${envir:-prod}
-# print current environment
-env
-
-############################################
-# Working Directory
-############################################
+####################################
+# make temp directory
+####################################
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
-############################################
-# Output for executables
-############################################
-export pgmout=OUTPUT.$$
+mkdir -p "${DATA}" && cd "${DATA}"
 
 ###########################################
 # Run setpdy and initialize PDY variables
 ###########################################
-export cycle=t${cyc}z 
+export cycle=${cycle:-"t${cyc}z"}
 setpdy.sh
 . ./PDY
 
-export RERUN=${RERUN:-NO}
+####################################
+# SEND to COM, DBN, etc
+####################################
+export SENDCOM=${SENDCOM:-"YES"}
+export SENDDBN=${SENDDBN:-"YES"}
 
-############################################
-# Set up the NET and RUN
-############################################
+####################################
+# Specify NET and RUN Name and model
+####################################
 export NET=${NET:-wafs}
 export RUN=${RUN:-wafs}
 
-############################################
-# Specify HOME Directory
-############################################
-export HOMEwafs=${HOMEwafs:-${NWROOT}/wafs.${wafs_ver}}
-export EXECwafs=$HOMEwafs/exec
-export FIXwafs=$HOMEwafs/fix/wafs
-export PARMwafs=$HOMEwafs/parm/wafs
-export USHwafs=$HOMEwafs/ush
-export SCRIPTSwafs=$HOMEwafs/scripts
+##############################################
+# Define COM directories
+##############################################
+export COMIN=${COMOUT:-$(compath.py "${envir}/${NET}/${wafs_ver}")"/${RUN}.${PDY}/${cyc}/grib2/0p25"}
+export COMOUT=${COMOUT:-$(compath.py -o "${NET}/${wafs_ver}")"/${RUN}.${PDY}/${cyc}/grib2/0p25/blending"}
+export COMOUTwmo=${COMOUTwmo:-"${COMOUT}/wmo"}
+mkdir -p "${COMOUT}" "${COMOUTwmo}"
 
-################################################
-# Set up the INPUT and OUTPUT directories
-################################################
-export COMIN=${COMIN:-$(compath.py $envir/$NET/$wafs_ver)/$RUN.$PDY/$cyc/grib2/0p25}
-export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc/grib2/0p25/blending}
-export PCOM=${PCOM:-$COMOUT/wmo}
+export COMINus=${COMINus:-"${COMIN}"}
+export COMINuk=${COMINuk:-"${DCOMROOT}/${PDY}/wgrbbul/ukmet_wafs"}
 
-if [ $SENDCOM = YES ] ; then
-  mkdir -p $COMOUT $PCOM
-fi
+####################################
+# Determine Job Output Name on System
+####################################
+export pgmout="OUTPUT.$$"
 
-export COMINus=${COMINus:-$COMIN}
-export COMINuk=${COMINuk:-$DCOMROOT/$PDY/wgrbbul/ukmet_wafs}
+####################################
+# Specify Execution Areas
+####################################
+export EXECwafs="${HOMEwafs}/exec"
+export FIXwafs="${HOMEwafs}/fix"
 
-###############################################
-# Specify Timeout Behavior of WAFS blending
-#
-# SLEEP_TIME - Amount of time to wait for
-#              a input file before exiting
-# SLEEP_INT  - Amount of time to wait between
-#              checking for input files
-###############################################
-# export SLEEP_TIME=300   # changed to 60 to avoid hitting wall_clock when miss umket wafs files ... 
-# JY -0129: export SLEEP_TIME=600
-# Aug2024: export SLEEP_TIME=1200 (20 minutes, T+4:30 - T+4:50)
-export SLEEP_TIME=1200
-export SLEEP_INT=10
+#########################################################
+# print current environment
+#########################################################
+env
 
 ############################################
 # Execute the script.
 ############################################
-${SCRIPTSwafs}/exwafs_grib2_0p25_blending.sh
-export err=$?; err_chk
+"${HOMEwafs}/scripts/exwafs_grib2_0p25_blending.sh"
+export err=$?
+err_chk
 
-echo "JOB $job HAS COMPLETED NORMALLY."
-
-############################################
-# print exec output
-############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
+if [[ -e "${pgmout}" ]]; then
+  cat "${pgmout}"
 fi
 
-############################################
-# remove temporary working directory
-############################################
-if [ $KEEPDATA != YES ] ; then
-    rm -rf $DATA
+##############################
+# Remove the Temporary working directory
+##############################
+if [[ "${KEEPDATA^^}" != "YES" ]]; then
+  rm -rf "${DATA}"
 fi
 
 date
