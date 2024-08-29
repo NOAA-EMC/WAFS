@@ -34,15 +34,12 @@ fi
 
 # Create the itag file
 cat >itag <<EOF
-&model_inputs
-  filename="atmfile",
-  ioform="netcdfpara",
-  grib="grib2",
-  datestr="${VDATE:0:4}-${VDATE:4:2}-${VDATE:6:2}_${VDATE:8:2}:00:00",
-  modelname="GFS",
-  filenameflux="flxfile",
-  filenameflat = "postxconfig-NT.txt"
-/
+atmfile
+netcdfpara
+grib2
+${VDATE:0:4}-${VDATE:4:2}-${VDATE:6:2}_${VDATE:8:2}:00:00
+GFS
+flxfile
 &nampgb
   kpo=${KPO},
   po=${PO},
