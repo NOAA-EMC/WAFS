@@ -35,8 +35,8 @@ export RUN=${RUN:-wafs}
 ##############################################
 # Define COM directories
 ##############################################
-export COMINgfs=${COMINgfs:-$(compath.py "${envir}/gfs/${gfs_ver})/gfs.${PDY}/${cyc}/atmos")}
-export COMOUT=${COMOUT:-$(compath.py -o "${NET}/${wafs_ver})/${RUN}.${PDY}/${cyc}/upp")}
+export COMINgfs=${COMINgfs:-$(compath.py "${envir}/gfs/${gfs_ver}")"/gfs.${PDY}/${cyc}/atmos"}
+export COMOUT=${COMOUT:-$(compath.py -o "${NET}/${wafs_ver}")"/${RUN}.${PDY}/${cyc}/upp"}
 mkdir -p "${COMOUT}"
 
 ####################################
@@ -50,7 +50,7 @@ export pgmout="OUTPUT.$$"
 export EXECwafs="${HOMEwafs}/exec"
 export PARMwafs="${HOMEwafs}/parm"
 
-export UPPEXEC=${UPPEXEC:-"${EXECwafs}/ncep_post"}
+export UPPEXEC=${UPPEXEC:-"${EXECwafs}/ncep_post.x"}
 export POSTGRB2TBL=${POSTGRB2TBL:-"${g2tmpl_ROOT}/share/params_grib2_tbl_new"}
 
 export MPIRUN=${MPIRUN:-'mpiexec -l -n 126 -ppn 126 --cpu-bind depth --depth 1'}
@@ -63,7 +63,7 @@ env
 #########################################################
 # Execute the Script
 #########################################################
-"${HOMEwafs}/exwafs_upp.sh"
+"${HOMEwafs}/scripts/exwafs_upp.sh"
 export err=$?
 err_chk
 

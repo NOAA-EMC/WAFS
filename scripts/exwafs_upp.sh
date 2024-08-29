@@ -74,7 +74,7 @@ export pgm
 # Clean out any existing output files
 . prep_step
 
-"${MPIRUN}" "${pgm}}" <itag >>"${pgmout}" 2>errfile
+${MPIRUN} ${DATA}/${pgm} <itag >>${pgmout} 2>errfile
 export err=$?
 err_chk
 
