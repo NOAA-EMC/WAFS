@@ -50,11 +50,6 @@ export pgmout="OUTPUT.$$"
 export EXECwafs="${HOMEwafs}/exec"
 export PARMwafs="${HOMEwafs}/parm"
 
-export UPPEXEC=${UPPEXEC:-"${EXECwafs}/ncep_post.x"}
-export POSTGRB2TBL=${POSTGRB2TBL:-"${g2tmpl_ROOT}/share/params_grib2_tbl_new"}
-
-export MPIRUN=${MPIRUN:-'mpiexec -l -n 126 -ppn 126 --cpu-bind depth --depth 1'}
-
 #########################################################
 # print current environment
 #########################################################
