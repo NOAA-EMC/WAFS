@@ -7,7 +7,7 @@
 # Example: ./setup_ecf.sh 2021010100 test
 #
 # Setting up ecflow suite requires the package to be cloned in a directory matching 'wafs.vX.Y.Z'
-# where X, Y, Z are optional letters (lowercase) or numbers or combination of both
+# where X, Y, Z are numbers
 # The script replaces @VARIABLE@ names in suite definition files with values
 # and links ecflow scripts in the ecf/scripts directory
 #
@@ -30,7 +30,7 @@ packagename=$(basename ${DIR_ROOT})
 pattern="^wafs\.v([0-9\.a-z]+).$"
 if [[ ! "${packagename}" =~ ${pattern} ]]; then
     echo "FATAL ERROR: The package '${packagename}' should be cloned in a directory matching 'wafs.vX.Y.Z'"
-    echo "             X, Y, Z are optional letters (lowercase) or numbers or combination of both"
+    echo "             X, Y, Z are numbers"
     exit 1
 fi
 

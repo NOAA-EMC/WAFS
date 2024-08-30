@@ -17,10 +17,9 @@ suite wafs@EXPID@
   edit SENDCANNEDDBN 'NO'
   edit KEEPDATA 'NO'
   edit RUN_ENVIR 'dev'
-  edit COMROOT '/lfs/h2/emc/ptmp/%USER%/%ENVIR%/com'
-  edit DATAROOT '/lfs/h2/emc/stmp/%USER%/tmp/wafs@EXPID@'
-  edit OUTPUTDIR '/lfs/h2/emc/stmp/%USER%/output/wafs@EXPID@'
-  edit DCOMROOT '/lfs/h1/ops/dev/dcom/test'
+  edit COMROOT '/lfs/h2/emc/ptmp/%USER%/wafs@EXPID@/com'
+  edit DATAROOT '/lfs/h2/emc/stmp/%USER%/wafs@EXPID@/tmp'
+  edit OUTPUTDIR '/lfs/h2/emc/stmp/%USER%/wafs@EXPID@/output'
   edit COMPATH '%COMROOT%/wafs'
   family primary
     family wafs
@@ -441,6 +440,7 @@ suite wafs@EXPID@
                 trigger ../../upp/jwafs_upp_f120 == complete
                 edit FHR 120
               family blending
+                edit DCOMROOT '/lfs/h1/ops/dev/dcom/test'
                 task jwafs_grib2_0p25_blending_f006
                   trigger ../jwafs_grib2_0p25_f006 == complete
                   edit FHR 006
