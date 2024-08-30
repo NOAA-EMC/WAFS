@@ -10,17 +10,15 @@ cd dev/ecf
 ```
 This will create a suite definition file called `wafs.def` in the `ecf/def` directory as well as links to the individual forecast hour ecf scripts.
 
-## Loading `ecflow`
-`ecflow` can be loaded using the following command:
-```bash
-module load ecflow
-```
-This will load `ecflow` in your environment and setup the necessary value for `ECF_PORT`.  It will also add `ecflow` calls to your `PATH`.
-
 ## Starting `ecflow_server`
 `ecflow_server` can only be started on dedicated ecflow server nodes.  On WCOSS2, the ecflow server nodes for development are:
 - `cdecflow01`, `cdecflow02` (cactus)
 - `ddcflow01`, `ddcflow02` (dogwood)
+
+`ssh` to one of the above ecflow server nodes (e.g. `cdecflow01`).
+```bash
+ssh cdecflow01
+```
 
 Before starting the `ecflow_server`, one has to set the following variables.  This only needs to be set once before starting the `ecflow_server`.
 ```bash
@@ -33,14 +31,26 @@ mkdir -p ${ECF_ROOT}
 
 You are now ready to start the `ecflow_server`.
 ```bash
+module load ecflow
 server_check.sh ${ECF_ROOT}
 ```
 This will start the `ecflow_server` and print out the port number that the server is running on.
 
-You can now exit the host where you started the `ecflow_server` and return to the usual WCOSS2 login nodes.
+`ecflow_server` needs to be started **ONLY** once.  Once the server is running, this window can be closed.
+You can now exit the ecflow host where you started the `ecflow_server` and return to the usual WCOSS2 login nodes.
 
-## Loading a Suite Definition File
-Load the `ecflow` module on the WCOSS2 login node where you want to load the suite definition file.
+## Starting `ecflow` and loading a Suite Definition File
+Load the `ecflow` module on any WCOSS2 login nodes where you want to load the suite definition file.
+```bash
+module load ecflow
+```
+This will load `ecflow` in your environment and setup the necessary value for `ECF_PORT`.  It will also add `ecflow` calls to your `PATH`.
+
+Declare `ECF_HOST` on the WCOSS2 login node.  `ECF_HOST` should be the `hostname` on which `ecflow_server` is running.
+```bash
+export ECF_HOST="cdecflow01"  # This is the hostname on which the `ecflow_server` process is active.
+```
+
 Check to ensure the `ecflow_client` can ping the `ecflow_server`:
 ```bash
 `ecflow_client --ping`
@@ -50,6 +60,8 @@ If this is successful, one can launch the `ecflow_ui` and place it in the backgr
 ```bash
 ecflow_ui &
 ```
+
+You can use the `ecflow_ui` GUI to start/halt the `ecflow_server`
 
 Navigate to the directory where the suite definition file is located (typically `ecf/def`).
 ```bash
