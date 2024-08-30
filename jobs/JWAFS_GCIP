@@ -50,7 +50,8 @@ export pgmout="OUTPUT.$$"
 # Specify Execution Areas
 ####################################
 export EXECwafs="${HOMEwafs}/exec"
-export USHwafs="${HOMEwafs}/ush"
+export PARMwafs="${HOMEwafs}/parm"
+export FIXwafs="${HOMEwafs}/fix"
 
 #########################################################
 # print current environment

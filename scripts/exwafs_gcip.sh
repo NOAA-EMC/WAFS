@@ -26,14 +26,7 @@
 
 set -x
 
-GFS_MASTER="${COMINgfs}/gfs.t${cyc}z.master.grb2f${fhr}"
-
 cd "${DATA}" || err_exit "FATAL ERROR: Could not 'cd ${DATA}'; ABORT!"
-
-# Preparing data
-cpreq "${GFS_MASTER}" ./gfs_master.grib2
-modelFile="modelfile.grb"
-${WGRIB2} "gfs_master.grib2" | grep -E ":HGT:|:VVEL:|:CLWMR:|:TMP:|:SPFH:|:RWMR:|:SNMR:|:GRLE:|:ICMR:|:RH:" | grep -E "00 mb:|25 mb:|50 mb:|75 mb:|:HGT:surface" | ${WGRIB2} -i "gfs_master.grib2" -grib "${modelFile}"
 
 # valid time. no worry, it won't be across to another date
 vhour=$((fhr + cyc))
@@ -68,7 +61,7 @@ for channel in ${channels}; do
 	else
 		# check the availability of satellite data file
 		if [[ -s "${COMINsat}/${satFile}" ]]; then
-			cp "${COMINsat}/${satFile}" .
+			cpreq "${COMINsat}/${satFile}" .
 		else
 			msg="GCIP at ${vhour}z ABORTING, no satellite ${channel} file!"
 			echo "${msg}"
@@ -97,13 +90,13 @@ for channel in ${channels}; do
 	fi
 done
 
-########################################################
+# Copy GFS master file and prepare modelFile
+cpreq "${COMINgfs}/gfs.t${cyc}z.master.grb2f${fhr}" ./gfs_master.grib2
+modelFile="modelfile.grb"
+${WGRIB2} "gfs_master.grib2" | grep -E ":HGT:|:VVEL:|:CLWMR:|:TMP:|:SPFH:|:RWMR:|:SNMR:|:GRLE:|:ICMR:|:RH:" | grep -E "00 mb:|25 mb:|50 mb:|75 mb:|:HGT:surface" | ${WGRIB2} -i "gfs_master.grib2" -grib "${modelFile}"
+
 # Composite gcip command options
-
-outputfile="wafs.t${vhour}z.gcip.f000.grib2"
 configFile="gcip.config"
-cpreq "${PARMwafs}/wafs_gcip_gfs.cfg" "${configFile}"
-
 cmdoptions="-t ${PDY}${vhour} -c ${configFile} -model ${modelFile}"
 if [[ -s "${metarFile}" ]]; then
 	cmdoptions="${cmdoptions} -metar ${metarFile}"
@@ -112,6 +105,8 @@ else
 fi
 if [[ -s "${shipFile}" ]]; then
 	cmdoptions="${cmdoptions} -ship ${shipFile}"
+else
+	echo "WARNING: There are no SHIP observations"
 fi
 # empty if a channel data is missing
 if [[ -n "${satFiles}" ]]; then
@@ -124,6 +119,8 @@ if [[ -s "${lightningFile}" ]]; then
 fi
 if [[ -s "${pirepFile}" ]]; then
 	cmdoptions="${cmdoptions} -pirep ${pirepFile}"
+else
+	echo "WARNING: There are no PIREP observations"
 fi
 # radar data
 sourceRadar="${COMINradar}/refd3d.t${vhour}z.grb2f00"
@@ -131,13 +128,21 @@ radarFile="radarFile.grb"
 if [[ -s "${sourceRadar}" ]]; then
 	cpreq "${sourceRadar}" "${radarFile}"
 	cmdoptions="${cmdoptions} -radar ${radarFile}"
+else
+	echo "WARNING: There are no RADAR observations"
 fi
+
+outputfile="wafs.t${vhour}z.gcip.f000.grib2"
 cmdoptions="${cmdoptions} -o ${outputfile}"
 
+# Copy the configuration files and the executable
+cpreq "${PARMwafs}/wafs_gcip_gfs.cfg" "${configFile}"
 cpreq "${FIXwafs}/gcip_near_ir_refl.table" ./near_ir_refl.table
-cpreq "${EXEwafs}/wafs_gcip.x" ./wafs_gcip.x
+cpreq "${EXECwafs}/wafs_gcip.x" ./wafs_gcip.x
 
 export pgm="wafs_gcip.x"
+
+. prep_step
 
 ${pgm}${cmdoptions} >>"${pgmout}" 2>errfile
 export err=$?
