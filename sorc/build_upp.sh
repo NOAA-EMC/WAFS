@@ -26,6 +26,6 @@ cd "${DIR_ROOT}/sorc/upp.fd/sorc"
 
 # Copy upp to WAFS/exec
 rm -rf "${DIR_ROOT}/exec/ncep_post"
-cp "${DIR_ROOT}/sorc/upp.fd/exec/ncep_post" "${DIR_ROOT}/exec/ncep_post"
+cp "${DIR_ROOT}/sorc/upp.fd/exec/ncep_post" "${DIR_ROOT}/exec/ncep_post.x"
 
 exit
