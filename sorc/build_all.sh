@@ -3,7 +3,7 @@
 set -eu
 
 # Get the root of the cloned WAFS directory
-readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
+readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/.." && pwd -P)
 
 # User Options
 export BUILD_TYPE=${BUILD_TYPE:-"Release"}
@@ -22,12 +22,15 @@ mkdir -p "${DIR_ROOT}/sorc/logs"
 
 echo "building ... wafs"
 rm -f "${DIR_ROOT}/sorc/logs/log.wafs"
-./build_wafs.sh >& "${DIR_ROOT}/sorc/logs/log.wafs" 2>&1
+./build_wafs.sh >&"${DIR_ROOT}/sorc/logs/log.wafs" 2>&1
 
 echo "building ... upp"
 rm -f "${DIR_ROOT}/sorc/logs/log.upp"
-./build_upp.sh >& "${DIR_ROOT}/sorc/logs/log.upp" 2>&1
+./build_upp.sh >&"${DIR_ROOT}/sorc/logs/log.upp" 2>&1
 
-echo "... done!"
+echo "building ... done!"
+
+echo "listing executables ..."
+ls -l "${DIR_ROOT}/exec"
 
 exit

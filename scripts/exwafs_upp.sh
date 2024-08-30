@@ -1,12 +1,19 @@
 #!/bin/bash
 
+######################################################################
+#  UTILITY SCRIPT NAME :  exwafs_upp.sh
+#         DATE WRITTEN :  07/22/2024
+#
+#  Abstract:  This script runs the offline UPP based on GFS model output
+#             and creates the WAFS master grib2 file
+#
+# History:  07/22/2024
+#              - initial version
 #####################################################################
-# TODO: need ex-script docblock, see Implementation Standards
-#####################################################################
+
 set -x
 
 POSTGRB2TBL=${POSTGRB2TBL:-"${g2tmpl_ROOT}/share/params_grib2_tbl_new"}
-UPPEXEC=${UPPEXEC:-"${EXECwafs}/ncep_post.x"}
 MPIRUN=${MPIRUN:-"mpiexec -l -n 126 -ppn 126 --cpu-bind depth --depth 1"}
 
 if [[ "${fhr}" == "anl" ]]; then # Analysis
@@ -38,7 +45,7 @@ cpreq "${FLXINP}" ./flxfile
 cpreq "${POSTGRB2TBL}" .
 cpreq "${PostFlatFile}" ./postxconfig-NT.txt
 cpreq "${PARMwafs}/upp/nam_micro_lookup.dat" ./eta_micro_lookup.dat
-cpreq "${UPPEXEC}" .
+cpreq "${EXECwafs}/wafs_upp.x" .
 if [[ "${fhr}" != "anl" ]]; then
     cpreq "${PARMwafs}/upp/gtg.config.gfs" gtg.config
     cpreq "${PARMwafs}/upp/gtg_imprintings.txt" gtg_imprintings.txt
@@ -64,7 +71,7 @@ cat itag
 # output file from UPP executable
 export PGBOUT="wafsfile"
 
-pgm=$(basename "${UPPEXEC}")
+pgm="wafs_upp.x"
 export pgm
 
 # Clean out any existing output files

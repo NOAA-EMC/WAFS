@@ -3,7 +3,7 @@
 set -eu
 
 # Get the root of the cloned WAFS directory
-readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
+readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/.." && pwd -P)
 
 # User Options
 BUILD_TYPE=${BUILD_TYPE:-"Release"}
