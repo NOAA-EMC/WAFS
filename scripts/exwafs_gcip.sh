@@ -4,7 +4,7 @@
 #  UTILITY SCRIPT NAME :  exwafs_gcip.sh
 #         DATE WRITTEN :  01/28/2015
 #
-#  Abstract:  This utility script produces the WAFS GCIP. 
+#  Abstract:  This utility script produces the WAFS GCIP.
 #
 #            GCIP runs f000 f003 for each cycle, 4 times/day,
 #            to make the output valid every 3 hours
@@ -12,185 +12,152 @@
 # History:  01/28/2015
 #         - GFS master file as first guess
 #              /com/prod/gfs.YYYYMMDD
-#         - Nesdis composite global satellite data 
+#         - Nesdis composite global satellite data
 #              /dcom (ftp?)
 #         - Metar/ships/lightning/pireps
 #              dumpjb YYYYMMDDHH hours output >/dev/null
 #         - Radar data over CONUS
 #              /com/hourly/prod/radar.YYYYMMDD/refd3d.tHHz.grbf00
 #         - output of current icing potential
-#####################################################################
-echo "-----------------------------------------------------"
-echo "JWAFS_GCIP at 00Z/06Z/12Z/18Z GFS postprocessing"
-echo "-----------------------------------------------------"
-echo "History: 2015 - First implementation of this new script."
-echo "Oct 2021 - Remove jlogfile"
-echo "May 2024 - WAFS separation"
-echo " "
+#         - First implementation of this new script."
+#         Oct 2021 - Remove jlogfile
+#         May 2024 - WAFS separation
 #####################################################################
 
 set -x
 
-# Set up working dir for parallel runs based on fhr
-fhr=$1
-DATA=$DATA/$fhr
-mkdir -p $DATA
-cd $DATA
-# Overwrite TMPDIR for dumpjb
-export TMPDIR=$DATA
-
-configFile=gcip.config
-
-echo 'before preparing data' `date`
+cd "${DATA}" || err_exit "FATAL ERROR: Could not 'cd ${DATA}'; ABORT!"
 
 # valid time. no worry, it won't be across to another date
-vhour=$(( $fhr + $cyc ))
-vhour="$(printf "%02d" $(( 10#$vhour )) )"
-
-########################################################
-# Preparing data
-
-# model data
-masterFile=$COMINgfs/gfs.t${cyc}z.master.grb2f$fhr
-cp $PARMwafs/wafs_gcip_gfs.cfg $configFile
-
-modelFile=modelfile.grb
-#  ln -sf $masterFile $modelFile
-$WGRIB2 $masterFile | egrep ":HGT:|:VVEL:|:CLWMR:|:TMP:|:SPFH:|:RWMR:|:SNMR:|:GRLE:|:ICMR:|:RH:" | egrep "00 mb:|25 mb:|50 mb:|75 mb:|:HGT:surface" | $WGRIB2 -i $masterFile -grib $modelFile
+vhour=$((fhr + cyc))
+vhour="$(printf "%02d" $((10#$vhour)))"
 
 # metar / ships / lightning / pireps
-# dumped data files' suffix is ".ibm"
+export TMPDIR="${DATA}" # dumpjb uses TMPDIR
 obsfiles="metar ships ltngsr pirep"
-for obsfile in $obsfiles ; do 
-    $DUMPJB ${PDY}${vhour} 1.5 $obsfile 
+for obsfile in ${obsfiles}; do
+	${DUMPJB} "${PDY}${vhour}" 1.5 "${obsfile}"
 done
-metarFile=metar.ibm
-shipFile=ships.ibm
-lightningFile=ltngsr.ibm
-pirepFile=pirep.ibm
+
+# dumped data files suffix is ".ibm"
+metarFile="metar.ibm"
+shipFile="ships.ibm"
+lightningFile="ltngsr.ibm"
+pirepFile="pirep.ibm"
+
+# Setup mailing list once
+if [[ "${envir}" != "prod" ]]; then
+	maillist="nco.spa@noaa.gov"
+fi
+maillist=${maillist:-"nco.spa@noaa.gov,ncep.sos@noaa.gov"}
 
 satFiles=""
 channels="VIS SIR LIR SSR"
 # If one channel is missing, satFiles will be empty
-for channel in $channels ; do
-    satFile=GLOBCOMP$channel.${PDY}${vhour}
-    if [[ $COMINsat == *ftp:* ]] ; then
-	curl -O $COMINsat/$satFile
-    else
-        # check the availability of satellite data file
-	if [ -s $COMINsat/$satFile ] ; then
-	    cp $COMINsat/$satFile .
+for channel in ${channels}; do
+	satFile="GLOBCOMP${channel}.${PDY}${vhour}"
+	if [[ "${COMINsat}" == *ftp:* ]]; then
+		curl -O "${COMINsat}/${satFile}"
 	else
-	    msg="GCIP at ${vhour}z ABORTING, no satellite $channel file!"
-	    echo "$msg"
-	    echo $msg >> $COMOUT/${RUN}.gcip.log
-            
-	    if [ $envir != prod ]; then
-		export maillist='nco.spa@noaa.gov'
-	    fi
-	    export maillist=${maillist:-'nco.spa@noaa.gov,ncep.sos@noaa.gov'}
+		# check the availability of satellite data file
+		if [[ -s "${COMINsat}/${satFile}" ]]; then
+			cpreq "${COMINsat}/${satFile}" .
+		else
+			msg="GCIP at ${vhour}z ABORTING, no satellite ${channel} file!"
+			echo "${msg}"
+			echo "${msg}" >>"${COMOUT}/${RUN}.gcip.log"
 
-	    export subject="Missing GLOBCOMPVIS Satellite Data for $PDY t${cyc}z $job"
-	    echo "*************************************************************" > mailmsg
-	    echo "*** WARNING !! COULD NOT FIND GLOBCOMPVIS Satellite Data  *** " >> mailmsg
-	    echo "*************************************************************" >> mailmsg
-	    echo >> mailmsg
-	    echo "One or more GLOBCOMPVIS Satellite Data files are missing, including " >> mailmsg
-	    echo "   $COMINsat/$satFile " >> mailmsg
-	    echo >> mailmsg
-	    echo "$job will gracfully exited" >> mailmsg
-	    cat mailmsg > $COMOUT/${RUN}.t${cyc}z.gcip.emailbody
-	    cat $COMOUT/${RUN}.t${cyc}z.gcip.emailbody | mail.py -s "$subject" $maillist -v
+			subject="Missing GLOBCOMPVIS Satellite Data for ${PDY} t${cyc}z ${job}"
+			echo "*************************************************************" >mailmsg
+			echo "*** WARNING !! COULD NOT FIND GLOBCOMPVIS Satellite Data  *** " >>mailmsg
+			echo "*************************************************************" >>mailmsg
+			echo >>mailmsg
+			echo "One or more GLOBCOMPVIS Satellite Data files are missing, including " >>mailmsg
+			echo "   ${COMINsat}/${satFile} " >>mailmsg
+			echo >>mailmsg
+			echo "${job} will gracfully exit" >>mailmsg
+			cat mailmsg >"${COMOUT}/${RUN}.t${cyc}z.gcip.emailbody"
+			cat "${COMOUT}/${RUN}.t${cyc}z.gcip.emailbody" | mail.py -s "${subject}" "${maillist}" -v
 
-	    exit 1
+			exit 1
+		fi
 	fi
-    fi
-    if [[ -s $satFile ]] ; then
-	satFiles="$satFiles $satFile"
-    else
-	satFiles=""
-	break
-    fi
+	if [[ -s "${satFile}" ]]; then
+		satFiles="${satFiles} ${satFile}"
+	else
+		satFiles=""
+		break
+	fi
 done
 
-# radar data
-sourceRadar=$COMINradar/refd3d.t${vhour}z.grb2f00
-radarFile=radarFile.grb
-if [ -s $sourceRadar ] ; then
-    cp $sourceRadar $radarFile
-fi
+# Copy GFS master file and prepare modelFile
+cpreq "${COMINgfs}/gfs.t${cyc}z.master.grb2f${fhr}" ./gfs_master.grib2
+modelFile="modelfile.grb"
+${WGRIB2} "gfs_master.grib2" | grep -E ":HGT:|:VVEL:|:CLWMR:|:TMP:|:SPFH:|:RWMR:|:SNMR:|:GRLE:|:ICMR:|:RH:" | grep -E "00 mb:|25 mb:|50 mb:|75 mb:|:HGT:surface" | ${WGRIB2} -i "gfs_master.grib2" -grib "${modelFile}"
 
-########################################################
 # Composite gcip command options
-
-outputfile=wafs.t${vhour}z.gcip.f000.grib2
-
-cmdoptions="-t ${PDY}${vhour} -c $configFile -model $modelFile"
-if [[ -s $metarFile ]] ; then
-    cmdoptions="$cmdoptions -metar $metarFile"
+configFile="gcip.config"
+cmdoptions="-t ${PDY}${vhour} -c ${configFile} -model ${modelFile}"
+if [[ -s "${metarFile}" ]]; then
+	cmdoptions="${cmdoptions} -metar ${metarFile}"
 else
-    err_exit "There are no METAR observations."
+	err_exit "FATAL ERROR: There are no METAR observations."
 fi
-if [[ -s $shipFile ]] ; then
-    cmdoptions="$cmdoptions -ship $shipFile"
+if [[ -s "${shipFile}" ]]; then
+	cmdoptions="${cmdoptions} -ship ${shipFile}"
+else
+	echo "WARNING: There are no SHIP observations"
 fi
 # empty if a channel data is missing
-if [[ -n $satFiles ]] ; then
-    cmdoptions="$cmdoptions -sat $satFiles"
+if [[ -n "${satFiles}" ]]; then
+	cmdoptions="${cmdoptions} -sat ${satFiles}"
 else
-    err_exit "Satellite data are not available or completed."
+	err_exit "FATAL ERROR: Satellite data are not available or completed."
 fi
-if [[ -s $lightningFile ]] ; then
-    cmdoptions="$cmdoptions -lightning $lightningFile"
+if [[ -s "${lightningFile}" ]]; then
+	cmdoptions="${cmdoptions} -lightning ${lightningFile}"
 fi
-if [[ -s $pirepFile ]] ; then
-    cmdoptions="$cmdoptions -pirep $pirepFile"
-fi
-if [[ -s $radarFile ]] ; then
-    cmdoptions="$cmdoptions -radar $radarFile"
-fi
-cmdoptions="$cmdoptions -o $outputfile"
-
-#######################################################
-# Run GCIP
-
-echo 'after preparing data' `date`
-
-export pgm=wafs_gcip.x
-
-cp $FIXwafs/gcip_near_ir_refl.table near_ir_refl.table
-
-startmsg
-$EXECwafs/$pgm >> $pgmout $cmdoptions 2> errfile &
-wait
-export err=$?; err_chk
-
-
-if [[ -s $outputfile ]] ; then
-    ############################## 
-    # Post Files to COM
-    ##############################
-    if [ $SENDCOM = "YES" ] ; then
-      cpfs $outputfile $COMOUT/$outputfile
-      if [ $SENDDBN = "YES" ] ; then
-	  :
-      fi
-    fi
+if [[ -s "${pirepFile}" ]]; then
+	cmdoptions="${cmdoptions} -pirep ${pirepFile}"
 else
-    err_exit "Output $outputfile was not generated"
+	echo "WARNING: There are no PIREP observations"
+fi
+# radar data
+sourceRadar="${COMINradar}/refd3d.t${vhour}z.grb2f00"
+radarFile="radarFile.grb"
+if [[ -s "${sourceRadar}" ]]; then
+	cpreq "${sourceRadar}" "${radarFile}"
+	cmdoptions="${cmdoptions} -radar ${radarFile}"
+else
+	echo "WARNING: There are no RADAR observations"
 fi
 
+outputfile="wafs.t${vhour}z.gcip.f000.grib2"
+cmdoptions="${cmdoptions} -o ${outputfile}"
 
-################################################################################
-# GOOD RUN
-set +x
-echo "**************JOB EXWAFS_GCIP.SH COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXWAFS_GCIP.SH COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXWAFS_GCIP.SH COMPLETED NORMALLY ON THE IBM"
-set -x
-################################################################################
+# Copy the configuration files and the executable
+cpreq "${PARMwafs}/wafs_gcip_gfs.cfg" "${configFile}"
+cpreq "${FIXwafs}/gcip_near_ir_refl.table" ./near_ir_refl.table
+cpreq "${EXECwafs}/wafs_gcip.x" ./wafs_gcip.x
 
-exit 0
+export pgm="wafs_gcip.x"
 
-############## END OF SCRIPT #######################
+. prep_step
 
+${pgm}${cmdoptions} >>"${pgmout}" 2>errfile
+export err=$?
+err_chk
+
+if [[ ! -f "${outputfile}" ]]; then
+	err_exit "FATAL ERROR: '${pgm}' failed to produce output '${outputfile}', ABORT!"
+fi
+
+# Send output to COM
+if [[ "${SENDCOM}" == "YES" ]]; then
+	cpfs "${outputfile}" "${COMOUT}/${outputfile}"
+fi
+
+# Alert through DBN
+if [[ "${SENDDBN}" == "YES" ]]; then
+	echo "TODO: DBN alert missing..."
+fi
