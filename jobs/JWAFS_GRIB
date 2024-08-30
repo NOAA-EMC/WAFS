@@ -49,6 +49,7 @@ export pgmout="OUTPUT.$$"
 # Specify Execution Areas
 ####################################
 export EXECwafs="${HOMEwafs}/exec"
+export FIXwafs="${HOMEwafs}/fix"
 export USHwafs="${HOMEwafs}/ush"
 
 #########################################################

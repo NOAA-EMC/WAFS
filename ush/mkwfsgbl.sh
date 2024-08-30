@@ -47,9 +47,9 @@ if [[ ! -f "pgrbf${fhr}" ]]; then
     #      Reason: It's not efficent if simply converting from grib2 to grib1 (costs 6 seconds with 415 records)
     #      Solution: Need to grep 'selected fields on selected levels' before CNVGRIB (costs 1 second with 92 records)
     #       ln -s $COMINgfs/gfs.${cycle}.pgrb2.1p00.f$fhr3  pgrb2f${fhr}
-    #       $WGRIB2 pgrb2f${fhr} | grep -F -f $FIXwafs/grib_wafs.grb2to1.list | $WGRIB2 -i pgrb2f${fhr} -grib pgrb2f${fhr}.tmp
+    #       $WGRIB2 pgrb2f${fhr} | grep -F -f ${FIXwafs}/wafs/grib_wafs.grb2to1.list | $WGRIB2 -i pgrb2f${fhr} -grib pgrb2f${fhr}.tmp
     cpreq "${GFS_MASTER}" "./gfs_masterf${fhr}.grib2"
-    ${WGRIB2} "./gfs_master${fhr}.grib2" | grep -F -f "${FIXwafs}/grib_wafs.grb2to1.list" | ${WGRIB2} -i "./gfs_master${fhr}.grib2" -grib "masterf${fhr}"
+    ${WGRIB2} "./gfs_masterf${fhr}.grib2" | grep -F -f "${FIXwafs}/wafs/grib_wafs.grb2to1.list" | ${WGRIB2} -i "./gfs_masterf${fhr}.grib2" -grib "masterf${fhr}"
 
     # Change data input from 1p00 files to master files
     export opt1=' -set_grib_type same -new_grid_winds earth '
@@ -75,7 +75,7 @@ fi
 # BAG - Put in fix on 20070925 to force the percision of U and V winds
 #       to default to 1 through the use of the grib_wafs.namelist file.
 #
-${COPYGB} -g3 -i0 -N${FIXwafs}/grib_wafs.namelist -x "pgrbf${fhr}" tmp
+${COPYGB} -g3 -i0 -N${FIXwafs}/wafs/grib_wafs.namelist -x "pgrbf${fhr}" tmp
 mv tmp "pgrbf${fhr}"
 ${GRBINDEX} "pgrbf${fhr}" "pgrbif${fhr}"
 
@@ -105,7 +105,7 @@ export FORT31="pgrbif${fhr}"
 export FORT51="xtrn.wfsgfs${fhr}${sets}"
 export FORT53="com.wafs${fhr}${sets}"
 
-${pgm} <"${FIXwafs}/grib_wfsgfs${fhr}${sets}" >>"${pgmout}" 2>errfile
+${DATA}/${pgm} <"${FIXwafs}/wafs/grib_wfsgfs${fhr}${sets}" >>"${pgmout}" 2>errfile
 export err=$?
 err_chk
 

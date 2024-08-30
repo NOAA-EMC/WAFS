@@ -27,9 +27,9 @@ WAFS_MASTER="${COMIN}/${RUN}.t${cyc}z.master.f${fhr}.grib2"
 
 ifhr="$((10#${fhr}))"
 if ((ifhr <= 48)); then
-    hazard_timewindow=yes
+    hazard_timewindow="YES"
 else
-    hazard_timewindow=no
+    hazard_timewindow="NO"
 fi
 
 cd "${DATA}" || err_exit "FATAL ERROR: Could not 'cd ${DATA}'; ABORT!"
@@ -47,7 +47,7 @@ cpreq "${WAFS_MASTER}" ./wafs_master.grib2
 ${WGRIB2} "./wafs_master.grib2" ${opt1} ${opt21} ${opt22} ${opt23} ${opt24} -new_grid ${newgrid} tmp_wafs_0p25.grb2
 # GFS 2D data
 cpreq "${GFS_MASTER}" ./gfs_master.grib2
-${WGRIB2} "./gfs_master.grib2" | grep -F -f "${FIXwafs}/grib2_0p25_gfs_master2d.list" |
+${WGRIB2} "./gfs_master.grib2" | grep -F -f "${FIXwafs}/wafs/grib2_0p25_gfs_master2d.list" |
     ${WGRIB2} -i "./gfs_master.grib2" -set master_table 25 -grib tmp_master.grb2
 ${WGRIB2} tmp_master.grb2 ${opt1} ${opt21} ":(UGRD|VGRD):max wind" ${opt23} ${opt24} -new_grid ${newgrid} tmp_master_0p25.grb2
 
@@ -76,7 +76,7 @@ if [[ "${hazard_timewindow}" == "YES" ]]; then
     #---------------------------
     # Product 3: WAFS unblended EDPARM, ICESEV, CB (No CAT MWT) wafs.tHHz.unblended.0p25.fFFF.grib2
     #---------------------------
-    ${WGRIB2} tmp_wafs_0p25.grb2 | grep -F -f "${FIXwafs}/grib2_0p25_wafs_hazard.list" |
+    ${WGRIB2} tmp_wafs_0p25.grb2 | grep -F -f "${FIXwafs}/wafs/grib2_0p25_wafs_hazard.list" |
         ${WGRIB2} -i tmp_wafs_0p25.grb2 -set master_table 25 -grib tmp_wafs_0p25.grb2.forblend
 
     # Convert template 5 to 5.40

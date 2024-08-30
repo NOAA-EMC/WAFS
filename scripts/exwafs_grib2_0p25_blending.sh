@@ -115,10 +115,10 @@ else
 
     . prep_step
 
-    ${pgm} "WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" \
+    ${DATA}/${pgm} "WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" \
         "EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${fhr}.grib2" \
         "0p25_blended_${PDY}${cyc}f${fhr}.grib2 >f${fhr}.out"
-    export err=$?
+    err=$?
     if ((err != 0)); then
         echo "WARNING: WAFS blending 0p25 program failed at '${PDY}${cyc}f${fhr}'. Turning back on dbn alert for unblended US WAFS product"
         SEND_US_WAFS="YES"
@@ -144,8 +144,8 @@ if [[ "${SEND_US_WAFS}" == "YES" ]]; then
     #  (Alert once for each forecast hour)
     if [[ "${SEND_AWC_US_ALERT}" == "NO" ]]; then
         echo "WARNING: Missing UK data for WAFS GRIB2 0P25 blending. Send alert message to AWC ......"
-        make_NTC_file.pl NOXX10 KKCI "${PDY}${cyc}" NONE "${FIXwafs}/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/wifs_0p25_admin_msg"
-        make_NTC_file.pl NOXX10 KWBC "${PDY}${cyc}" NONE "${FIXwafs}/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/iscs_0p25_admin_msg"
+        make_NTC_file.pl NOXX10 KKCI "${PDY}${cyc}" NONE "${FIXwafs}/wafs/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/wifs_0p25_admin_msg"
+        make_NTC_file.pl NOXX10 KWBC "${PDY}${cyc}" NONE "${FIXwafs}/wafs/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/iscs_0p25_admin_msg"
         if [[ "${SENDDBN_NTC}" == "YES" ]]; then
             "${DBNROOT}/bin/dbn_alert" NTC_LOW WAFS "${job}" "${COMOUTwmo}/wifs_0p25_admin_msg"
             "${DBNROOT}/bin/dbn_alert" NTC_LOW WAFS "${job}" "${COMOUTwmo}/iscs_0p25_admin_msg"
@@ -184,8 +184,8 @@ elif [[ "${SEND_UK_WAFS}" == "YES" ]]; then
     #  (Alert once for each forecast hour)
     if [[ "${SEND_AWC_UK_ALERT}" == "NO" ]]; then
         echo "WARNING: Missing US data for WAFS GRIB2 0P25 blending. Send alert message to AWC ......"
-        make_NTC_file.pl NOXX10 KKCI "${PDY}${cyc}" NONE "${FIXwafs}/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/wifs_0p25_admin_msg"
-        make_NTC_file.pl NOXX10 KWBC "${PDY}${cyc}" NONE "${FIXwafs}/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/iscs_0p25_admin_msg"
+        make_NTC_file.pl NOXX10 KKCI "${PDY}${cyc}" NONE "${FIXwafs}/wafs/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/wifs_0p25_admin_msg"
+        make_NTC_file.pl NOXX10 KWBC "${PDY}${cyc}" NONE "${FIXwafs}/wafs/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/iscs_0p25_admin_msg"
         if [[ "${SENDDBN_NTC}" == "YES" ]]; then
             "${DBNROOT}/bin/dbn_alert" NTC_LOW WAFS "${job}" "${COMOUTwmo}/wifs_0p25_admin_msg"
             "${DBNROOT}/bin/dbn_alert" NTC_LOW WAFS "${job}" "${COMOUTwmo}/iscs_0p25_admin_msg"

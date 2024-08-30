@@ -136,15 +136,15 @@ outputfile="wafs.t${vhour}z.gcip.f000.grib2"
 cmdoptions="${cmdoptions} -o ${outputfile}"
 
 # Copy the configuration files and the executable
-cpreq "${PARMwafs}/wafs_gcip_gfs.cfg" "${configFile}"
-cpreq "${FIXwafs}/gcip_near_ir_refl.table" ./near_ir_refl.table
+cpreq "${PARMwafs}/wafs/wafs_gcip_gfs.cfg" "${configFile}"
+cpreq "${FIXwafs}/wafs/gcip_near_ir_refl.table" ./near_ir_refl.table
 cpreq "${EXECwafs}/wafs_gcip.x" ./wafs_gcip.x
 
 export pgm="wafs_gcip.x"
 
 . prep_step
 
-${pgm}${cmdoptions} >>"${pgmout}" 2>errfile
+${DATA}/${pgm} ${cmdoptions} >>"${pgmout}" 2>errfile
 export err=$?
 err_chk
 
