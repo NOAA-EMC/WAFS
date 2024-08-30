@@ -1,4 +1,4 @@
-[submodule "sorc/wafs_upp.fd"]
-  path = sorc/wafs_upp.fd
+[submodule "sorc/upp.fd"]
+  path = sorc/upp.fd
   url = https://github.com/NOAA-EMC/UPP
   ignore = dirty
