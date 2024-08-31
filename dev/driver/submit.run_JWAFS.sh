@@ -8,7 +8,7 @@ readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/../..
 job=${1?"Must specify a job to submit"}
 CDATE=${2:-"2024081918"}
 
-tmpdir=/lfs/h2/emc/ptmp/${USER}/wafs.$job.${CDATE:0:8}
+tmpdir=/lfs/h2/emc/ptmp/${USER}/working_wafs.$job.${CDATE:0:8}
 mkdir -p $tmpdir
 cd $tmpdir
 
@@ -41,11 +41,20 @@ elif [ $job = 'grib2_0p25_blending' ]; then
 fi
 
 for fhr in $FHOURS; do
-  sed -e "s/log.wafs_$job/log.wafs_$job.$fhr/g" \
-    -e "s/PDY=.*/PDY=${CDATE:0:8}/g" \
-    -e "s/cyc=.*/cyc=${CDATE:8:2}/g" \
-    -e "s/fhr=.*/fhr=$fhr/g" \
-    -e "s/working_wafs/working_wafs.$job.${CDATE:0:8}/g" \
+    if [ $job = 'grib' ]; then
+	fhr="$(printf "%02d" $(( 10#$fhr )) )"
+    else
+	if [ ! $fhr = "anl" ] ; then
+	    fhr="$(printf "%03d" $(( 10#$fhr )) )"
+	fi
+    fi
+
+    sed -e "s|log.wafs_$job|log.wafs_$job.$fhr|g" \
+    -e "s|HOMEwafs=.*|HOMEwafs=$DIR_ROOT|g" \
+    -e "s|PDY=.*|PDY=${CDATE:0:8}|g" \
+    -e "s|cyc=.*|cyc=${CDATE:8:2}|g" \
+    -e "s|fhr=.*|fhr=$fhr|g" \
+    -e "s|working_wafs|working_wafs.$job.${CDATE:0:8}|g" \
     $jobcard >$jobcard.$fhr
   qsub $jobcard.$fhr
 done
