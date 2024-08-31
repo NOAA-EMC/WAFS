@@ -13,12 +13,12 @@ fi
 # upp_v8.3.0:
 cd "${DIR_ROOT}/sorc/wafs_upp.fd"
 
-# copy UPP parm/ to the main vertical structure
-cp -r parm "${DIR_ROOT}/parm/upp"
-
 # copy GTG code to UPP
 cp sorc/post_gtg.fd/*f90 sorc/ncep_post.fd/.
 cp sorc/post_gtg.fd/gtg.config.gfs parm/gtg.config.gfs
+
+# copy UPP parm/ to the main vertical structure
+cp -r parm "${DIR_ROOT}/parm/upp"
 
 # Build upp executable file
 cd "${DIR_ROOT}/sorc/wafs_upp.fd/sorc"
