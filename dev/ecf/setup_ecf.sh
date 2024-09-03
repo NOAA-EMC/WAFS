@@ -3,8 +3,8 @@
 # The script sets up the ecflow suite definition file for the WAFS workflow
 # Usage: ./setup_ecf.sh PDYcyc [EXPID]
 #   PDYcyc: Test date in YYYYMMDDHH format
-#   EXPID: Experiment ID to distinguish different test runs (default: test)
-# Example: ./setup_ecf.sh 2021010100 test
+#   EXPID: Experiment ID to distinguish different test runs (default: None)
+# Example: ./setup_ecf.sh 2020011012 x001
 #
 # Setting up ecflow suite requires the package to be cloned in a directory matching 'wafs.vX.Y.Z'
 # where X, Y, Z are numbers
@@ -16,7 +16,7 @@
 set -eu
 
 PDYcyc=${1:?"Provide a test date (YYYYMMDDHH)"}
-EXPID=${2:-"test"} # Experiment ID to distinguish different test runs
+EXPID=${2:-""} # Experiment ID to distinguish different test runs
 
 # Get the root of the cloned WAFS directory
 readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/../.." && pwd -P)
