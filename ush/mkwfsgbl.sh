@@ -19,6 +19,8 @@
 #   History: SEPT    1996 - First implementation of this utility script"
 #            AUG     1999 - Modified for implementation on IBM SP"
 #                         - Allows users to run interactively"
+#            SEP     2007 - BAG - Put in fix on 20070925 to force the percision of U and V winds
+#                           to default to 1 through the use of the grib_wafs.namelist file.
 
 set -x
 
@@ -43,11 +45,6 @@ GFS_MASTER="${COMINgfs}/gfs.t${cyc}z.master.grb2f${fhr3}"
 
 if [[ ! -f "pgrbf${fhr}" ]]; then
 
-    #      To solve Bugzilla #408: remove the dependency of grib1 files in gfs wafs job in next GFS upgrade
-    #      Reason: It's not efficent if simply converting from grib2 to grib1 (costs 6 seconds with 415 records)
-    #      Solution: Need to grep 'selected fields on selected levels' before CNVGRIB (costs 1 second with 92 records)
-    #       ln -s $COMINgfs/gfs.${cycle}.pgrb2.1p00.f$fhr3  pgrb2f${fhr}
-    #       $WGRIB2 pgrb2f${fhr} | grep -F -f ${FIXwafs}/wafs/grib_wafs.grb2to1.list | $WGRIB2 -i pgrb2f${fhr} -grib pgrb2f${fhr}.tmp
     cpreq "${GFS_MASTER}" "./gfs_masterf${fhr}.grib2"
     ${WGRIB2} "./gfs_masterf${fhr}.grib2" | grep -F -f "${FIXwafs}/wafs/grib_wafs.grb2to1.list" | ${WGRIB2} -i "./gfs_masterf${fhr}.grib2" -grib "masterf${fhr}"
 
@@ -71,10 +68,6 @@ if [[ ! -f "pgrbf${fhr}" ]]; then
     ${CNVGRIB} -g21 "pgrb2f${fhr}.tmp" "pgrbf${fhr}"
 fi
 
-#
-# BAG - Put in fix on 20070925 to force the percision of U and V winds
-#       to default to 1 through the use of the grib_wafs.namelist file.
-#
 ${COPYGB} -g3 -i0 -N${FIXwafs}/wafs/grib_wafs.namelist -x "pgrbf${fhr}" tmp
 mv tmp "pgrbf${fhr}"
 ${GRBINDEX} "pgrbf${fhr}" "pgrbif${fhr}"
