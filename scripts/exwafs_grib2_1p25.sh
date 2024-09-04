@@ -41,10 +41,10 @@ cd "${DATA}" || err_exit "FATAL ERROR: Could not 'cd ${DATA}'; ABORT!"
 # 1) Grib2 data for FAA
 #---------------------------
 cpreq "${GFS_MASTER}" ./gfs_master.grib2
-${WGRIB2} "./gfs_master.grib2" | grep -F -f "${FIXwafs}/grib2_gfs_awf_master.list" | ${WGRIB2} -i "./gfs_master.grib2" -grib "tmpfile_wafsf${fhr}"
+${WGRIB2} "./gfs_master.grib2" | grep -F -f "${FIXwafs}/wafs/grib2_gfs_awf_master.list" | ${WGRIB2} -i "./gfs_master.grib2" -grib "tmpfile_wafsf${fhr}"
 
 # F006 master file has two records of 0-6 hour APCP and ACPCP each, keep only one
-# FAA APCP ACPCP: included every 6 forecast hour (0, 48], every 12 forest hour [48, 72] (controlled by ${FIXwafs}/grib2_gfs_awf_master.list)
+# FAA APCP ACPCP: included every 6 forecast hour (0, 48], every 12 forest hour [48, 72] (controlled by ${FIXwafs}/wafs/grib2_gfs_awf_master.list)
 if ((ifhr == 6)); then
     ${WGRIB2} "tmpfile_wafsf${fhr}" -not "(APCP|ACPCP)" -grib tmp.grb2
     ${WGRIB2} "tmpfile_wafsf${fhr}" -match APCP -append -grib tmp.grb2 -quit
@@ -62,7 +62,7 @@ ${WGRIB2} "tmpfile_wafsf${fhr}" \
 ${WGRIB2} -s "${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2" >"${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2.idx"
 
 # WMO header (This header is different from WAFS)
-cpreq "${FIXwafs}/grib2_gfs_awff${fhr}.45" gfs_wmo_header45
+cpreq "${FIXwafs}/wafs/grib2_gfs_awff${fhr}.45" gfs_wmo_header45
 
 export pgm="${TOCGRIB2}"
 
@@ -89,9 +89,9 @@ if [[ "${wafs_timewindow}" == "YES" ]]; then
     #---------------------------
     # 3D data from "./wafs_master.grib2", on exact model pressure levels
     cpreq "${WAFS_MASTER}" ./wafs_master.grib2
-    ${WGRIB2} "./wafs_master.grib2" | grep -F -f "${FIXwafs}/grib2_wafs.gfs_master.list" | ${WGRIB2} -i "./wafs_master.grib2" -grib "tmpfile_wafsf${fhr}"
+    ${WGRIB2} "./wafs_master.grib2" | grep -F -f "${FIXwafs}/wafs/grib2_wafs.gfs_master.list" | ${WGRIB2} -i "./wafs_master.grib2" -grib "tmpfile_wafsf${fhr}"
     # 2D data from "./gfs_master.grib2"
-    tail -5 "${FIXwafs}/grib2_wafs.gfs_master.list" >grib2_wafs.gfs_master.list.2D
+    tail -5 "${FIXwafs}/wafs/grib2_wafs.gfs_master.list" >grib2_wafs.gfs_master.list.2D
     ${WGRIB2} "./gfs_master.grib2" | grep -F -f grib2_wafs.gfs_master.list.2D | ${WGRIB2} -i "./gfs_master.grib2" -grib "tmpfile_wafsf${fhr}.2D"
     # Complete list of WAFS data
     cat tmpfile_wafsf${fhr}.2D >>tmpfile_wafsf${fhr}
@@ -108,7 +108,7 @@ if [[ "${wafs_timewindow}" == "YES" ]]; then
     export pgm="${TOCGRIB2}"
 
     # WMO header
-    cpreq "${FIXwafs}/grib2_wafsf${fhr}.45" wafs_wmo_header45
+    cpreq "${FIXwafs}/wafs/grib2_wafsf${fhr}.45" wafs_wmo_header45
 
     # Clean out any existing output files
     . prep_step

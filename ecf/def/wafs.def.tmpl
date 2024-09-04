@@ -1,4 +1,4 @@
-suite wafs
+suite wafs@EXPID@
   edit MACHINE_SITE '@MACHINE_SITE@'
   edit USER '@USER@'
   edit wafs_ver '@MODELVER@'
@@ -10,28 +10,27 @@ suite wafs
   edit QUEUE_ARCH 'dev_transfer'
   edit PROJENVIR 'DEV'
   edit PROJ 'GFS'  # TODO: Change to 'WAFS' when ready
-  edit PDY '20240824'
+  edit PDY '@PDY@'
   edit PARATEST 'NO'
   edit SENDDBN 'NO'
   edit SENDDBN_NTC 'NO'
   edit SENDCANNEDDBN 'NO'
   edit KEEPDATA 'NO'
   edit RUN_ENVIR 'dev'
-  edit COMROOT '/lfs/h2/emc/ptmp/%USER%/%ENVIR%/com'
-  edit DATAROOT '/lfs/h2/emc/stmp/%USER%/tmp'
-  edit DCOMROOT '/lfs/h1/ops/dev/dcom/test'
-  edit OUTPUTDIR '/lfs/h2/emc/stmp/%USER%/output'
+  edit COMROOT '/lfs/h2/emc/ptmp/%USER%/wafs@EXPID@/com'
+  edit DATAROOT '/lfs/h2/emc/stmp/%USER%/wafs@EXPID@/tmp'
+  edit OUTPUTDIR '/lfs/h2/emc/stmp/%USER%/wafs@EXPID@/output'
   edit COMPATH '%COMROOT%/wafs'
   family primary
     family wafs
       edit NET 'wafs'
       edit RUN 'wafs'
-      family v7.0
-        family 00
-          edit CYC '00'
+      family @MODELVER@
+        family @CYC@
+          edit CYC '@CYC@'
           task jwafs_gfs_manager
-            #trigger  /00/gfs/jgfs_forecast == active or /00/gfs/jgfs_forecast == complete
-            event 1 release_wafs_upp_anl
+            #trigger  /@CYC@/gfs/jgfs_forecast == active or /@CYC@/gfs/jgfs_forecast == complete
+            event 1 release_wafs_upp_anl  # upp
             event 2 release_wafs_upp_000
             event 3 release_wafs_upp_001
             event 4 release_wafs_upp_002
@@ -77,20 +76,17 @@ suite wafs
             event 44 release_wafs_upp_108
             event 45 release_wafs_upp_114
             event 46 release_wafs_upp_120
-            event 47 release_wafs_gcip_000
+            event 47 release_wafs_gcip_000  # gcip
             event 48 release_wafs_gcip_003
-            event 49 release_wafs_grib_006
-            event 50 release_wafs_grib_012
-            event 51 release_wafs_grib_018
-            event 52 release_wafs_grib_024
-            event 53 release_wafs_grib_030
-            event 54 release_wafs_grib_036
-            event 55 release_wafs_grib_042
-            event 56 release_wafs_grib_048
-            event 57 release_wafs_grib_054
-            event 58 release_wafs_grib_060
-            event 59 release_wafs_grib_066
-            event 60 release_wafs_grib_072
+            event 49 release_wafs_grib_012  # grib
+            event 50 release_wafs_grib_018
+            event 51 release_wafs_grib_024
+            event 52 release_wafs_grib_030
+            event 53 release_wafs_grib_036
+            event 54 release_wafs_grib_042
+            event 55 release_wafs_grib_048
+            event 56 release_wafs_grib_060
+            event 57 release_wafs_grib_072
           family upp
             task jwafs_upp_anl
               trigger ../jwafs_gfs_manager:release_wafs_upp_anl
@@ -240,9 +236,6 @@ suite wafs
               edit FHR 003
           endfamily  # endfamily gcip
           family grib
-            task jwafs_grib_f006
-              trigger ../jwafs_gfs_manager:release_wafs_grib_006
-              edit FHR 06
             task jwafs_grib_f012
               trigger ../jwafs_gfs_manager:release_wafs_grib_012
               edit FHR 12
@@ -264,15 +257,9 @@ suite wafs
             task jwafs_grib_f048
               trigger ../jwafs_gfs_manager:release_wafs_grib_048
               edit FHR 48
-            task jwafs_grib_f054
-              trigger ../jwafs_gfs_manager:release_wafs_grib_054
-              edit FHR 54
             task jwafs_grib_f060
               trigger ../jwafs_gfs_manager:release_wafs_grib_060
               edit FHR 60
-            task jwafs_grib_f066
-              trigger ../jwafs_gfs_manager:release_wafs_grib_066
-              edit FHR 66
             task jwafs_grib_f072
               trigger ../jwafs_gfs_manager:release_wafs_grib_072
               edit FHR 72
@@ -453,6 +440,7 @@ suite wafs
                 trigger ../../upp/jwafs_upp_f120 == complete
                 edit FHR 120
               family blending
+                edit DCOMROOT '/lfs/h1/ops/dev/dcom/test'
                 task jwafs_grib2_0p25_blending_f006
                   trigger ../jwafs_grib2_0p25_f006 == complete
                   edit FHR 006
@@ -537,8 +525,8 @@ suite wafs
               endfamily  # endfamily blending
             endfamily  # endfamily 0p25
           endfamily  # endfamily grib2
-        endfamily  # endfamily 00
-      endfamily  # endfamily v7.0
+        endfamily  # endfamily @CYC@
+      endfamily  # endfamily @MODELVER@
     endfamily  # endfamily wafs
   endfamily  # endfamily primary
-endsuite  # endsuite wafs
+endsuite  # endsuite wafs@EXPID@

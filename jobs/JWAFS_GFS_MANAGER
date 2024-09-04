@@ -1,89 +1,70 @@
 #!/bin/bash
-
 ########################################
-# GFS manager
+# WAFS GFS MANAGER
 ########################################
 
-export PS4='$SECONDS + '
 date
+export PS4='$SECONDS + '
 set -x
 
-# keep the working directory or not
-export KEEPDATA=${KEEPDATA:-NO}
-
-############################################
-# Specify it is production or developmen
-############################################
-export envir=${envir:-prod}
-# print current environment
-env
-
-############################################
-# Working Directory
-############################################
+####################################
+# make temp directory
+####################################
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
-############################################
-# Output for executables
-############################################
-export pgmout=OUTPUT.$$
-
-############################################
-# Load the UTILITIES module
-############################################
-#### module load prod_util
-#### module load grib_util
+mkdir -p "${DATA}" && cd "${DATA}"
 
 ###########################################
 # Run setpdy and initialize PDY variables
 ###########################################
-export cycle=t${cyc}z
+export cycle=${cycle:-"t${cyc}z"}
 setpdy.sh
 . ./PDY
 
-############################################
-# Set up the NET and RUN
-############################################
+####################################
+# SEND to COM, DBN, etc
+####################################
+
+####################################
+# Specify NET and RUN Name and model
+####################################
 export NET=${NET:-wafs}
 export RUN=${RUN:-wafs}
 
+##############################################
+# Define COM directories
+##############################################
+export COMINgfs=${COMINgfs:-$(compath.py "${envir}/gfs/${gfs_ver}")"/gfs.${PDY}/${cyc}/atmos"}
+
+####################################
+# Determine Job Output Name on System
+####################################
+export pgmout="OUTPUT.$$"
+
+####################################
+# Specify Execution Areas
+####################################
+
+#########################################################
+# print current environment
+#########################################################
+env
+
 ############################################
-# Specify HOME Directory
-############################################
-export HOMEwafs=${HOMEwafs:-${NWROOT}/wafs.${wafs_ver}}
-export EXECwafs=$HOMEwafs/exec
-export FIXwafs=$HOMEwafs/fix/wafs
-export PARMwafs=$HOMEwafs/parm/wafs
-export USHwafs=$HOMEwafs/ush
-export SCRIPTSwafs=$HOMEwafs/scripts
-
-################################################
-# Set up the input/output directory
-################################################
-
-export COMIN=${COMIN:-$(compath.py $envir/$NET/$wafs_ver)/$RUN.$PDY/$cyc}
-export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc}
-export COMINgfs=${COMINgfs:-$(compath.py $envir/gfs/$gfs_ver)/gfs.$PDY/$cyc/atmos}
-
-########################################################
 # Execute the script.
-$HOMEwafs/scripts/exwafs_gfs_manager.sh
-########################################################
+############################################
+"${HOMEwafs}/scripts/exwafs_gfs_manager.sh"
+export err=$?
+err_chk
 
-############################################
-# print exec output
-############################################
-if [ -e "$pgmout" ]; then
-  cat $pgmout
+if [[ -e "${pgmout}" ]]; then
+  cat "${pgmout}"
 fi
 
-############################################
-# remove temporary working directory
-############################################
-if [ $KEEPDATA != YES ]; then
-  rm -rf $DATA
+##############################
+# Remove the Temporary working directory
+##############################
+if [[ "${KEEPDATA^^}" != "YES" ]]; then
+  rm -rf "${DATA}"
 fi
 
 date

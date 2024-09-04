@@ -35,7 +35,7 @@ export RUN=${RUN:-wafs}
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMOUT:-$(compath.py "${envir}/${NET}/${wafs_ver}")"/${RUN}.${PDY}/${cyc}/grib2/0p25"}
+export COMIN=${COMIN:-$(compath.py "${envir}/${NET}/${wafs_ver}")"/${RUN}.${PDY}/${cyc}/grib2/0p25"}
 export COMOUT=${COMOUT:-$(compath.py -o "${NET}/${wafs_ver}")"/${RUN}.${PDY}/${cyc}/grib2/0p25/blending"}
 export COMOUTwmo=${COMOUTwmo:-"${COMOUT}/wmo"}
 mkdir -p "${COMOUT}" "${COMOUTwmo}"

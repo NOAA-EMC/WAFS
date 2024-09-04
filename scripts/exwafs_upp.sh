@@ -1,12 +1,19 @@
 #!/bin/bash
 
+######################################################################
+#  UTILITY SCRIPT NAME :  exwafs_upp.sh
+#         DATE WRITTEN :  07/22/2024
+#
+#  Abstract:  This script runs the offline UPP based on GFS model output
+#             and creates the WAFS master grib2 file
+#
+# History:  07/22/2024
+#              - initial version
 #####################################################################
-# TODO: need ex-script docblock, see Implementation Standards
-#####################################################################
+
 set -x
 
 POSTGRB2TBL=${POSTGRB2TBL:-"${g2tmpl_ROOT}/share/params_grib2_tbl_new"}
-UPPEXEC=${UPPEXEC:-"${EXECwafs}/ncep_post.x"}
 MPIRUN=${MPIRUN:-"mpiexec -l -n 126 -ppn 126 --cpu-bind depth --depth 1"}
 
 if [[ "${fhr}" == "anl" ]]; then # Analysis
@@ -38,7 +45,7 @@ cpreq "${FLXINP}" ./flxfile
 cpreq "${POSTGRB2TBL}" .
 cpreq "${PostFlatFile}" ./postxconfig-NT.txt
 cpreq "${PARMwafs}/upp/nam_micro_lookup.dat" ./eta_micro_lookup.dat
-cpreq "${UPPEXEC}" .
+cpreq "${EXECwafs}/wafs_upp.x" .
 if [[ "${fhr}" != "anl" ]]; then
     cpreq "${PARMwafs}/upp/gtg.config.gfs" gtg.config
     cpreq "${PARMwafs}/upp/gtg_imprintings.txt" gtg_imprintings.txt
@@ -53,6 +60,7 @@ grib2
 ${VDATE:0:4}-${VDATE:4:2}-${VDATE:6:2}_${VDATE:8:2}:00:00
 GFS
 flxfile
+
 &nampgb
   kpo=58,
   po=97720.,90810.,84310.,81200.,78190.,75260.,72430.,69680.,67020.,64440.,61940.,59520.,57180.,54920.,52720.,50600.,48550.,46560.,44650.,42790.,41000.,39270.,37600.,35990.,34430.,32930.,31490.,30090.,28740.,27450.,26200.,25000.,23840.,22730.,21660.,20650.,19680.,18750.,17870.,17040.,16240.,15470.,14750.,14060.,13400.,12770.,12170.,11600.,11050.,10530.,10040.,9570.,9120.,8700.,8280.,7900.,7520.,7170.,
@@ -64,7 +72,7 @@ cat itag
 # output file from UPP executable
 export PGBOUT="wafsfile"
 
-pgm=$(basename "${UPPEXEC}")
+pgm="wafs_upp.x"
 export pgm
 
 # Clean out any existing output files

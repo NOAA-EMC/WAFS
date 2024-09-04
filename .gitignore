@@ -22,4 +22,4 @@ ecf/scripts/gcip/jwafs_gcip_f*.ecf
 ecf/scripts/grib/jwafs_grib_f*.ecf
 
 # Ignore wafs.def
-ecf/def/wafs.def
+ecf/def/wafs*.def

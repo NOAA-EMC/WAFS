@@ -15,22 +15,22 @@ function link_master_to_fhr() {
   local clean_only=${3:-"NO"} # Clean only flag to remove existing links
   local fhr3 master target
   for fhr in ${fhrs[@]}; do
-    fhr3=$(printf %03d $fhr)
-    master=${tmpl}_master.ecf
-    target=${tmpl}_f${fhr3}.ecf
-    rm -f ${target}
-    case ${clean_only} in
+    fhr3=$(printf %03d ${fhr})
+    master="${tmpl}_master.ecf"
+    target="${tmpl}_f${fhr3}.ecf"
+    rm -f "${target}"
+    case "${clean_only}" in
     "YES")
       continue
       ;;
     *)
-      ln -sf ${master} ${target}
+      ln -sf "${master}" "${target}"
       ;;
     esac
   done
 }
 
-CLEAN=${1:-${CLEAN:-"NO"}}  # Remove links only; do not create links (YES)
+CLEAN=${1:-${CLEAN:-"NO"}} # Remove links only; do not create links (YES)
 
 # JWAFS_UPP
 cd "${ECF_DIR}/scripts/upp"
@@ -81,5 +81,7 @@ link_master_to_fhr "jwafs_gcip" "${fhrs}" "${CLEAN}"
 # JWAFS_GRIB
 cd "${ECF_DIR}/scripts/grib"
 echo "Linking grib ..."
-fhrs=$(seq -s ' ' 6 6 72) # 006 -> 072; 6-hourly
+seq1=$(seq -s ' ' 12 6 48) # 012 -> 048; 6-hourly
+seq2="60 72"               # 060, 072
+fhrs="${seq1} ${seq2}"
 link_master_to_fhr "jwafs_grib" "${fhrs}" "${CLEAN}"
