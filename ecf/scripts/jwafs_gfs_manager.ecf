@@ -38,4 +38,14 @@ fi
 
 %include <tail.h>
 %manual
+TASK: JWAFS_GFS_MANAGER
+
+PURPOSE: Look for GFS forecast model output and trigger the following jobs:
+  JWAFS_UPP: Offline UPP with GTG
+  JWAFS_GCIP:
+  JWAFS_GRIB:
+
+This job will look for GFS forecast model output, and trigger the above jobs for each of the forecast hour that the products are desired.
+The job will timeout in 10800 seconds (3 hours) if the forecast model output is not available.
+The job will skip any intermediate forecast hour if the forecast model output is not available for that forecast hour
 %end
