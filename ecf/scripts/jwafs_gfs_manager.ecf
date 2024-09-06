@@ -48,4 +48,7 @@ PURPOSE: Look for GFS forecast model output and trigger the following jobs:
 This job will look for GFS forecast model output, and trigger the above jobs for each of the forecast hour that the products are desired.
 The job will timeout in 10800 seconds (3 hours) if the forecast model output is not available.
 The job will skip any intermediate forecast hour if the forecast model output is not available for that forecast hour
+
+TROUBLESHOOTING
+If this job fails, re-queuing the job is probably not the best idea as it may release the triggers for already launched/completed downstream jobs.  In that case, it is perhaps better to boot the downstream jobs mentioned in the purpose for the failed forecast hours.
 %end
