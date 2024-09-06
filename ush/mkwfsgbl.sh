@@ -46,7 +46,8 @@ GFS_MASTER="${COMINgfs}/gfs.t${cyc}z.master.grb2f${fhr3}"
 if [[ ! -f "pgrbf${fhr}" ]]; then
 
     cpreq "${GFS_MASTER}" "./gfs_masterf${fhr}.grib2"
-    ${WGRIB2} "./gfs_masterf${fhr}.grib2" | grep -F -f "${FIXwafs}/wafs/grib_wafs.grb2to1.list" | ${WGRIB2} -i "./gfs_masterf${fhr}.grib2" -grib "masterf${fhr}"
+    cpreq "${FIXwafs}/wafs/grib_wafs.grb2to1.list" ./
+    ${WGRIB2} "./gfs_masterf${fhr}.grib2" | grep -F -f "./grib_wafs.grb2to1.list" | ${WGRIB2} -i "./gfs_masterf${fhr}.grib2" -grib "masterf${fhr}"
 
     # Change data input from 1p00 files to master files
     export opt1=' -set_grib_type same -new_grid_winds earth '
@@ -68,7 +69,8 @@ if [[ ! -f "pgrbf${fhr}" ]]; then
     ${CNVGRIB} -g21 "pgrb2f${fhr}.tmp" "pgrbf${fhr}"
 fi
 
-${COPYGB} -g3 -i0 -N${FIXwafs}/wafs/grib_wafs.namelist -x "pgrbf${fhr}" tmp
+cpreq "${FIXwafs}/wafs/grib_wafs.namelist" ./
+${COPYGB} -g3 -i0 -N"./grib_wafs.namelist" -x "pgrbf${fhr}" tmp
 mv tmp "pgrbf${fhr}"
 ${GRBINDEX} "pgrbf${fhr}" "pgrbif${fhr}"
 
@@ -88,7 +90,7 @@ else
 fi
 
 cpreq "${EXECwafs}/wafs_makewafs.x" "./wafs_makewafs.x"
-
+cpreq "${FIXwafs}/wafs/grib_wfsgfs${fhr}${sets}" "./grib_wfsgfs${fhr}${sets}"
 export pgm="wafs_makewafs.x"
 
 . prep_step
@@ -98,7 +100,7 @@ export FORT31="pgrbif${fhr}"
 export FORT51="xtrn.wfsgfs${fhr}${sets}"
 export FORT53="com.wafs${fhr}${sets}"
 
-${DATA}/${pgm} <"${FIXwafs}/wafs/grib_wfsgfs${fhr}${sets}" >>"${pgmout}" 2>errfile
+${DATA}/${pgm} <"./grib_wfsgfs${fhr}${sets}" >>"${pgmout}" 2>errfile
 export err=$?
 err_chk
 

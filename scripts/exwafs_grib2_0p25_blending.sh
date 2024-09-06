@@ -138,14 +138,15 @@ if [[ "${envir}" != "prod" ]]; then
 fi
 maillist=${maillist:-"nco.spa@noaa.gov,ncep.sos@noaa.gov"}
 
+cpreq "${FIXwafs}/wafs/wafs_blending_0p25_admin_msg" ./
 if [[ "${SEND_US_WAFS}" == "YES" ]]; then
 
     #  checking any US WAFS product was sent due to No UK WAFS GRIB2 file or WAFS blending program
     #  (Alert once for each forecast hour)
     if [[ "${SEND_AWC_US_ALERT}" == "NO" ]]; then
         echo "WARNING: Missing UK data for WAFS GRIB2 0P25 blending. Send alert message to AWC ......"
-        make_NTC_file.pl NOXX10 KKCI "${PDY}${cyc}" NONE "${FIXwafs}/wafs/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/wifs_0p25_admin_msg"
-        make_NTC_file.pl NOXX10 KWBC "${PDY}${cyc}" NONE "${FIXwafs}/wafs/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/iscs_0p25_admin_msg"
+        make_NTC_file.pl NOXX10 KKCI "${PDY}${cyc}" NONE "./wafs_blending_0p25_admin_msg" "${COMOUTwmo}/wifs_0p25_admin_msg"
+        make_NTC_file.pl NOXX10 KWBC "${PDY}${cyc}" NONE "./wafs_blending_0p25_admin_msg" "${COMOUTwmo}/iscs_0p25_admin_msg"
         if [[ "${SENDDBN_NTC}" == "YES" ]]; then
             "${DBNROOT}/bin/dbn_alert" NTC_LOW WAFS "${job}" "${COMOUTwmo}/wifs_0p25_admin_msg"
             "${DBNROOT}/bin/dbn_alert" NTC_LOW WAFS "${job}" "${COMOUTwmo}/iscs_0p25_admin_msg"
@@ -184,8 +185,8 @@ elif [[ "${SEND_UK_WAFS}" == "YES" ]]; then
     #  (Alert once for each forecast hour)
     if [[ "${SEND_AWC_UK_ALERT}" == "NO" ]]; then
         echo "WARNING: Missing US data for WAFS GRIB2 0P25 blending. Send alert message to AWC ......"
-        make_NTC_file.pl NOXX10 KKCI "${PDY}${cyc}" NONE "${FIXwafs}/wafs/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/wifs_0p25_admin_msg"
-        make_NTC_file.pl NOXX10 KWBC "${PDY}${cyc}" NONE "${FIXwafs}/wafs/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/iscs_0p25_admin_msg"
+        make_NTC_file.pl NOXX10 KKCI "${PDY}${cyc}" NONE "./wafs_blending_0p25_admin_msg" "${COMOUTwmo}/wifs_0p25_admin_msg"
+        make_NTC_file.pl NOXX10 KWBC "${PDY}${cyc}" NONE "./wafs_blending_0p25_admin_msg" "${COMOUTwmo}/iscs_0p25_admin_msg"
         if [[ "${SENDDBN_NTC}" == "YES" ]]; then
             "${DBNROOT}/bin/dbn_alert" NTC_LOW WAFS "${job}" "${COMOUTwmo}/wifs_0p25_admin_msg"
             "${DBNROOT}/bin/dbn_alert" NTC_LOW WAFS "${job}" "${COMOUTwmo}/iscs_0p25_admin_msg"
