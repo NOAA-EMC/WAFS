@@ -52,10 +52,9 @@ export RUN=wafs
 ############################################
 # user defined
 ############################################
-export PDY=20240703
-
 export cyc=${cyc:-00}
 export fhr=006
+export PDY=$(cut -c 7-14 $COMROOT/date/t${cyc}z)
 
 export job=wafs_grib2_1p25_${cyc}
 
@@ -64,7 +63,7 @@ export jobid=${job}.${pid}
 
 # wafs_grib2 for generating global WAFS on grid 45
 
-USER=`whoami`
+USER=$(whoami)
 
 ############################################
 # SENDCOM=YES--Copy output file to /com

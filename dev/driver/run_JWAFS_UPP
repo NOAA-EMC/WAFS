@@ -64,14 +64,10 @@ export RUN=wafs
 ############################################
 # user defined
 ############################################
-#export PDY=`$NDATE -24 | cut -c 1-8`
-export PDY=$(cut -c 7-14 $COMROOT/date/t00z)
-export PDY=20240617
-
 export cyc=${cyc:-00}
 export cycle=t${cyc}z
-
-export fhr="018"
+export fhr=006
+export PDY=$(cut -c 7-14 $COMROOT/date/t${cyc}z)
 
 # wafs_grib2 for generating global WAFS on grid 45
 export job=wafs_upp_${cyc}

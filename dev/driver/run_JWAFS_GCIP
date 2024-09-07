@@ -55,10 +55,9 @@ export RUN=wafs
 ############################################
 # user defined
 ############################################
-export PDY=20240703
-
 export cyc=${cyc:-00}
 export fhr=000
+export PDY=$(cut -c 7-14 $COMROOT/date/t${cyc}z)
 
 # wafs_gcip for generating global icing analysis for every 3 hours
 export job=wafs_gcip_${cyc}
@@ -66,7 +65,7 @@ export job=wafs_gcip_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 
-USER=`whoami`
+USER=$(whoami)
 
 ############################################
 # SENDCOM=YES--Copy output file to /com
