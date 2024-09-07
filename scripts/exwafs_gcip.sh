@@ -156,8 +156,3 @@ fi
 if [[ "${SENDCOM}" == "YES" ]]; then
 	cpfs "${outputfile}" "${COMOUT}/${outputfile}"
 fi
-
-# Alert through DBN
-if [[ "${SENDDBN}" == "YES" ]]; then
-	echo "TODO: DBN alert missing..."
-fi
