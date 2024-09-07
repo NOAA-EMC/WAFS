@@ -39,8 +39,7 @@ export RUN=${RUN:-wafs}
 export COMINgfs=${COMINgfs:-$(compath.py "${envir}/gfs/${gfs_ver}")"/gfs.${PDY}/${cyc}/atmos"}
 export COMIN=${COMIN:-$(compath.py "${envir}/${NET}/${wafs_ver}")"/${RUN}.${PDY}/${cyc}/upp"}
 export COMOUT=${COMOUT:-$(compath.py -o "${NET}/${wafs_ver}")"/${RUN}.${PDY}/${cyc}/grib2/0p25"}
-export COMOUTwmo=${COMOUTwmo:-"${COMOUT}/wmo"}
-mkdir -p "${COMOUT}" "${COMOUTwmo}"
+mkdir -p "${COMOUT}"
 
 ####################################
 # Determine Job Output Name on System
