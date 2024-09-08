@@ -76,8 +76,6 @@ export pgm="wafs_upp.x"
 # Clean out any existing output files
 . prep_step
 
-# Run UPP with 1 thread
-export OMP_NUM_THREADS=1
 ${MPIRUN} ${EXECwafs}/${pgm} <itag >>${pgmout} 2>errfile
 export err=$?
 err_chk

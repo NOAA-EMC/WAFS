@@ -58,6 +58,9 @@ env
 #########################################################
 # Execute the Script
 #########################################################
+# Run UPP with 1 thread
+export OMP_NUM_THREADS=1
+
 "${HOMEwafs}/scripts/exwafs_upp.sh"
 export err=$?
 err_chk
