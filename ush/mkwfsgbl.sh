@@ -87,8 +87,6 @@ else
     unset sets
 fi
 
-cpreq "${EXECwafs}/wafs_makewafs.x" "./wafs_makewafs.x"
-
 export pgm="wafs_makewafs.x"
 
 . prep_step
@@ -98,7 +96,7 @@ export FORT31="pgrbif${fhr}"
 export FORT51="xtrn.wfsgfs${fhr}${sets}"
 export FORT53="com.wafs${fhr}${sets}"
 
-${DATA}/${pgm} <"${FIXwafs}/wafs/grib_wfsgfs${fhr}${sets}" >>"${pgmout}" 2>errfile
+${EXECwafs}/${pgm} <"${FIXwafs}/wafs/grib_wfsgfs${fhr}${sets}" >>"${pgmout}" 2>errfile
 export err=$?
 err_chk
 

@@ -45,7 +45,6 @@ cpreq "${FLXINP}" ./flxfile
 cpreq "${POSTGRB2TBL}" .
 cpreq "${PostFlatFile}" ./postxconfig-NT.txt
 cpreq "${PARMwafs}/upp/nam_micro_lookup.dat" ./eta_micro_lookup.dat
-cpreq "${EXECwafs}/wafs_upp.x" .
 if [[ "${fhr}" != "anl" ]]; then
     cpreq "${PARMwafs}/upp/gtg.config.gfs" gtg.config
     cpreq "${PARMwafs}/upp/gtg_imprintings.txt" gtg_imprintings.txt
@@ -72,15 +71,14 @@ cat itag
 # output file from UPP executable
 export PGBOUT="wafsfile"
 
-pgm="wafs_upp.x"
-export pgm
+export pgm="wafs_upp.x"
 
 # Clean out any existing output files
 . prep_step
 
 # Run UPP with 1 thread
 export OMP_NUM_THREADS=1
-${MPIRUN} ${DATA}/${pgm} <itag >>${pgmout} 2>errfile
+${MPIRUN} ${EXECwafs}/${pgm} <itag >>${pgmout} 2>errfile
 export err=$?
 err_chk
 

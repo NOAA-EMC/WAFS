@@ -138,13 +138,12 @@ cmdoptions="${cmdoptions} -o ${outputfile}"
 # Copy the configuration files and the executable
 cpreq "${PARMwafs}/wafs/wafs_gcip_gfs.cfg" "${configFile}"
 cpreq "${FIXwafs}/wafs/gcip_near_ir_refl.table" ./near_ir_refl.table
-cpreq "${EXECwafs}/wafs_gcip.x" ./wafs_gcip.x
 
 export pgm="wafs_gcip.x"
 
 . prep_step
 
-${DATA}/${pgm} ${cmdoptions} >>"${pgmout}" 2>errfile
+${EXECwafs}/${pgm} ${cmdoptions} >>"${pgmout}" 2>errfile
 export err=$?
 err_chk
 

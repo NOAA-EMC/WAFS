@@ -70,7 +70,7 @@ for ((ic = 1; ic <= SLEEP_LOOP_MAX; ic++)); do
                 echo "${ukfile}" >>missing_uk_files
             fi
         done
-        echo "WARNING: UK WAFS GRIB2 unblended data is not completely available, exiting"
+        echo "WARNING: UK WAFS GRIB2 unblended data is not completely available, no blending"
         SEND_US_WAFS="YES"
         break
     else
@@ -107,15 +107,12 @@ else
     # pick up US data
     cpreq "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" .
 
-    # copy the blending executable
-    cpreq "${EXECwafs}/wafs_blending_0p25.x" .
-
     # run blending code
     export pgm="wafs_blending_0p25.x"
 
     . prep_step
 
-    ${DATA}/${pgm} "WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" \
+    ${EXECwafs}/${pgm} "WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" \
         "EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${fhr}.grib2" \
         "0p25_blended_${PDY}${cyc}f${fhr}.grib2 >f${fhr}.out"
     err=$?
@@ -218,13 +215,11 @@ else
     # Distribute US WAFS unblend Data to NCEP FTP Server (WOC) and TOC
     if [[ "${SENDCOM}" == "YES" ]]; then
         cpfs "0p25_blended_${PDY}${cyc}f${fhr}.grib2" "${COMOUT}/WAFS_0p25_blended_${PDY}${cyc}f${fhr}.grib2"
-        #cpfs "grib2.t${cyc}z.WAFS_0p25_blended_f${fhr}" "${COMOUTwmo}/grib2.t${cyc}z.WAFS_0p25_blended_f${fhr}"
     fi
 
     if [[ "${SENDDBN_NTC}" == "YES" ]]; then
         #   Distribute Data to NCEP FTP Server (WOC) and TOC
         echo "No WMO header yet"
-        #"${DBNROOT}/bin/dbn_alert" NTC_LOW $NET "${job}" "${COMOUTwmo}/grib2.t${cyc}z.WAFS_0p25_blended_f${fhr}"
     fi
 
     if [[ "${SENDDBN}" == "YES" ]]; then

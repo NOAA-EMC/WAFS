@@ -65,7 +65,6 @@ ${WGRIB2} -s "${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2" >"${RUN}.t${cyc}z.awf_gr
 cpreq "${FIXwafs}/wafs/grib2_gfs_awff${fhr}.45" gfs_wmo_header45
 
 export pgm="${TOCGRIB2}"
-
 # Clean out any existing output files
 . prep_step
 
@@ -74,7 +73,7 @@ export FORT31=" "
 export FORT51="grib2.wafs.t${cyc}z.awf_grid45.f${fhr}"
 
 # For FAA, add WMO header. The header is different from WAFS
-${pgm} <gfs_wmo_header45 >>"${pgmout}" 2>errfile
+${TOCGRIB2} <gfs_wmo_header45 >>"${pgmout}" 2>errfile
 export err=$?
 err_chk
 
@@ -105,11 +104,10 @@ if [[ "${wafs_timewindow}" == "YES" ]]; then
         -new_grid latlon 0:288:1.25 90:145:-1.25 "gfs.t${cyc}z.wafs_grb45f${fhr}.grib2"
     ${WGRIB2} -s "gfs.t${cyc}z.wafs_grb45f${fhr}.grib2" >"gfs.t${cyc}z.wafs_grb45f${fhr}.grib2.idx"
 
-    export pgm="${TOCGRIB2}"
-
     # WMO header
     cpreq "${FIXwafs}/wafs/grib2_wafsf${fhr}.45" wafs_wmo_header45
 
+    export pgm="${TOCGRIB2}"
     # Clean out any existing output files
     . prep_step
 
@@ -118,7 +116,7 @@ if [[ "${wafs_timewindow}" == "YES" ]]; then
     export FORT51="grib2.wafs.t${cyc}z.grid45.f${fhr}"
 
     # For WAFS, add WMO header. Processing WAFS GRIB2 grid 45 for ISCS and WIFS
-    ${pgm} <wafs_wmo_header45 >>"${pgmout}" 2>errfile
+    ${TOCGRIB2} <wafs_wmo_header45 >>"${pgmout}" 2>errfile
     export err=$?
     err_chk
 
