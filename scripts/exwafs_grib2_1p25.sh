@@ -149,15 +149,17 @@ fi
 
 # Alert via DBN
 if [[ "${SENDDBN}" == "YES" ]]; then
-
-    # Distribute Data to WOC
     if [[ "${wafs_timewindow}" == "YES" ]]; then
+	# Distribute Data to WOC
         "${DBNROOT}/bin/dbn_alert" MODEL WAFS_1P25_GB2 "${job}" "${COMOUT}/gfs.t${cyc}z.wafs_grb45f${fhr}.grib2"
-        # Distribute Data to TOC TO WIFS FTP SERVER (AWC)
+    fi
+fi
+
+if [[ "$SENDDBN_NTC" == "YES" ]] ; then
+    if [[ "${wafs_timewindow}" == "YES" ]]; then
+	# Distribute Data to TOC TO WIFS FTP SERVER (AWC)
         "${DBNROOT}/bin/dbn_alert" NTC_LOW "${NET}" "${job}" "${COMOUTwmo}/grib2.wafs.t${cyc}z.grid45.f${fhr}"
     fi
-
     # Distribute data to FAA
     "${DBNROOT}/bin/dbn_alert" NTC_LOW "${NET}" "${job}" "${COMOUTwmo}/grib2.wafs.t${cyc}z.awf_grid45.f${fhr}"
-
 fi
