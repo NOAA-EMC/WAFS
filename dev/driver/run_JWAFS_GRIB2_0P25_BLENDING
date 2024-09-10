@@ -57,13 +57,9 @@ export RUN=wafs
 ############################################
 # user defined
 ############################################
-#export PDY=`$NDATE -24 | cut -c 1-8`
-export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20240703
-
 export cyc=${cyc:-00}
-
 export fhr=006
+export PDY=$(cut -c 7-14 $COMROOT/date/t${cyc}z)
 
 # wafs_blending for blending icing turbulence of US and UK
 export job=wafs_blending_0p25_${cyc}
@@ -71,7 +67,7 @@ export job=wafs_blending_0p25_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 
-USER=`whoami`
+USER=$(whoami)
 
 ############################################
 # SENDCOM=YES--Copy output file to /com

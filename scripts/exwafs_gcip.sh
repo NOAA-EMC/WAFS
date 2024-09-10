@@ -6,22 +6,20 @@
 #
 #  Abstract:  This utility script produces the WAFS GCIP.
 #
-#            GCIP runs f000 f003 for each cycle, 4 times/day,
-#            to make the output valid every 3 hours
+#             GCIP runs f000 f003 for each cycle, 4 times/day,
+#             to make the output valid every 3 hours
 #
-# History:  01/28/2015
-#         - GFS master file as first guess
-#              /com/prod/gfs.YYYYMMDD
-#         - Nesdis composite global satellite data
-#              /dcom (ftp?)
-#         - Metar/ships/lightning/pireps
-#              dumpjb YYYYMMDDHH hours output >/dev/null
-#         - Radar data over CONUS
-#              /com/hourly/prod/radar.YYYYMMDD/refd3d.tHHz.grbf00
-#         - output of current icing potential
-#         - First implementation of this new script."
-#         Oct 2021 - Remove jlogfile
-#         May 2024 - WAFS separation
+#  History:  01/28/2015
+#              - First implementation of this new script.
+#              - GFS master file as first guess
+#              - Nesdis composite global satellite data
+#              - Metar/ships/lightning/pireps
+#              - Radar data over CONUS
+#              - output of current icing potential
+#            Oct 2021   - Remove jlogfile
+#            09/08/2024 - WAFS separation
+#               - Filename changes according to EE2 standard
+#               - Fix bugzilla 1213: Filename should use fHHH instead of FHH
 #####################################################################
 
 set -x
@@ -138,13 +136,12 @@ cmdoptions="${cmdoptions} -o ${outputfile}"
 # Copy the configuration files and the executable
 cpreq "${PARMwafs}/wafs/wafs_gcip_gfs.cfg" "${configFile}"
 cpreq "${FIXwafs}/wafs/gcip_near_ir_refl.table" ./near_ir_refl.table
-cpreq "${EXECwafs}/wafs_gcip.x" ./wafs_gcip.x
 
 export pgm="wafs_gcip.x"
 
 . prep_step
 
-${DATA}/${pgm} ${cmdoptions} >>"${pgmout}" 2>errfile
+${EXECwafs}/${pgm} ${cmdoptions} >>"${pgmout}" 2>errfile
 export err=$?
 err_chk
 
@@ -155,9 +152,4 @@ fi
 # Send output to COM
 if [[ "${SENDCOM}" == "YES" ]]; then
 	cpfs "${outputfile}" "${COMOUT}/${outputfile}"
-fi
-
-# Alert through DBN
-if [[ "${SENDDBN}" == "YES" ]]; then
-	echo "TODO: DBN alert missing..."
 fi

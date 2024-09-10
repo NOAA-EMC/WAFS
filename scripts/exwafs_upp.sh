@@ -7,8 +7,9 @@
 #  Abstract:  This script runs the offline UPP based on GFS model output
 #             and creates the WAFS master grib2 file
 #
-# History:  07/22/2024
-#              - initial version
+#  History:  07/22/2024
+#               - initial version, for WAFS separation
+#               - Add additional levels of icing and turbulence than prior to WAFS separation
 #####################################################################
 
 set -x
@@ -45,7 +46,6 @@ cpreq "${FLXINP}" ./flxfile
 cpreq "${POSTGRB2TBL}" .
 cpreq "${PostFlatFile}" ./postxconfig-NT.txt
 cpreq "${PARMwafs}/upp/nam_micro_lookup.dat" ./eta_micro_lookup.dat
-cpreq "${EXECwafs}/wafs_upp.x" .
 if [[ "${fhr}" != "anl" ]]; then
     cpreq "${PARMwafs}/upp/gtg.config.gfs" gtg.config
     cpreq "${PARMwafs}/upp/gtg_imprintings.txt" gtg_imprintings.txt
@@ -72,15 +72,12 @@ cat itag
 # output file from UPP executable
 export PGBOUT="wafsfile"
 
-pgm="wafs_upp.x"
-export pgm
+export pgm="wafs_upp.x"
 
 # Clean out any existing output files
 . prep_step
 
-# Run UPP with 1 thread
-export OMP_NUM_THREADS=1
-${MPIRUN} ${DATA}/${pgm} <itag >>${pgmout} 2>errfile
+${MPIRUN} ${EXECwafs}/${pgm} <itag >>${pgmout} 2>errfile
 export err=$?
 err_chk
 
@@ -90,7 +87,7 @@ if [[ ! -f "${PGBOUT}" ]]; then
 fi
 
 # Copy relevant files to COMOUT
-if [[ "${fhr}" == "anl" ]]; then # Analysis interpolated file for verification (EVS)
+if [[ "${fhr}" == "anl" ]]; then # U/V/T analysis interpolated file for verification (EVS)
 
     # Interpolate to 0.25-degree grid
     ${WGRIB2} "${PGBOUT}" \
@@ -106,7 +103,7 @@ if [[ "${fhr}" == "anl" ]]; then # Analysis interpolated file for verification (
         ${WGRIB2} -s "${PGBOUT}.0p25" >"${COMOUT}/${RUN}.t${cyc}z.0p25.anl.grib2.idx"
     fi
 
-else # Forecast master files
+else # Forecast WAFS master files (including hazard aviation data if forecast hour is 48 or less)
 
     # Copy master files to COMOUT and index the file
     if [[ "${SENDCOM}" == "YES" ]]; then

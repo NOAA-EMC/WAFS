@@ -24,7 +24,6 @@ setpdy.sh
 # SEND to COM, DBN, etc
 ####################################
 export SENDCOM=${SENDCOM:-"YES"}
-export SENDDBN=${SENDDBN:-"YES"}
 
 ####################################
 # Specify NET and RUN Name and model

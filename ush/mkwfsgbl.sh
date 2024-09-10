@@ -1,5 +1,6 @@
 #!/bin/bash
 
+################################################################################
 #  UTILITY SCRIPT NAME :  mkwfsgbl.sh
 #               AUTHOR :  Mary Jacobs
 #         DATE WRITTEN :  11/06/96
@@ -21,6 +22,7 @@
 #                         - Allows users to run interactively"
 #            SEP     2007 - BAG - Put in fix on 20070925 to force the percision of U and V winds
 #                           to default to 1 through the use of the grib_wafs.namelist file.
+################################################################################
 
 set -x
 
@@ -87,8 +89,6 @@ else
     unset sets
 fi
 
-cpreq "${EXECwafs}/wafs_makewafs.x" "./wafs_makewafs.x"
-
 export pgm="wafs_makewafs.x"
 
 . prep_step
@@ -98,7 +98,7 @@ export FORT31="pgrbif${fhr}"
 export FORT51="xtrn.wfsgfs${fhr}${sets}"
 export FORT53="com.wafs${fhr}${sets}"
 
-${DATA}/${pgm} <"${FIXwafs}/wafs/grib_wfsgfs${fhr}${sets}" >>"${pgmout}" 2>errfile
+${EXECwafs}/${pgm} <"${FIXwafs}/wafs/grib_wfsgfs${fhr}${sets}" >>"${pgmout}" 2>errfile
 export err=$?
 err_chk
 
@@ -107,7 +107,6 @@ if [[ ! -f "xtrn.wfsgfs${fhr}${sets}" ]]; then
 fi
 
 # Send data to COM
-jobsuffix="gfs_atmos_wafs_f${fhr}_$cyc"
 if [[ "${SENDCOM}" == "YES" ]]; then
     cpfs "xtrn.wfsgfs${fhr}${sets}" "${COMOUTwmo}/xtrn.wfsgfs${cyc}${fhr}${sets}.${jobsuffix}"
 fi
