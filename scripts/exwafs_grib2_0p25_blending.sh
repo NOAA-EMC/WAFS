@@ -43,7 +43,7 @@ fi
 ###############################################
 # SLEEP_TIME - Amount of time (secs) to wait for a input file before exiting
 # SLEEP_INT  - Amount of time (secs) to wait between checking for input files
-SLEEP_TIME=${SLEEP_TIME:-1200}
+SLEEP_TIME=${SLEEP_TIME:-1500}
 SLEEP_INT=${SLEEP_INT:-10}
 SLEEP_LOOP_MAX=$((SLEEP_TIME / SLEEP_INT))
 
