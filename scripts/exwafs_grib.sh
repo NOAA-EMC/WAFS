@@ -44,6 +44,8 @@ set -x
 
 cd "${DATA}" || err_exit "FATAL ERROR: Could not 'cd ${DATA}'; ABORT!"
 
+export jobsuffix="gfs_atmos_wafs_f${fhr}_$cyc"
+
 # If we are processing fhrs 12-30, we have the
 # added variable of the a  or b in the process.
 # The other fhrs, the a or b  is dropped.

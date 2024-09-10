@@ -107,7 +107,6 @@ if [[ ! -f "xtrn.wfsgfs${fhr}${sets}" ]]; then
 fi
 
 # Send data to COM
-jobsuffix="gfs_atmos_wafs_f${fhr}_$cyc"
 if [[ "${SENDCOM}" == "YES" ]]; then
     cpfs "xtrn.wfsgfs${fhr}${sets}" "${COMOUTwmo}/xtrn.wfsgfs${cyc}${fhr}${sets}.${jobsuffix}"
 fi
