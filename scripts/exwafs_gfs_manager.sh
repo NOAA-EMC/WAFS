@@ -6,7 +6,7 @@
 #  Abstract:  This script checks for upstream GFS data availability
 #             and triggers downstream JWAFS jobs
 #
-# History:  07/22/2024
+#  History:  07/22/2024
 #              - initial version
 #####################################################################
 

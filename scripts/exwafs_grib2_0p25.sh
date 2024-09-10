@@ -14,10 +14,14 @@
 #             3 hour: 027 - 048
 #             6 hour: 054 - 120 (for U/V/T/RH, not for turbulence/icing/CB)
 #
-# History: Mar 2020 - First implementation of this new script."
-#          Oct 2021 - Remove jlogfile"
-#          Aug 2022 - fhr expanded from 36 to 120"
-#          May 2024 - WAFS separation"
+#  History:  Mar 2020   - First implementation of this new script.
+#            Oct 2021   - Remove jlogfile
+#            Aug 2022   - fhr expanded from 36 to 120
+#            09/08/2024 - WAFS separation
+#              - Filename changes according to EE2 standard except for files sent to UK
+#              - dbn_alert subtype is changed from gfs to WAFS
+#              - Fix bugzilla 1213: Filename should use fHHH instead of FHH
+#              - Add additional levels of icing and turbulence to AWF files
 #####################################################################
 
 set -x

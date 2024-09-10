@@ -1,26 +1,33 @@
 #!/bin/bash
 
 ######################################################################
-#  UTILITY SCRIPT NAME :  exwafs_grib2.sh
+#  UTILITY SCRIPT NAME :  exwafs_grib2_1p25.sh
 #         DATE WRITTEN :  07/15/2009
 #
-#  Abstract:  This utility script produces the WAFS GRIB2. The output
-#             GRIB files are posted on NCEP ftp server and the grib2 files
-#             are pushed via dbnet to TOC to WAFS (ICSC).
-#             This is a joint project of WAFC London and WAFC Washington.
+#  Abstract: This utility script produces the WAFS GRIB2. The output
+#            grib2 files pushed via dbnet to TOC to WAFS (ICSC).
+#            This is a joint project of WAFC London and WAFC Washington.
 #
 #             We are processing WAFS grib2 for fhr from 06 - 36
 #             with 3-hour time increment.
 #
-# History:  08/20/2014
+#             AWF is processed through fhr=72
+#
+#  History: 08/xx/2009 - First implementation
+#           08/20/2014
 #              - ingest master file in grib2 (or grib1 if grib2 fails)
 #              - output of icng tcld cat cb are in grib2
-#           02/21/2020
+#            02/21/2020
 #              - Prepare unblended icing severity and GTG tubulence
 #                for blending at 0.25 degree
-#           02/22/2022
-#              - Add grib2 data requested by FAA
+#            10/xx/2021 - Remove jlogfile
+#            02/22/2022
+#              - Add grib2 AWF data requested by FAA
 #              - Stop generating grib1 data for WAFS
+#            09/08/2024 - WAFS separation
+#              - Filename changes according to EE2 standard except for files sent to UK
+#              - dbn_alert subtype is changed from gfs to WAFS
+#              - Fix bugzilla 1213: Filename should use fHHH instead of FHH
 #####################################################################
 
 set -x
@@ -61,7 +68,7 @@ ${WGRIB2} "tmpfile_wafsf${fhr}" \
     -new_grid latlon 0:288:1.25 90:145:-1.25 "${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2"
 ${WGRIB2} -s "${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2" >"${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2.idx"
 
-# WMO header (This header is different from WAFS)
+# For FAA, add WMO header. The header is different from WAFS
 cpreq "${FIXwafs}/wafs/grib2_gfs_awff${fhr}.45" gfs_wmo_header45
 
 export pgm="${TOCGRIB2}"
@@ -71,8 +78,6 @@ export pgm="${TOCGRIB2}"
 export FORT11="${RUN}.t${cyc}z.awf_grid45.f${fhr}.grib2"
 export FORT31=" "
 export FORT51="grib2.wafs.t${cyc}z.awf_grid45.f${fhr}"
-
-# For FAA, add WMO header. The header is different from WAFS
 ${TOCGRIB2} <gfs_wmo_header45 >>"${pgmout}" 2>errfile
 export err=$?
 err_chk
@@ -104,7 +109,7 @@ if [[ "${wafs_timewindow}" == "YES" ]]; then
         -new_grid latlon 0:288:1.25 90:145:-1.25 "gfs.t${cyc}z.wafs_grb45f${fhr}.grib2"
     ${WGRIB2} -s "gfs.t${cyc}z.wafs_grb45f${fhr}.grib2" >"gfs.t${cyc}z.wafs_grb45f${fhr}.grib2.idx"
 
-    # WMO header
+    # For WAFS, add WMO header. Processing WAFS GRIB2 grid 45 for ISCS and WIFS
     cpreq "${FIXwafs}/wafs/grib2_wafsf${fhr}.45" wafs_wmo_header45
 
     export pgm="${TOCGRIB2}"
@@ -114,8 +119,6 @@ if [[ "${wafs_timewindow}" == "YES" ]]; then
     export FORT11="gfs.t${cyc}z.wafs_grb45f${fhr}.grib2"
     export FORT31=" "
     export FORT51="grib2.wafs.t${cyc}z.grid45.f${fhr}"
-
-    # For WAFS, add WMO header. Processing WAFS GRIB2 grid 45 for ISCS and WIFS
     ${TOCGRIB2} <wafs_wmo_header45 >>"${pgmout}" 2>errfile
     export err=$?
     err_chk

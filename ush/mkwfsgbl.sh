@@ -1,5 +1,6 @@
 #!/bin/bash
 
+################################################################################
 #  UTILITY SCRIPT NAME :  mkwfsgbl.sh
 #               AUTHOR :  Mary Jacobs
 #         DATE WRITTEN :  11/06/96
@@ -21,6 +22,7 @@
 #                         - Allows users to run interactively"
 #            SEP     2007 - BAG - Put in fix on 20070925 to force the percision of U and V winds
 #                           to default to 1 through the use of the grib_wafs.namelist file.
+################################################################################
 
 set -x
 

@@ -13,11 +13,11 @@
 #              added variable of the a or b in the process accordingly.
 #              The other fhrs, the a or b  is dropped.
 #
-#   History: Oct 2004 - First implementation of this new script."
-#            Aug 2015 - Modified for Phase II"
-#            Dec 2015 - Modified for input model data in Grib2"
-#            Oct 2021 - Remove jlogfile"
-#            May 2024 - WAFS separation"
+#   History:  Oct 2004 - First implementation of this new script."
+#             Aug 2015 - Modified for Phase II"
+#             Dec 2015 - Modified for input model data in Grib2"
+#             Oct 2021 - Remove jlogfile"
+#             May 2024 - WAFS separation"
 #####################################################################
 
 set -x

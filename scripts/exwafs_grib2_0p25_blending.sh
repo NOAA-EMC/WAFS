@@ -1,24 +1,43 @@
 #!/bin/bash
 
 ################################################################################
-####  UNIX Script Documentation Block
-#                      .                                             .
-# Script name:         exwafs_grib2_0p25_blending.sh
-# Script description:  This scripts looks for US and UK WAFS Grib2 products at 1/4 deg,
-# wait for specified period of time. If both WAFS data are available.
-# Otherwise, the job aborts with error massage
+#  UTILITY SCRIPT NAME :  exwafs_grib2_0p25_blending.sh
+#         DATE WRITTEN :  04/02/2020
 #
-# Author:        Y Mao       Org: EMC         Date: 2020-04-02
+#  Abstract:  This script looks for US and UK WAFS Grib2 products at 1/4 deg,
+#             waits unblended UK data for specified period of time, and blends
+#             whenever UK data becomes available. After the waiting time window
+#             expires, the script sends out US data only if UK data doesn't arrive
 #
-# Script history log:
-# 2020-04-02 Y Mao
-# Oct 2021 - Remove jlogfile
-# 2022-05-25 | Y Mao | Add ICAO new milestone Nov 2023
-# May 2024 - WAFS separation
+#  History:  04/02/2020 - First implementation of this new script
+#            10/xx/2021 - Remove jlogfile
+#            05/25/2022 - Add ICAO new milestone Nov 2023
+#            09/08/2024 - WAFS separation
+#              - Filename changes according to EE2 standard except for files sent to UK
+#              - dbn_alert subtype is changed from gfs to WAFS
+#              - Fix bugzilla 1213: Filename should use fHHH instead of FHH.
+#              - Parallel run for each forecast hour, changed from sequential run.
+#              - Fix bugzilla 1593: Improve email notification for missing UK WAFS data.
+#              - Extend waiting time window from 15 to 25 minutes
 ################################################################################
 
 set -x
 
+cd "${DATA}" || err_exit "FATAL ERROR: Could not 'cd ${DATA}'; ABORT!"
+
+SEND_US_WAFS="NO"
+SEND_UK_WAFS="NO"
+##########################
+# look for US WAFS data
+##########################
+if [[ ! -s "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" ]]; then
+    echo "Not found US WAFS GRIB2 file '${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2', continue ..."
+    SEND_UK_WAFS="YES"
+fi
+
+##########################
+# look for UK WAFS data.
+##########################
 ###############################################
 # Specify Timeout Behavior for WAFS blending
 ###############################################
@@ -26,33 +45,8 @@ set -x
 # SLEEP_INT  - Amount of time (secs) to wait between checking for input files
 SLEEP_TIME=${SLEEP_TIME:-1200}
 SLEEP_INT=${SLEEP_INT:-10}
-
 SLEEP_LOOP_MAX=$((SLEEP_TIME / SLEEP_INT))
 
-cd "${DATA}" || err_exit "FATAL ERROR: Could not 'cd ${DATA}'; ABORT!"
-
-##########################
-# look for US WAFS data
-##########################
-SEND_US_WAFS="NO"
-for ((ic = 1; ic <= SLEEP_LOOP_MAX; ic++)); do
-    if [[ -s "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" ]]; then
-        echo "Found US WAFS GRIB2 file '${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2', continue ..."
-        break
-    fi
-    if ((ic == SLEEP_LOOP_MAX)); then
-        echo "WARNING: US WAFS GRIB2 file '${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2' not found after waiting over ${SLEEP_TIME} seconds, exiting"
-        SEND_UK_WAFS="YES"
-        break
-    else
-        sleep "${SLEEP_INT}"
-    fi
-done
-
-##########################
-# look for UK WAFS data.
-##########################
-SEND_UK_WAFS="NO"
 for ((ic = 1; ic <= SLEEP_LOOP_MAX; ic++)); do
     # Three(3) unblended UK files for each cycle+fhour: icing, turb, cb
     ukfiles=$(find "${COMINuk}" -name "egrr_wafshzds_unblended_*_0p25_${PDY:0:4}-${PDY:4:2}-${PDY:6:2}T${cyc}:00Z_t${fhr}.grib2" | wc -l)
@@ -126,9 +120,6 @@ fi
 # Data dissemination
 ##########################
 
-SEND_AWC_US_ALERT="NO"
-SEND_AWC_UK_ALERT="NO"
-
 # Set up mailing list
 if [[ "${envir}" != "prod" ]]; then
     maillist="nco.spa@noaa.gov"
@@ -139,7 +130,7 @@ if [[ "${SEND_US_WAFS}" == "YES" ]]; then
 
     #  checking any US WAFS product was sent due to No UK WAFS GRIB2 file or WAFS blending program
     #  (Alert once for each forecast hour)
-    if [[ "${SEND_AWC_US_ALERT}" == "NO" ]]; then
+    if [[ ! -f ${COMOUTwmo}/wifs_0p25_admin_msg ]]; then
         echo "WARNING: Missing UK data for WAFS GRIB2 0P25 blending. Send alert message to AWC ......"
         make_NTC_file.pl NOXX10 KKCI "${PDY}${cyc}" NONE "${FIXwafs}/wafs/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/wifs_0p25_admin_msg"
         make_NTC_file.pl NOXX10 KWBC "${PDY}${cyc}" NONE "${FIXwafs}/wafs/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/iscs_0p25_admin_msg"
@@ -159,8 +150,6 @@ if [[ "${SEND_US_WAFS}" == "YES" ]]; then
         echo >>mailmsg
         cat mailmsg >"${COMOUT}/${RUN}.t${cyc}z.f${fhr}.wafs_blend_0p25_usonly.emailbody"
         cat "${COMOUT}/${RUN}.t${cyc}z.f${fhr}.wafs_blend_0p25_usonly.emailbody" | mail.py -s "${subject}" "${maillist}" -v
-
-        SEND_AWC_US_ALERT="YES"
     fi
 
     # Distribute US WAFS unblend Data to NCEP FTP Server (WOC) and TOC
@@ -173,13 +162,11 @@ if [[ "${SEND_US_WAFS}" == "YES" ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_UBL_GB2_WIDX "${job}" "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2.idx"
     fi
 
-    SEND_US_WAFS="NO"
-
 elif [[ "${SEND_UK_WAFS}" == "YES" ]]; then
 
     #  checking any UK WAFS product was sent due to No US WAFS GRIB2 file
     #  (Alert once for each forecast hour)
-    if [[ "${SEND_AWC_UK_ALERT}" == "NO" ]]; then
+    if [[ ! -f ${COMOUTwmo}/wifs_0p25_admin_msg ]]; then
         echo "WARNING: Missing US data for WAFS GRIB2 0P25 blending. Send alert message to AWC ......"
         make_NTC_file.pl NOXX10 KKCI "${PDY}${cyc}" NONE "${FIXwafs}/wafs/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/wifs_0p25_admin_msg"
         make_NTC_file.pl NOXX10 KWBC "${PDY}${cyc}" NONE "${FIXwafs}/wafs/wafs_blending_0p25_admin_msg" "${COMOUTwmo}/iscs_0p25_admin_msg"
@@ -200,7 +187,6 @@ elif [[ "${SEND_UK_WAFS}" == "YES" ]]; then
         cat mailmsg >"${COMOUT}/${RUN}.t${cyc}z.f${fhr}.wafs_blend_0p25_ukonly.emailbody"
         cat "${COMOUT}/${RUN}.t${cyc}z.f${fhr}.wafs_blend_0p25_ukonly.emailbody" | mail.py -s "${subject}" "${maillist}" -v
 
-        SEND_AWC_UK_ALERT="YES"
     fi
     #   Distribute UK WAFS unblend Data to NCEP FTP Server (WOC) and TOC
     echo "altering the unblended UK WAFS products - EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${fhr}.grib2"
@@ -208,8 +194,6 @@ elif [[ "${SEND_UK_WAFS}" == "YES" ]]; then
     if [[ "${SENDDBN}" == "YES" ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL WAFS_UKMET_0P25_UBL_GB2 "${job}" "EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${fhr}.grib2"
     fi
-
-    SEND_UK_WAFS="NO"
 
 else
     # Distribute US WAFS unblend Data to NCEP FTP Server (WOC) and TOC
