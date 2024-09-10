@@ -73,8 +73,17 @@ if [[ "${hazard_timewindow}" == "YES" ]]; then
     criteria1=":EDPARM:|:ICESEV:|parm=37:"
     criteria2=":CATEDR:|:MWTURB:"
     criteria3=":CBHE:|:ICAHT:"
-    ${WGRIB2} tmp_wafs_0p25.grb2 | grep -E "${criteria1}|$criteria2|$criteria3" |
-        ${WGRIB2} -i tmp_wafs_0p25.grb2 -grib "${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2"
+    if ((ifhr > 36 )); then
+	extra_levels1=":977.2 mb:|:908.1 mb:|:127.7 mb:"
+	extra_levels2=":EDPARM:812 mb:|:CATEDR:812 mb:|:MWTURB:812 mb:"
+	extra_levels3=":EDPARM:724.3 mb:|:CATEDR:724.3 mb:|:MWTURB:724.3 mb:"
+	${WGRIB2} tmp_wafs_0p25.grb2 | grep -E "$criteria1|$criteria2|$criteria3" |
+	    grep -Ev "$extra_levels1|$extra_levels2|$extra_levels3" |
+            ${WGRIB2} -i tmp_wafs_0p25.grb2 -grib "${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2"
+    else
+	${WGRIB2} tmp_wafs_0p25.grb2 | grep -E "${criteria1}|$criteria2|$criteria3" |
+            ${WGRIB2} -i tmp_wafs_0p25.grb2 -grib "${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2"
+    fi
     ${WGRIB2} -s "${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2" >"${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2.idx"
 
     #---------------------------
