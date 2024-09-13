@@ -3,7 +3,7 @@
 #PBS -j oe
 #PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib2_0p25_blending
 #PBS -N wafs_blending_0p25
-#PBS -l walltime=00:25:00
+#PBS -l walltime=00:30:00
 #PBS -l select=1:ncpus=1
 #PBS -q debug
 #PBS -l debug=true
