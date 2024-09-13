@@ -21,7 +21,7 @@
 #              - Filename changes according to EE2 standard except for files sent to UK
 #              - dbn_alert subtype is changed from gfs to WAFS
 #              - Fix bugzilla 1213: Filename should use fHHH instead of FHH
-#              - Add additional levels of icing and turbulence to AWF files
+#              - Add additional levels of icing and turbulence to AWF files fhr<=36
 #####################################################################
 
 set -x
@@ -73,12 +73,10 @@ if [[ "${hazard_timewindow}" == "YES" ]]; then
     criteria1=":EDPARM:|:ICESEV:|parm=37:"
     criteria2=":CATEDR:|:MWTURB:"
     criteria3=":CBHE:|:ICAHT:"
+    # AWC requests additional low levels of icing and high level of turbulence if fhr<=36
     if ((ifhr > 36 )); then
-	extra_levels1=":977.2 mb:|:908.1 mb:|:127.7 mb:"
-	extra_levels2=":EDPARM:812 mb:|:CATEDR:812 mb:|:MWTURB:812 mb:"
-	extra_levels3=":EDPARM:724.3 mb:|:CATEDR:724.3 mb:|:MWTURB:724.3 mb:"
-	${WGRIB2} tmp_wafs_0p25.grb2 | grep -E "$criteria1|$criteria2|$criteria3" |
-	    grep -Ev "$extra_levels1|$extra_levels2|$extra_levels3" |
+	extra_levels=":977.2 mb:|:942.1 mb:|:908.1 mb:|:875.1 mb:|:127.7 mb:"
+	${WGRIB2} tmp_wafs_0p25.grb2 | grep -E "$criteria1|$criteria2|$criteria3" | grep -Ev "$extra_levels" |
             ${WGRIB2} -i tmp_wafs_0p25.grb2 -grib "${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2"
     else
 	${WGRIB2} tmp_wafs_0p25.grb2 | grep -E "${criteria1}|$criteria2|$criteria3" |
@@ -119,7 +117,7 @@ if [[ "${SENDDBN}" == "YES" ]]; then
 
     if [[ "${hazard_timewindow}" == "YES" ]]; then
         # Hazard WAFS data (ICESEV EDR CAT MWT on 100mb to 1000mb or on new ICAO levels) sent to AWC and to NOMADS for US stakeholders
-        "${DBNROOT}/bin/dbn_alert" MODEL WAFS_AWF.0P25_GB2 "${job}" "${COMOUT}/${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2"
+        "${DBNROOT}/bin/dbn_alert" MODEL WAFS_AWF_0P25_GB2 "${job}" "${COMOUT}/${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2"
 
         # Unblended US WAFS data sent to UK for blending, to the same server as 1.25 deg unblended data: wmo/grib2.tCCz.wafs_grb_wifsfFF.45
         "${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_UBL_GB2 "${job}" "${COMOUT}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2"
