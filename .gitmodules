@@ -1,5 +1,5 @@
 [submodule "sorc/wafs_upp.fd"]
   path = sorc/wafs_upp.fd
   url = https://github.com/NOAA-EMC/UPP
-  branch = release/wafs_v7
+  branch = upp_wafs_v7.0.0
   ignore = dirty
