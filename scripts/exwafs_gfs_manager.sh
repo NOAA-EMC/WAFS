@@ -40,8 +40,8 @@ for ((iter = 1; iter <= MAX_ITER; iter++)); do
 
     # Trigger jobs based on GFS forecast output availability
     gfs_log="${COMINgfs}/gfs.t${cyc}z.logf${fhr3}.txt"
-    gfs_atm="${COMINgfs}/gfs.t${cyc}z.atmf${fhr3}.txt"
-    gfs_sfc="${COMINgfs}/gfs.t${cyc}z.sfcf${fhr3}.txt"
+    gfs_atm="${COMINgfs}/gfs.t${cyc}z.atmf${fhr3}.nc"
+    gfs_sfc="${COMINgfs}/gfs.t${cyc}z.sfcf${fhr3}.nc"
     gfs_grb="${COMINgfs}/gfs.t${cyc}z.master.grb2f${fhr3}"
     if [[ -s "${gfs_log}" ]] && [[ -s "${gfs_atm}" ]] && [[ -s "${gfs_sfc}" ]] && [[ -s "${gfs_grb}" ]]; then
 
