@@ -439,6 +439,7 @@ suite wafs@EXPID@
                 trigger ../../upp/jwafs_upp_f120 == complete
                 edit FHR 120
               family blending
+                trigger :TIME >= 0430 and :TIME < 1030
                 edit DCOMROOT '/lfs/h1/ops/dev/dcom/test'
                 task jwafs_grib2_0p25_blending_f006
                   trigger ../jwafs_grib2_0p25_f006 == complete
@@ -939,6 +940,7 @@ suite wafs@EXPID@
                 trigger ../../upp/jwafs_upp_f120 == complete
                 edit FHR 120
               family blending
+                trigger :TIME >= 1030 and :TIME < 1630
                 edit DCOMROOT '/lfs/h1/ops/dev/dcom/test'
                 task jwafs_grib2_0p25_blending_f006
                   trigger ../jwafs_grib2_0p25_f006 == complete
@@ -1439,6 +1441,7 @@ suite wafs@EXPID@
                 trigger ../../upp/jwafs_upp_f120 == complete
                 edit FHR 120
               family blending
+                trigger :TIME >= 1630 and :TIME < 2230
                 edit DCOMROOT '/lfs/h1/ops/dev/dcom/test'
                 task jwafs_grib2_0p25_blending_f006
                   trigger ../jwafs_grib2_0p25_f006 == complete
@@ -1939,6 +1942,7 @@ suite wafs@EXPID@
                 trigger ../../upp/jwafs_upp_f120 == complete
                 edit FHR 120
               family blending
+                trigger :TIME >= 2230
                 edit DCOMROOT '/lfs/h1/ops/dev/dcom/test'
                 task jwafs_grib2_0p25_blending_f006
                   trigger ../jwafs_grib2_0p25_f006 == complete
