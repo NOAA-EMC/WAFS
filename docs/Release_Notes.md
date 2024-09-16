@@ -63,7 +63,7 @@ Parm Changes
 1. Remove parm/wafs/legend
 2. parm/upp is created after system building. Per AWC request, WAFS UPP control files add 4 low levels for icing and 1 upper lower for turbulence:
    - postxconfig-NT-GFS-WAFS.txt
-   -  postcntrl_gfs_wafs.xml
+   - postcntrl_gfs_wafs.xml
 
 Script Changes
 --------------
