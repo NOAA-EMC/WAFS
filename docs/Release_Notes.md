@@ -76,7 +76,8 @@ First of all, filename changes according to EE2 standards:
  |   exwafs_grib2_0p25.sh          |<- exgfs_atmos_wafs_grib2_0p25.sh                            |
  |   exwafs_grib2_1p25.sh          |<- exgfs_atmos_wafs_grib2.sh                                 |
  |   exwafs_grib.sh                |<- exgfs_atmos_wafs_grib.sh                                  |
- |   exwafs_gfs_manager.sh (new)   |   exgfs_atmos_wafs_blending.sh (removed after cleaning up)  |
+|     |  exgfs_atmos_wafs_blending.sh (removed after cleaning up) |
+ |   exwafs_gfs_manager.sh (new)   |     |
  |   exwafs_upp.sh (new)           |                                                             |
 
 Additionally there are other changes:
