@@ -54,7 +54,8 @@ Filename changes according to EE2 standards:
  |   JWAFS_GRIB2_0P25          |<- JGFS_ATMOS_WAFS_GRIB2_0P25                           |
  |   JWAFS_GRIB2_0P25_BLENDING |<- JGFS_ATMOS_WAFS_BLENDING_0P25                        |
  |   JWAFS_GRIB2_1P25          |<- JGFS_ATMOS_WAFS_GRIB2                                |
- |   JWAFS_GFS_MANAGER (new)   |   JGFS_ATMOS_WAFS_BLENDING (removed after cleaning up) |
+ |         | JGFS_ATMOS_WAFS_BLENDING (removed after cleaning up) |
+  |   JWAFS_GFS_MANAGER (new)   |   |
  |   JWAFS_UPP         (new)   |                                                        |
 
 
