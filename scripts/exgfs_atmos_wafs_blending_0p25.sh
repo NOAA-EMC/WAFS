@@ -70,7 +70,8 @@ do
        fi
 
        if [ $ic_uk -eq $SLEEP_LOOP_MAX_UK ] ; then
-          echo "UK WAFS GRIB2 file  $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2  not found"
+          echo "UK WAFS GRIB2 file  $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 not found"
+          echo "One or more UK WAFS GRIB2 file  $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 not found. Skipping f${ffhr}..."  >> UK_missing
 	  echo "UK WAFS GRIB2 file " $COMINuk/EGRR_WAFS_0p25_*_unblended_${PDY}_${cyc}z_t${ffhr}.grib2 " not found"
           export SEND_US_WAFS=YES
 	  break
@@ -151,7 +152,7 @@ do
              if [ $envir != prod ]; then
 		 export maillist='nco.spa@noaa.gov'
              fi
-             export maillist=${maillist:-'nco.spa@noaa.gov,ncep.sos@noaa.gov'}
+             export maillist=${maillist:-'nco.spa@noaa.gov,ncep.sos@noaa.gov,nco.hpc.dataflow@noaa.gov'}
              export subject="WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending, $PDY t${cyc}z $job"
              echo "*************************************************************" > mailmsg
              echo "*** WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending ***" >> mailmsg
@@ -160,7 +161,7 @@ do
              echo "Send alert message to AWC ...... " >> mailmsg
              echo >> mailmsg
              cat mailmsg > $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_usonly.emailbody
-             cat $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_usonly.emailbody | mail.py -s "$subject" $maillist -v
+#             cat $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_usonly.emailbody | mail.py -s "$subject" $maillist -v
 
 	     export SEND_AWC_US_ALERT=YES
 	 fi
@@ -292,6 +293,25 @@ do
      fi
 
 done
+
+if [ -s UK_missing ]; then
+  if [ $envir != prod ]; then
+     export maillist='nco.spa@noaa.gov'
+  fi
+  export maillist=${maillist:-'nco.spa@noaa.gov,ncep.sos@noaa.gov,nco.hpc.dataflow@noaa.gov'}
+  export subject="WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending, $PDY t${cyc}z $job"
+  echo "*************************************************************" > mailmsg
+  echo "*** WARNING! No UK WAFS GRIB2 0P25 file for WAFS blending ***" >> mailmsg
+  echo "*************************************************************" >> mailmsg
+  echo >> mailmsg
+  echo "Send alert message to AWC ...... " >> mailmsg
+  echo >> mailmsg
+  cat UK_missing >> mailmsg
+  cat mailmsg > $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_usonly.emailbody
+  cat $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_usonly.emailbody | mail.py -s "$subject" $maillis
+t -v
+
+fi
 ################################################################################
 
 exit 0
