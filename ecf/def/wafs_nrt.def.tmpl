@@ -28,7 +28,6 @@ suite wafs@EXPID@
         family 00
           edit CYC '00'
           task jwafs_gfs_manager
-            #trigger  /00/gfs/jgfs_forecast == active or /00/gfs/jgfs_forecast == complete
             trigger :TIME >= 0335 and :TIME < 0935
             event 1 release_wafs_upp_anl  # upp
             event 2 release_wafs_upp_000
@@ -529,7 +528,6 @@ suite wafs@EXPID@
         family 06
           edit CYC '06'
           task jwafs_gfs_manager
-            #trigger  /06/gfs/jgfs_forecast == active or /06/gfs/jgfs_forecast == complete
             trigger :TIME >= 0935 and :TIME < 1535
             event 1 release_wafs_upp_anl  # upp
             event 2 release_wafs_upp_000
@@ -1030,7 +1028,6 @@ suite wafs@EXPID@
         family 12
           edit CYC '12'
           task jwafs_gfs_manager
-            #trigger  /12/gfs/jgfs_forecast == active or /12/gfs/jgfs_forecast == complete
             trigger :TIME >= 1535 and :TIME < 2135
             event 1 release_wafs_upp_anl  # upp
             event 2 release_wafs_upp_000
@@ -1531,7 +1528,6 @@ suite wafs@EXPID@
         family 18
           edit CYC '18'
           task jwafs_gfs_manager
-            #trigger  /18/gfs/jgfs_forecast == active or /18/gfs/jgfs_forecast == complete
             trigger :TIME >= 2135
             event 1 release_wafs_upp_anl  # upp
             event 2 release_wafs_upp_000
