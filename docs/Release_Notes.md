@@ -54,8 +54,8 @@ Filename changes according to EE2 standards:
  |   JWAFS_GRIB2_0P25          |<- JGFS_ATMOS_WAFS_GRIB2_0P25                           |
  |   JWAFS_GRIB2_0P25_BLENDING |<- JGFS_ATMOS_WAFS_BLENDING_0P25                        |
  |   JWAFS_GRIB2_1P25          |<- JGFS_ATMOS_WAFS_GRIB2                                |
- |         | JGFS_ATMOS_WAFS_BLENDING (removed after cleaning up) |
-  |   JWAFS_GFS_MANAGER (new)   |   |
+ |                             |   JGFS_ATMOS_WAFS_BLENDING (removed after cleaning up) |
+ |   JWAFS_GFS_MANAGER (new)   |                                                        |
  |   JWAFS_UPP         (new)   |                                                        |
 
 
@@ -76,8 +76,8 @@ First of all, filename changes according to EE2 standards:
  |   exwafs_grib2_0p25.sh          |<- exgfs_atmos_wafs_grib2_0p25.sh                            |
  |   exwafs_grib2_1p25.sh          |<- exgfs_atmos_wafs_grib2.sh                                 |
  |   exwafs_grib.sh                |<- exgfs_atmos_wafs_grib.sh                                  |
-|     |  exgfs_atmos_wafs_blending.sh (removed after cleaning up) |
- |   exwafs_gfs_manager.sh (new)   |     |
+ |                                 |   exgfs_atmos_wafs_blending.sh (removed after cleaning up)  |
+ |   exwafs_gfs_manager.sh (new)   |                                                             |
  |   exwafs_upp.sh (new)           |                                                             |
 
 Additionally there are other changes:
@@ -86,7 +86,7 @@ Additionally there are other changes:
 3. In ush/mkwfsgbl.sh: change input dependency from GFS pgrb2.1p00 to master file.
 4. Remove files under ush/ folder: wafs_blending.sh wafs_grib2.regrid.sh wafs_intdsk.sh
 
-
+docs/Release_Notes.md
 Fix Changes
 -----------
 1. Remove fix/wafs/legend folder
@@ -95,7 +95,7 @@ Fix Changes
    - grib2_gfs_wafs_wifs_fFF.0p25
    - grib_wafsgfs_intdsk
    - grib_wafsgfs_intdskf00   
-3. Under fix/wafs, filenames are changed according to EE2 standards.
+3. Under fix/wafs, filenames are changed.
    - faa_gfsmaster.grb2.list   → grib2_gfs_awf_master.list
    - gfs_master.grb2_0p25.list → grib2_0p25_gfs_master2d.list
    - gfs_wafs.grb2_0p25.list   → grib2_0p25_wafs_hazard.list
@@ -146,7 +146,21 @@ Product Changes
 * Filename changes
   * Renamed according to EE2 implementation standards
   * Exceptions: files sent to UK
-  * Refer to this document: https://docs.google.com/spreadsheets/d/1Nt343Z9x9UycweFik3HRFpXkqIjs7m20s15yGOhsgUY
+  * Details:
+  | GFSv16                                 | wafs.v7                                  |
+  | -------------------------------------- | ---------------------------------------- |
+  | gfs.tCCz.wafs.0p25.anl                 | wafs.tCCz.0p25.anl.grib2                 |
+  | gfs.tCCz.wafs.grb2fFFF                 | wafs.tCCz.master.fFFF.grib2              |
+  | gfs.tCCz.wafs_0p25_unblended.fFF.grib2 | WAFS_0p25_unblended_YYYYMMDDHHfFFF.grib2 |
+  | gfs.tCCz.awf_0p25.fFFF.grib2           | wafs.tCCz.awf.0p25.fFFF.grib2            |
+  | gfs.tCCz.awf_grb45fFF.grib2            | wafs.tCCz.awf_grid45.fFFF.grib2          |
+  | wmo/grib2.tCCz.awf_grbfFF.45           | wmo/grib2.wafs.tCCz.awf_grid45.fFFF      |
+  | gfs.tCCz.wafs_grb45fFF.grib2           | gfs.tCCz.wafs_grb45fFFF.grib2            |
+  | wmo/grib2.tCCz.wafs_grbfFF.45          | wmo/grib2.wafs.tCCz.grid45.fFFF          |
+  | gfs.tCCz.gcip.fFF.grib2                | wafs.tCCz.gcip.fFFF.grib2                |
+  | WAFS_0p25_blended_YYYYMMDDHHfFF.grib2  | WAFS_0p25_blended_ YYYYMMDDHHfFFF.grib2  |
+  
+
 * File content changes
   * Add EDPARM CATEDR MWTURB on 127.7 mb, ICESEV on 875.1 908.1 942.1 977.2 mb to:
     * wafs.tCCz.master.fFFF.grib2 when FFF<=048
@@ -155,14 +169,23 @@ Product Changes
 
 Dissemination Information
 -------------------------
-* Filename changes and dbn_alert subtype changes
-  * Refer to this document: https://docs.google.com/spreadsheets/d/1Nt343Z9x9UycweFik3HRFpXkqIjs7m20s15yGOhsgUY
+* dbn_alert subtype changes
+  |                                          | GFSv16                | wafs.v7           |
+  | ---------------------------------------- | --------------------- |------------------ |
+  | gfs.tCCz.wafs_0p25.fFFF.grib2            | GFS_WAFS_0P25_GB2     | WAFS_0P25_GB2     |
+  | WAFS_0p25_unblended_YYYYMMDDHHfFFF.grib2 | GFS_WAFS_0P25_UBL_GB2 | WAFS_0P25_UBL_GB2 |
+  | wafs.tCCz.awf.0p25.fFFF.grib2            | GFS_AWF_0P25_GB2      | WAFS_AWF_0P25_GB2 |
+  | wmo/grib2.wafs.tCCz.awf_grid45.fFFF      | gfs                   | wafs              |
+  | gfs.tCCz.wafs_grb45fFFF.grib2            | GFS_WAFS_1P25_GB2     | WAFS_1P25_GB2     |
+  | wmo/grib2.wafs.tCCz.grid45.fFFF          | gfs                   | wafs              |
+  | WAFS_0p25_blended_ YYYYMMDDHHfFFF.grib2  | GFS_WAFS_0P25_BL_GB2  | WAFS_0P25_BL_GB2  |
+
 * Where should this output be sent?
   * Same as current operations in GFS WAFS
 * Who are the users?
-  * Same as current operations WAFS users
+  * AWC, UK Met Office, SPC, and ICAO subscribed users
 * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
-  * Same as current operations in GFS WAFS
+  * All WAFS files should be transferred
 
 
 HPSS Archive
