@@ -118,8 +118,11 @@ Environment and Resource Changes
 --------------------------------
 1. Add ecFlow to WAFS package
 2. Add UPP as a WAFS component
-3. Get rid of MPMD, each forecast hour will be run in its own job card.
-4. WAFS_GRIB job dependency is changed from GFS pgrb2.1p00 to GFS master file
+3. Get rid of MPMD, each forecast hour will be run in its own job card. 
+4. WAFS_GRIB job dependency is changed from GFS pgrb2.1p00 to GFS master file.
+5. WAFS_GRIB2_0P25_BLENDING runtime decreases from 4 minutes to 0.5 minutes after switching from sequential to parallel run for each forecast hour
+6. Package increases from 33M to 288M (increase due to offline UPP source)
+7. According to EE2 standards, input data are copied to DATA work folder instead of being soft linked. For this reason, the overall DATA folder size rockets up to 709.6G from 39G
 
 Pre-implementation Testing Requirements
 ---------------------------------------
@@ -203,6 +206,7 @@ Job Dependencies and flow diagram
 Documentation
 -------------
 * WAFS.V7 Implementation Kick-off Meeting Slides https://docs.google.com/presentation/d/1yhdTfTHoBvV7K6jR2nfvkNAWn_eDJ2lTvDueRp9C89w
+* WAFSv7 products and dbn_alert: https://docs.google.com/spreadsheets/d/1Nt343Z9x9UycweFik3HRFpXkqIjs7m20s15yGOhsgUY
 
 
 Prepared By
