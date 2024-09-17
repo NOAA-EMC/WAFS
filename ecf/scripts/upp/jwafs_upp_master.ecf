@@ -56,4 +56,16 @@ fi
 
 %include <tail.h>
 %manual
+TASK: JWAFS_UPP
+
+PURPOSE: Triggered by JWAFS_GFS_MANAGER to produce WAFS master files, and trigger the following two jobs:
+  JWAFS_GRIB2_0P25
+  JWAFS_GRIB2_1P25
+
+This job will be triggered for each forecast hour by JWAFS_GFS_MANAGER once GFS forecast model output is available.
+Different from genearl UPP, this job will be with GTG to produce WAFS master files for its downstream jobs.
+This job will skip any intermediate forecast hour if the forecast model output is not available for that forecast hour
+
+TROUBLESHOOTING
+If this job fails, make sure GFS forecast model output is available and re-run this job for the failed forecast hour. To debug, make sure GTG related source code, scripts and parm files work correctly.
 %end

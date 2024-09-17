@@ -86,7 +86,6 @@ Additionally there are other changes:
 3. In ush/mkwfsgbl.sh: change input dependency from GFS pgrb2.1p00 to master file.
 4. Remove files under ush/ folder: wafs_blending.sh wafs_grib2.regrid.sh wafs_intdsk.sh
 
-docs/Release_Notes.md
 Fix Changes
 -----------
 1. Remove fix/wafs/legend folder
@@ -148,7 +147,7 @@ Product Changes
   * `gfs.tCCz.wafs_icao.grb2fFFF`
 * Filename changes
   * Renamed according to EE2 implementation standards
-  * Exceptions: files sent to UK
+  * Exceptions: files sent to UK keep the original names except forecast hour is changed to 3 digits
   * Details:
     | GFSv16                                 | wafs.v7                                  |
     | -------------------------------------- | ---------------------------------------- |
