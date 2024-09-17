@@ -52,4 +52,19 @@ fi
 
 %include <tail.h>
 %manual
+TASK: JWAFS_GCIP
+
+PURPOSE: Triggered by JWAFS_GFS_MANAGER to produce icing analysis. It needs observation data including:
+  Satellite data from $DCOMROOT/YYYYMMDD/mcidas, manditory
+  METAR dumped from BUFR by 'dumpjb', manditory
+  PIREP/ships/lightning data dumped from BUFR by 'dumpjb', optional
+  Radar data, optional
+
+This job will be triggered by time trigger at T+4:40
+This job will be triggered by JWAFS_GFS_MANAGER once GFS forecast model output, at F000 and F003 respectively, is available.
+This job will quit if satellite data is missing and/or no METAR data is dumped.
+This job will continue if radar data or PIREP/ships/lightning data is missing
+
+TROUBLESHOOTING
+This job may fail if the mandiory observation data (satellite and METAR) is missing. If the observation data becomes available, rebooting the job will work. It is ok for occasional failures.
 %end
