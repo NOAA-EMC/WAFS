@@ -147,18 +147,18 @@ Product Changes
   * Renamed according to EE2 implementation standards
   * Exceptions: files sent to UK
   * Details:
-  | GFSv16                                 | wafs.v7                                  |
-  | -------------------------------------- | ---------------------------------------- |
-  | gfs.tCCz.wafs.0p25.anl                 | wafs.tCCz.0p25.anl.grib2                 |
-  | gfs.tCCz.wafs.grb2fFFF                 | wafs.tCCz.master.fFFF.grib2              |
-  | gfs.tCCz.wafs_0p25_unblended.fFF.grib2 | WAFS_0p25_unblended_YYYYMMDDHHfFFF.grib2 |
-  | gfs.tCCz.awf_0p25.fFFF.grib2           | wafs.tCCz.awf.0p25.fFFF.grib2            |
-  | gfs.tCCz.awf_grb45fFF.grib2            | wafs.tCCz.awf_grid45.fFFF.grib2          |
-  | wmo/grib2.tCCz.awf_grbfFF.45           | wmo/grib2.wafs.tCCz.awf_grid45.fFFF      |
-  | gfs.tCCz.wafs_grb45fFF.grib2           | gfs.tCCz.wafs_grb45fFFF.grib2            |
-  | wmo/grib2.tCCz.wafs_grbfFF.45          | wmo/grib2.wafs.tCCz.grid45.fFFF          |
-  | gfs.tCCz.gcip.fFF.grib2                | wafs.tCCz.gcip.fFFF.grib2                |
-  | WAFS_0p25_blended_YYYYMMDDHHfFF.grib2  | WAFS_0p25_blended_ YYYYMMDDHHfFFF.grib2  |
+    | GFSv16                                 | wafs.v7                                  |
+    | -------------------------------------- | ---------------------------------------- |
+    | gfs.tCCz.wafs.0p25.anl                 | wafs.tCCz.0p25.anl.grib2                 |
+    | gfs.tCCz.wafs.grb2fFFF                 | wafs.tCCz.master.fFFF.grib2              |
+    | gfs.tCCz.wafs_0p25_unblended.fFF.grib2 | WAFS_0p25_unblended_YYYYMMDDHHfFFF.grib2 |
+    | gfs.tCCz.awf_0p25.fFFF.grib2           | wafs.tCCz.awf.0p25.fFFF.grib2            |
+    | gfs.tCCz.awf_grb45fFF.grib2            | wafs.tCCz.awf_grid45.fFFF.grib2          |
+    | wmo/grib2.tCCz.awf_grbfFF.45           | wmo/grib2.wafs.tCCz.awf_grid45.fFFF      |
+    | gfs.tCCz.wafs_grb45fFF.grib2           | gfs.tCCz.wafs_grb45fFFF.grib2            |
+    | wmo/grib2.tCCz.wafs_grbfFF.45          | wmo/grib2.wafs.tCCz.grid45.fFFF          |
+    | gfs.tCCz.gcip.fFF.grib2                | wafs.tCCz.gcip.fFFF.grib2                |
+    | WAFS_0p25_blended_YYYYMMDDHHfFF.grib2  | WAFS_0p25_blended_ YYYYMMDDHHfFFF.grib2  |
   
 
 * File content changes
@@ -196,8 +196,8 @@ HPSS Archive
 
 Job Dependencies and flow diagram
 ---------------------------------
-* Refer to this document: https://docs.google.com/spreadsheets/d/1Nt343Z9x9UycweFik3HRFpXkqIjs7m20s15yGOhsgUY/edit?gid=1172497604#gid=1172497604
-* Refer to page 6 in this document: https://docs.google.com/presentation/d/1yhdTfTHoBvV7K6jR2nfvkNAWn_eDJ2lTvDueRp9C89w/edit#slide=id.g2eeab8aa817_0_0
+* Job dependencies refers to this document: https://docs.google.com/spreadsheets/d/1Nt343Z9x9UycweFik3HRFpXkqIjs7m20s15yGOhsgUY/edit?gid=1172497604#gid=1172497604
+* Flow diagram refer to page 6 in this document: https://docs.google.com/presentation/d/1yhdTfTHoBvV7K6jR2nfvkNAWn_eDJ2lTvDueRp9C89w/edit#slide=id.g2eeab8aa817_0_0
 
 
 Documentation
