@@ -16,10 +16,11 @@ set -x
 gfs_fhrs=$(seq -s ' ' 0 1 120)
 
 # Forecast hours for JWAFS_UPP
-seq1=$(seq -s ' ' 0 1 24)   # 000 -> 024; 1-hourly
+seq0="0"                    # 000
+seq1=$(seq -s ' ' 6 1 24)   # 006 -> 024; 1-hourly
 seq2=$(seq -s ' ' 27 3 48)  # 027 -> 048; 3-hourly
 seq3=$(seq -s ' ' 54 6 120) # 054 -> 120; 6-hourly
-jwafs_upp_fhrs="${seq1} ${seq2} ${seq3}"
+jwafs_upp_fhrs="${seq0} ${seq1} ${seq2} ${seq3}"
 
 # Forecast hours for JWAFS_GRIB
 seq1=$(seq -s ' ' 12 6 48) # 012 -> 048; 6-hourly

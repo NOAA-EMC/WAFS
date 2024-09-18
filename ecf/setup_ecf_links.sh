@@ -40,10 +40,11 @@ rm -f jwafs_upp_anl.ecf
 if [[ "${CLEAN}" != "YES" ]]; then
   ln -sf jwafs_upp_master.ecf jwafs_upp_anl.ecf
 fi
-seq1=$(seq -s ' ' 0 1 24)   # 000 -> 024; 1-hourly
+seq0="0"                    # 000
+seq1=$(seq -s ' ' 6 1 24)   # 006 -> 024; 1-hourly
 seq2=$(seq -s ' ' 27 3 48)  # 027 -> 048; 3-hourly
 seq3=$(seq -s ' ' 54 6 120) # 054 -> 120; 6-hourly
-fhrs="${seq1} ${seq2} ${seq3}"
+fhrs="${seq0} ${seq1} ${seq2} ${seq3}"
 link_master_to_fhr "jwafs_upp" "${fhrs}" "${CLEAN}"
 
 # JWAFS_GRIB2
