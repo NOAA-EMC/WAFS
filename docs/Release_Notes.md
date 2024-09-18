@@ -110,7 +110,7 @@ No change
 
 Changes to File Sizes
 ---------------------
-* UPP: increased by 40G (new, moved from GFS to WAFS)
+* UPP: increased by 35G (new, moved from GFS to WAFS)
 * GRIB2_0P25: increased by 0.1G
 
 Environment and Resource Changes
@@ -145,6 +145,7 @@ Product Changes
     * |-------- blending
 * Files to be retired
   * `gfs.tCCz.wafs_icao.grb2fFFF`
+  * wafs.tCCz.master.fFFF.grib2 where FFF is from 001 to 005
 * Filename changes
   * Renamed according to EE2 implementation standards
   * Exceptions: files sent to UK keep the original names except forecast hour is changed to 3 digits
