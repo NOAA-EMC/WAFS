@@ -27,7 +27,7 @@ suite wafs@EXPID@
       family @MODELVER@
         family 00
           edit CYC '00'
-            task jwafs_gfs_manager
+          task jwafs_gfs_manager
             trigger :TIME >= 0335 and :TIME < 0935
             event 1 release_wafs_upp_anl  # upp
             event 2 release_wafs_upp_000
@@ -508,7 +508,7 @@ suite wafs@EXPID@
         endfamily  # endfamily 00
         family 06
           edit CYC '06'
-            task jwafs_gfs_manager
+          task jwafs_gfs_manager
             trigger :TIME >= 0935 and :TIME < 1535
             event 1 release_wafs_upp_anl  # upp
             event 2 release_wafs_upp_000
@@ -989,7 +989,7 @@ suite wafs@EXPID@
         endfamily  # endfamily 06
         family 12
           edit CYC '12'
-            task jwafs_gfs_manager
+          task jwafs_gfs_manager
             trigger :TIME >= 1535 and :TIME < 2135
             event 1 release_wafs_upp_anl  # upp
             event 2 release_wafs_upp_000
@@ -1470,7 +1470,7 @@ suite wafs@EXPID@
         endfamily  # endfamily 12
         family 18
           edit CYC '18'
-            task jwafs_gfs_manager
+          task jwafs_gfs_manager
             trigger :TIME >= 2135
             event 1 release_wafs_upp_anl  # upp
             event 2 release_wafs_upp_000
