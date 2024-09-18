@@ -145,6 +145,7 @@ Product Changes
     * |-------- blending
 * Files to be retired
   * `gfs.tCCz.wafs_icao.grb2fFFF`
+  * wafs.tCCz.master.fFFF.grib2 where FFF is from 001 to 005
 * Filename changes
   * Renamed according to EE2 implementation standards
   * Exceptions: files sent to UK keep the original names except forecast hour is changed to 3 digits
