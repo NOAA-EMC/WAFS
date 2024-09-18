@@ -110,7 +110,7 @@ No change
 
 Changes to File Sizes
 ---------------------
-* UPP: increased by 40G (new, moved from GFS to WAFS)
+* UPP: increased by 35G (new, moved from GFS to WAFS)
 * GRIB2_0P25: increased by 0.1G
 
 Environment and Resource Changes
