@@ -64,6 +64,7 @@ PURPOSE: Triggered by JWAFS_GFS_MANAGER to produce WAFS master files, and trigge
 
 This job will be triggered for each forecast hour by JWAFS_GFS_MANAGER once GFS forecast model output is available.
 Different from genearl UPP, this job will be with GTG to produce WAFS master files for its downstream jobs.
+This job will use different control files for forecast hour [000-048] and [054-120], so forecast products are different. forecast hour [000-048] contains icing and turublence, while [054-120] doesn't.
 This job will skip any intermediate forecast hour if the forecast model output is not available for that forecast hour
 
 TROUBLESHOOTING
