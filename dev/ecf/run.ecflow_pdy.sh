@@ -6,20 +6,24 @@
 # 1. ecflow_server has been started
 # 2. ecflow_server is started on either cdecflow01 or ddecflow01
 #
-# What the script will do:
-# 1. Follow the instructions from dev/ecf/setup_ecf.sh and creates a suite definition file for real time parallel run
+# What the script will do for a PDYcyc:
+# 1. Follow the instructions from dev/ecf/setup_ecf.sh and creates a suite definition file for a PDYcyc
 # 2. Load the suite def file to the ecflow_server which was started already
-# 3. Begin parallel run of the suite in real time
+# 3. Begin ecflow for a PDYcyc
 
 set -eu
+
+echo "Usage: ./setup_ecf.sh [PDYcyc]"
+
+PDYcyc=${1:-$(date --utc "+%Y%m%d")00}
 
 # Get the root of the script
 readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/../.." && pwd -P)
 cd $DIR_ROOT/dev/ecf
 # create a suite def file in real time
-./setup_ecf.sh -x x001
+./setup_ecf.sh -d $PDYcyc -x xPDY
 
-suitename="wafsx001"
+suitename="wafsxPDY"
 
 # set ECF_HOST according to which WCOSS2 machine
 if [[ $(hostname) =~ ^[d][login|dxfer] ]]  ; then

@@ -85,6 +85,7 @@ ecflow_client --begin wafs
 
 `qstat -u $USER`                     To check any job is running, including triggered by a loaded suite
 
+`ecflow_client --replace=/yoursuite1 $PWD/yoursuite2.def` To load a new suite if not loaded, otherwise replace the suite
 
 ## Additional Resources
 For more information on using ecflow, refer to the official [documentation](https://ecflow.readthedocs.io/en/latest/overview.html)
