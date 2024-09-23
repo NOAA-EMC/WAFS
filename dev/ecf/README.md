@@ -76,9 +76,13 @@ ecflow_client --begin wafs
 
 ## Some useful commands
 `ecflow_client --stats`              To check the status of ecflow_server: HALTED/RUNNING
+
 `ecflow_client --restart`            To start ecflow_server if it is HALTED
+
 `ecflow_client --delete=/yoursuite`  To delete a suite which was previously loaded
+
 `ecflow_stop.sh -p NNNNN`            To stop ecflow_server, where NNNNN is a port number assigned to the ecflow_server
+
 `qstat -u $USER`                     To check any job is running, including triggered by a loaded suite
 
 
