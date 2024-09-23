@@ -85,6 +85,7 @@ Additionally there are other changes:
 2. In exwafs_grib2_0p25.sh, only include fields at the extra levels when forecast hour is between 06 and 36 per AWC request
 3. In ush/mkwfsgbl.sh: change input dependency from GFS pgrb2.1p00 to master file.
 4. Remove files under ush/ folder: wafs_blending.sh wafs_grib2.regrid.sh wafs_intdsk.sh
+5. In exwafs_grib2_0p25_blending.sh, remove the condition of sending UK unblended data if US unblended data is missing. It won't happen because the job itself won't get triggered if US unblended data is missing
 
 Fix Changes
 -----------
@@ -146,6 +147,8 @@ Product Changes
 * Files to be retired
   * `gfs.tCCz.wafs_icao.grb2fFFF`
   * wafs.tCCz.master.fFFF.grib2 where FFF is from 001 to 005
+* File changes
+  * For WAFS blending when UK data is missing at multiple forecast hours, multiple files wafs.tCCz.fFFF.wafs_blend_0p25_usonly.emailbody for each forecast hour will replace one single file gfs.tCCz.wafs_blend_0p25_usonly.emailbody for the whole cycle.
 * Filename changes
   * Renamed according to EE2 implementation standards
   * Exceptions: files sent to UK keep the original names except forecast hour is changed to 3 digits
