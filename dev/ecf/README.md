@@ -13,7 +13,7 @@ This will create a suite definition file called `wafs.def` in the `ecf/def` dire
 ## Starting `ecflow_server`
 `ecflow_server` can only be started on dedicated ecflow server nodes.  On WCOSS2, the ecflow server nodes for development are:
 - `cdecflow01`, `cdecflow02` (cactus)
-- `ddcflow01`, `ddcflow02` (dogwood)
+- `ddecflow01`, `ddecflow02` (dogwood)
 
 `ssh` to one of the above ecflow server nodes (e.g. `cdecflow01`).
 ```bash
@@ -53,7 +53,7 @@ export ECF_HOST="cdecflow01"  # This is the hostname on which the `ecflow_server
 
 Check to ensure the `ecflow_client` can ping the `ecflow_server`:
 ```bash
-`ecflow_client --ping`
+ecflow_client --ping
 ```
 
 If this is successful, one can launch the `ecflow_ui` and place it in the background.
@@ -73,6 +73,19 @@ To begin running the suite, use the following command:
 ```bash
 ecflow_client --begin wafs
 ```
+
+## Some useful commands
+`ecflow_client --stats`              To check the status of ecflow_server: HALTED/RUNNING
+
+`ecflow_client --restart`            To start ecflow_server if it is HALTED
+
+`ecflow_client --delete=/yoursuite`  To delete a suite which was previously loaded
+
+`ecflow_stop.sh -p NNNNN`            To stop ecflow_server, where NNNNN is a port number assigned to the ecflow_server
+
+`qstat -u $USER`                     To check any job is running, including triggered by a loaded suite
+
+`ecflow_client --replace=/yoursuite1 $PWD/yoursuite2.def` To load a new suite if not loaded, otherwise replace the suite
 
 ## Additional Resources
 For more information on using ecflow, refer to the official [documentation](https://ecflow.readthedocs.io/en/latest/overview.html)
