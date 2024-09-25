@@ -308,8 +308,7 @@ if [ -s UK_missing ]; then
   echo >> mailmsg
   cat UK_missing >> mailmsg
   cat mailmsg > $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_usonly.emailbody
-  cat $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_usonly.emailbody | mail.py -s "$subject" $maillis
-t -v
+  cat $COMOUT/${RUN}.t${cyc}z.wafs_blend_0p25_usonly.emailbody | mail.py -s "$subject" $maillist -v
 
 fi
 ################################################################################
