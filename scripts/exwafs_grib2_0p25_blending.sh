@@ -98,13 +98,6 @@ fi
 ##########################
 # Data dissemination
 ##########################
-
-# Set up mailing list
-if [[ "${envir}" != "prod" ]]; then
-    maillist="nco.spa@noaa.gov"
-fi
-maillist=${maillist:-"nco.spa@noaa.gov,ncep.sos@noaa.gov,nco.hpc.dataflow@noaa.gov"}
-
 if [[ "${SEND_UNBLENDED_US_WAFS}" == "YES" ]]; then
 
     #  checking any US WAFS product was sent due to No UK WAFS GRIB2 file or WAFS blending program
@@ -131,7 +124,7 @@ if [[ "${SEND_UNBLENDED_US_WAFS}" == "YES" ]]; then
     cat missing_uk_files >>mailmsg
     echo "Skipping t${cyc}z f${fhr}..." >>mailmsg    
     cat mailmsg >"${COMOUT}/${RUN}.t${cyc}z.f${fhr}.wafs_blend_0p25_usonly.emailbody"
-    cat "${COMOUT}/${RUN}.t${cyc}z.f${fhr}.wafs_blend_0p25_usonly.emailbody" | mail.py -s "${subject}" "${maillist}" -v
+    cat "${COMOUT}/${RUN}.t${cyc}z.f${fhr}.wafs_blend_0p25_usonly.emailbody" | mail.py -s "${subject}" "${MAILTO}" -v
 
     # Distribute US WAFS unblend Data to NCEP FTP Server (WOC) and TOC
     echo "altering the unblended US WAFS products:"
