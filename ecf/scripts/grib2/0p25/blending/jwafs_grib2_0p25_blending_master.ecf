@@ -40,6 +40,12 @@ set -x
 ############################################################
 # CALL executable job script here
 ############################################################
+# Set up mailing list
+if [[ "${envir}" != "prod" ]]; then
+    MAILTO="nco.spa@noaa.gov"
+fi
+export MAILTO=${MAILTO:-"nco.spa@noaa.gov,ncep.sos@noaa.gov,nco.sos@noaa.gov,nco.hpc.dataflow@noaa.gov"}
+
 ${HOMEwafs}/jobs/JWAFS_GRIB2_0P25_BLENDING
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
