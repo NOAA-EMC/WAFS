@@ -89,7 +89,7 @@ export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 # export COMPATH=$COMROOT/wafs
 export COMPATH=/lfs/h2/emc/ptmp/yali.mao/wafsx001/prod/com/wafs
 
-export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs.$jobid
+export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs
 
 ############################################
 # run the job

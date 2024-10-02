@@ -79,13 +79,14 @@ First of all, filename changes according to EE2 standards:
  |                                 |   exgfs_atmos_wafs_blending.sh (removed after cleaning up)  |
  |   exwafs_gfs_manager.sh (new)   |                                                             |
  |   exwafs_upp.sh (new)           |                                                             |
+ |   ush/wafs_grib2_0p25_blending.sh (new) |                                                     |
 
 Additionally there are other changes:
 1. In exwafs_grib2_0p25_blending.sh, extend the waiting time window for UK data from 15 to 25 minutes
 2. In exwafs_grib2_0p25.sh, only include fields at the extra levels when forecast hour is between 06 and 36 per AWC request
 3. In ush/mkwfsgbl.sh: change input dependency from GFS pgrb2.1p00 to master file.
 4. Remove files under ush/ folder: wafs_blending.sh wafs_grib2.regrid.sh wafs_intdsk.sh
-5. In exwafs_grib2_0p25_blending.sh, remove the condition of sending UK unblended data if US unblended data is missing. It won't happen because the job itself won't get triggered if US unblended data is missing
+5. In exwafs_grib2_0p25_blending.sh, remove the condition of sending UK unblended data if US unblended data is missing.
 
 Fix Changes
 -----------
@@ -118,7 +119,7 @@ Environment and Resource Changes
 --------------------------------
 1. Add ecFlow to WAFS package
 2. Add UPP as a WAFS component
-3. Get rid of MPMD, each forecast hour will be run in its own job card. 
+3. Add MPMD to WAFS_GRIB2_0P25_BLENDING; For other jobs, get rid of MPMD, each forecast hour will be run in its own job card. 
 4. WAFS_GRIB job dependency is changed from GFS pgrb2.1p00 to GFS master file.
 5. WAFS_GRIB2_0P25_BLENDING runtime decreases from 4 minutes to 0.5 minutes after switching from sequential to parallel run for each forecast hour
 6. Package increases from 33M to 288M (increase due to offline UPP source)
@@ -147,8 +148,6 @@ Product Changes
 * Files to be retired
   * `gfs.tCCz.wafs_icao.grb2fFFF`
   * wafs.tCCz.master.fFFF.grib2 where FFF is from 001 to 005
-* File changes
-  * For WAFS blending when UK data is missing at multiple forecast hours, multiple files wafs.tCCz.fFFF.wafs_blend_0p25_usonly.emailbody for each forecast hour will replace one single file gfs.tCCz.wafs_blend_0p25_usonly.emailbody for the whole cycle.
 * Filename changes
   * Renamed according to EE2 implementation standards
   * Exceptions: files sent to UK keep the original names except forecast hour is changed to 3 digits

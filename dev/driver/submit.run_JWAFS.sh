@@ -32,7 +32,14 @@ elif [ $job = 'grib2_1p25' ]; then
 elif [ $job = 'grib' ]; then
   export FHOURS=${FHOURS:-"06 12 18 24 30 36 42 48 54 60 66 72"}
 elif [ $job = 'grib2_0p25_blending' ]; then
-  export FHOURS="999"
+  sed -e "s|log.wafs_$job|log.wafs_$job|g" \
+  -e "s|HOMEwafs=.*|HOMEwafs=$DIR_ROOT|g" \
+  -e "s|PDY=.*|PDY=${PDYcyc:0:8}|g" \
+  -e "s|cyc=.*|cyc=${PDYcyc:8:2}|g" \
+  -e "s|working_wafs|working_wafs.${job}_${PDYcyc:0:8}|g" \
+  -i $jobcard
+  qsub $jobcard
+  exit
 fi
 
 for fhr in $FHOURS; do
@@ -52,12 +59,6 @@ for fhr in $FHOURS; do
   -e "s|working_wafs|working_wafs.${job}_${PDYcyc:0:8}|g" \
   $jobcard >$jobcard.$fhr
 
-  # for blending
-  if ["$FHOURS" = "999" ] ; then
-      mv $jobcard.$fhr $jobcard
-      qsub  $jobcard
-  else
-      qsub $jobcard.$fhr
-  fi
+  qsub $jobcard.$fhr
 done
 
