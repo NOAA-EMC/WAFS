@@ -4,7 +4,7 @@
 #PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib2_0p25_blending
 #PBS -N wafs_blending_0p25
 #PBS -l walltime=00:30:00
-#PBS -l select=1:ncpus=1
+#PBS -l select=1:ncpus=27:mem=50GB
 #PBS -q debug
 #PBS -l debug=true
 #PBS -A GFS-DEV
@@ -58,7 +58,6 @@ export RUN=wafs
 # user defined
 ############################################
 export cyc=${cyc:-00}
-export fhr=006
 export PDY=$(cut -c 7-14 $COMROOT/date/t${cyc}z)
 
 # wafs_blending for blending icing turbulence of US and UK
@@ -88,16 +87,16 @@ export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
 # For COMIN
 # export COMPATH=$COMROOT/wafs
-export COMPATH=/lfs/h2/emc/ptmp/yali.mao/wafsxPDY/com/wafs
+export COMPATH=/lfs/h2/emc/ptmp/yali.mao/wafsx001/prod/com/wafs
 
-export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/blending.$jobid
+export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs.$jobid
 
 ############################################
 # run the job
 #############################################
 # Set up mailing list
 if [[ "${envir}" != "prod" ]]; then
-    MAILTO="yali.mao@noaa.gov"
+    MAILTO="nco.spa@noaa.gov"
 fi
 export MAILTO=${MAILTO:-"nco.spa@noaa.gov,ncep.sos@noaa.gov,nco.sos@noaa.gov,nco.hpc.dataflow@noaa.gov"}
 

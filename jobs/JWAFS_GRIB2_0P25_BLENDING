@@ -54,6 +54,7 @@ export pgmout="OUTPUT.$$"
 ####################################
 export EXECwafs="${HOMEwafs}/exec"
 export FIXwafs="${HOMEwafs}/fix"
+export USHwafs="${HOMEwafs}/ush"
 
 #########################################################
 # print current environment
