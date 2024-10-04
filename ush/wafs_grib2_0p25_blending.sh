@@ -27,6 +27,11 @@ fhr=$1
 
 mkdir -p "${DATA}/${fhr}"
 cd "${DATA}/${fhr}" || err=1
+if (( err != 0 )); then
+  echo "FATAL ERROR: Could not 'cd ${DATA}/${fhr}'"
+  echo "WAFS blending 0p25 program failed at " ${PDY}${cyc}F${fhr} > ../no_blending_files.$fhr
+  exit 1
+fi
 
 ###############################################
 # Specify Timeout Behavior for WAFS blending

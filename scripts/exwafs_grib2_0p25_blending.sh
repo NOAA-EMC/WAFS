@@ -25,11 +25,13 @@ for fhr in ${fhours[@]}; do
     echo "${USHwafs}/wafs_grib2_0p25_blending.sh $fhr > $DATA/${fhr}.log 2>&1">> wafsgrib2_0p25_blending.cmdfile
 done
 export MP_PGMMODEL=mpmd
-np=${#fhours[@]}
-MPIRUN="mpiexec -np ${np} -cpu-bind verbose,core cfp"
+MPIRUN="mpiexec -np ${#fhours[@]} -cpu-bind verbose,core cfp"
 $MPIRUN wafsgrib2_0p25_blending.cmdfile
 
-export err=$? ; err_chk
+export err=$?
+if (( err != 0 )); then
+    echo "FATAL ERROR: An error occured processing blending"
+fi
 
 for fhr in ${fhours[@]}; do
     echo "=================== log file of fhr=$fhr ==================="
@@ -99,3 +101,5 @@ if [[ ! -z "$no_blending_files" ]] ; then
     cat mailmsg >"${COMOUT}/${RUN}.t${cyc}z.wafs_blend_0p25_noblending.emailbody"
     cat "${COMOUT}/${RUN}.t${cyc}z.wafs_blend_0p25_noblending.emailbody" | mail.py -s "${subject}" "${MAILTO}" -v
 fi
+
+export err=$? ; err_chk
