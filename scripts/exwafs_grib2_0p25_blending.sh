@@ -19,14 +19,14 @@ set -x
 cd "${DATA}" || err_exit "FATAL ERROR: Could not 'cd ${DATA}'; ABORT!"
 
 fhours=($(seq -s ' ' -f "%03g" 6 1 24; seq -s ' ' -f "%03g" 27 3 48))
-np=${#fhours[@]}
-MPIRUN="mpiexec -np ${np} -cpu-bind verbose,core cfp"
 
 rm -f wafsgrib2_0p25.cmdfile
 for fhr in ${fhours[@]}; do
     echo "${USHwafs}/wafs_grib2_0p25_blending.sh $fhr > $DATA/${fhr}.log 2>&1">> wafsgrib2_0p25_blending.cmdfile
-    export MP_PGMMODEL=mpmd
 done
+export MP_PGMMODEL=mpmd
+np=${#fhours[@]}
+MPIRUN="mpiexec -np ${np} -cpu-bind verbose,core cfp"
 $MPIRUN wafsgrib2_0p25_blending.cmdfile
 
 export err=$? ; err_chk
@@ -38,7 +38,7 @@ done
 echo "===================== end of log files ====================="
 
 missing_uk_files="$(find $DATA -name 'missing_uk_files*')"
-missing_us_files="$(find $DATA -name 'missing_us_file*')"
+missing_us_files="$(find $DATA -name 'missing_us_files*')"
 no_blending_files="$(find $DATA -name 'no_blending_files*')"
 
 if [[ ! -z "$missing_uk_files" ]] || [[ ! -z "$missing_us_files" ]] || [[ ! -z "$no_blending_files" ]] ; then

@@ -25,7 +25,7 @@ set -x
 
 fhr=$1
 
-mkdir -p $DATA/$fhr
+mkdir -p "${DATA}/${fhr}"
 cd "${DATA}/${fhr}" || err_exit "FATAL ERROR: Could not 'cd ${DATA}/${fhr}'; ABORT!"
 
 ###############################################
@@ -83,7 +83,7 @@ if [[ ! -f "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2.idx" ]]; th
     sleep 60
     if [[ ! -f "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2.idx" ]]; then
 	echo "WARNING: missing US unblended data - ${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2"
-	echo "Missing ${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" > ../missing_us_file.$fhr
+	echo "Missing ${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" > ../missing_us_files.$fhr
 	MISSING_US_WAFS="YES"
     fi
 fi
@@ -92,8 +92,8 @@ fi
 # Blending or unblended
 ##########################
 if [[ "${MISSING_UK_WAFS}" == "YES" ]] && [[ "${MISSING_US_WAFS}" == "YES" ]]; then
-    cat ../missing_uk_files.$fhr ../missing_us_file.$fhr > ../no_blending_files.$fhr
-    rm ../missing_uk_files.$fhr ../missing_us_file.$fhr
+    cat ../missing_uk_files.$fhr ../missing_us_files.$fhr > ../no_blending_files.$fhr
+    rm ../missing_uk_files.$fhr ../missing_us_files.$fhr
 elif [[ "${MISSING_UK_WAFS}" == "YES" ]]; then
     echo "turning back on dbn alert for unblended US WAFS product"
     # Avoid duplicate dbn_alert of unblended grib2 file which was done in the upstream grib2_0p25 job, fix bugzilla 1226
