@@ -26,7 +26,7 @@ set -x
 fhr=$1
 
 mkdir -p "${DATA}/${fhr}"
-cd "${DATA}/${fhr}" || err_exit "FATAL ERROR: Could not 'cd ${DATA}/${fhr}'; ABORT!"
+cd "${DATA}/${fhr}" || err=1
 
 ###############################################
 # Specify Timeout Behavior for WAFS blending
@@ -125,7 +125,7 @@ else
 	if (( err != 0 )); then
 	    echo "turning back on dbn alert for unblended US WAFS product"
 	    "${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_UBL_GB2_WIDX "${job}" "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2.idx"
-	    echo "WAFS blending 0p25 program failed at " ${PDY}${cyc}F${ffhr} > ../no_blending_files.$fhr
+	    echo "WAFS blending 0p25 program failed at " ${PDY}${cyc}F${fhr} > ../no_blending_files.$fhr
 	else
 	    # Distribute US WAFS unblend Data to NCEP FTP Server (WOC) and TOC
 	    if [[ "${SENDCOM}" == "YES" ]]; then
