@@ -102,4 +102,4 @@ if [[ ! -z "$no_blending_files" ]] ; then
     cat "${COMOUT}/${RUN}.t${cyc}z.wafs_blend_0p25_noblending.emailbody" | mail.py -s "${subject}" "${MAILTO}" -v
 fi
 
-export err=$? ; err_chk
+err_chk
