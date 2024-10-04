@@ -86,7 +86,9 @@ Additionally there are other changes:
 2. In exwafs_grib2_0p25.sh, only include fields at the extra levels when forecast hour is between 06 and 36 per AWC request
 3. In ush/mkwfsgbl.sh: change input dependency from GFS pgrb2.1p00 to master file.
 4. Remove files under ush/ folder: wafs_blending.sh wafs_grib2.regrid.sh wafs_intdsk.sh
-5. In exwafs_grib2_0p25_blending.sh, remove the condition of sending UK unblended data if US unblended data is missing.
+5. In exwafs_grib2_0p25_blending.sh, use MPMD for each forecast hour to call ush/wafs_grib2_0p25_blending.sh.
+   - Collect missing files from ush/wafs_grib2_0p25_blending.sh, send out warning email and dbn_alert of missing data once per cycle
+   - Add not-blended email and dbn_alert if both UK and US unblended files are missing
 
 Fix Changes
 -----------
@@ -164,7 +166,10 @@ Product Changes
     | wmo/grib2.tCCz.wafs_grbfFF.45          | wmo/grib2.wafs.tCCz.grid45.fFFF          |
     | gfs.tCCz.gcip.fFF.grib2                | wafs.tCCz.gcip.fFFF.grib2                |
     | WAFS_0p25_blended_YYYYMMDDHHfFF.grib2  | WAFS_0p25_blended_ YYYYMMDDHHfFFF.grib2  |
-  
+    | gfs.tCCz.wafs_blend_0p25_usonly.emailbody  | wafs.tCCz.wafs_blend_0p25_ukmissing.emailbody |
+    | gfs.tCCz.wafs_blend_0p25_ukonly.emailbody  | wafs.tCCz.wafs_blend_0p25_usmissing.emailbody |
+    |                                            | wafs.tCCz.wafs_blend_0p25_noblending.emailbody (new) |
+
 
 * File content changes
   * Add EDPARM CATEDR MWTURB on 127.7 mb, ICESEV on 875.1 908.1 942.1 977.2 mb to:

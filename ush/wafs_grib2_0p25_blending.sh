@@ -26,9 +26,7 @@ set -x
 fhr=$1
 
 mkdir -p $DATA/$fhr
-cd "${DATA}/$fhr" || err_exit "FATAL ERROR: Could not 'cd ${DATA}/fhr'; ABORT!"
-
-SEND_UNBLENDED_US_WAFS="NO"
+cd "${DATA}/${fhr}" || err_exit "FATAL ERROR: Could not 'cd ${DATA}/${fhr}'; ABORT!"
 
 ###############################################
 # Specify Timeout Behavior for WAFS blending
@@ -42,6 +40,8 @@ SLEEP_LOOP_MAX=$((SLEEP_TIME / SLEEP_INT))
 ##########################
 # look for UK WAFS data.
 ##########################
+MISSING_UK_WAFS="NO"
+
 for ((ic = 1; ic <= SLEEP_LOOP_MAX; ic++)); do
     # Three(3) unblended UK files for each cycle+fhour: icing, turb, cb
     ukfiles=$(find "${COMINuk}" -name "egrr_wafshzds_unblended_*_0p25_${PDY:0:4}-${PDY:4:2}-${PDY:6:2}T${cyc}:00Z_t${fhr}.grib2" | wc -l)
@@ -56,11 +56,11 @@ for ((ic = 1; ic <= SLEEP_LOOP_MAX; ic++)); do
             ukfile="egrr_wafshzds_unblended_${prod}_0p25_${PDY:0:4}-${PDY:4:2}-${PDY:6:2}T${cyc}:00Z_t${fhr}.grib2"
             if [[ ! -f "${COMINuk}/${ukfile}" ]]; then
                 echo "WARNING: UK WAFS GRIB2 file '${ukfile}' not found after waiting over ${SLEEP_TIME} seconds"
-                echo "${COMINuk}/${ukfile}" >> ../missing_uk_files.$fhr
+                echo "Missing ${COMINuk}/${ukfile}" >> ../missing_uk_files.$fhr
             fi
         done
         echo "WARNING: UK WAFS GRIB2 unblended data is not completely available, no blending"
-        SEND_UNBLENDED_US_WAFS="YES"
+        MISSING_UK_WAFS="YES"
         break
     else
         sleep "${SLEEP_INT}"
@@ -68,42 +68,78 @@ for ((ic = 1; ic <= SLEEP_LOOP_MAX; ic++)); do
 done
 
 ##########################
+# look for US WAFS data.
+##########################
+MISSING_US_WAFS="NO"
+
+if [[ ! -f "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2.idx" ]]; then
+    # Blending ecflow run is triggered by the finishing of the upstream JWAFS_GRIB2_0P25 f048
+    #  - In real time ecflow, blending starts at T+4:30, unblended upstream products are all available.
+    #    It doesn't need to sleep/wait
+    #  - In non-real time ecflow, blending has no time tigger, unblended f048 is not guaranteed to be the last finished one.
+    #    It needs to sleep/wait. All upstream jobs can be finished within 60 seconds when f048 is finished.
+    #
+    # Standalone blending doesn't need to sleep/wait since unblended upstream grib2_0p25 runs standalone first.
+    sleep 60
+    if [[ ! -f "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2.idx" ]]; then
+	echo "WARNING: missing US unblended data - ${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2"
+	echo "Missing ${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" > ../missing_us_file.$fhr
+	MISSING_US_WAFS="YES"
+    fi
+fi
+
+##########################
 # Blending or unblended
 ##########################
-
-if [[ "${SEND_UNBLENDED_US_WAFS}" == "YES" ]]; then
+if [[ "${MISSING_UK_WAFS}" == "YES" ]] && [[ "${MISSING_US_WAFS}" == "YES" ]]; then
+    cat ../missing_uk_files.$fhr ../missing_us_file.$fhr > ../no_blending_files.$fhr
+    rm ../missing_uk_files.$fhr ../missing_us_file.$fhr
+elif [[ "${MISSING_UK_WAFS}" == "YES" ]]; then
     echo "turning back on dbn alert for unblended US WAFS product"
-elif [[ ! -f "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" ]]; then
-    echo "Warning: missing US unblended data - ${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2 "
-    exit # Silently quit if US data is missing
+    # Avoid duplicate dbn_alert of unblended grib2 file which was done in the upstream grib2_0p25 job, fix bugzilla 1226
+    # "${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_UBL_GB2 "${job}" "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2"
+    "${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_UBL_GB2_WIDX "${job}" "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2.idx"
 else
-    # pick up US data
-    cpreq "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" .
-
     # retrieve UK products
     # Three(3) unblended UK files for each cycle+fhour: icing, turb, cb
     cat "${COMINuk}/egrr_wafshzds_unblended_"*"_0p25_${PDY:0:4}-${PDY:4:2}-${PDY:6:2}T${cyc}:00Z_t${fhr}.grib2" >"EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${fhr}.grib2"
-    
-    # run blending code
-    export pgm="wafs_blending_0p25.x"
 
-    . prep_step
+    if [[ "${MISSING_US_WAFS}" == "YES" ]]; then
+	if [ $SENDDBN = "YES" ] ; then
+	    "$DBNROOT/bin/dbn_alert" MODEL WAFS_UKMET_0P25_UBL_GB2 "${job}" "EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${fhr}.grib2"
+	fi
+    else
+	# pick up US data
+	cpreq "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" .
 
-    ${EXECwafs}/${pgm} "WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" \
-        "EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${fhr}.grib2" \
-        "0p25_blended_${PDY}${cyc}f${fhr}.grib2 >f${fhr}.out"
+	# run blending code
+	export pgm="wafs_blending_0p25.x"
 
-    # Distribute US WAFS unblend Data to NCEP FTP Server (WOC) and TOC
-    if [[ "${SENDCOM}" == "YES" ]]; then
-        cpfs "0p25_blended_${PDY}${cyc}f${fhr}.grib2" "${COMOUT}/WAFS_0p25_blended_${PDY}${cyc}f${fhr}.grib2"
-    fi
+	. prep_step
 
-    if [[ "${SENDDBN_NTC}" == "YES" ]]; then
-        #   Distribute Data to NCEP FTP Server (WOC) and TOC
-        echo "No WMO header yet"
-    fi
+	${EXECwafs}/${pgm} "WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2" \
+		   "EGRR_WAFS_0p25_unblended_${PDY}_${cyc}z_t${fhr}.grib2" \
+		   "0p25_blended_${PDY}${cyc}f${fhr}.grib2 >f${fhr}.out"
 
-    if [[ "${SENDDBN}" == "YES" ]]; then
-        "${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_BL_GB2 "${job}" "${COMOUT}/WAFS_0p25_blended_${PDY}${cyc}f${fhr}.grib2"
+	err=$?
+	if (( err != 0 )); then
+	    echo "turning back on dbn alert for unblended US WAFS product"
+	    "${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_UBL_GB2_WIDX "${job}" "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2.idx"
+	    echo "WAFS blending 0p25 program failed at " ${PDY}${cyc}F${ffhr} > ../no_blending_files.$fhr
+	else
+	    # Distribute US WAFS unblend Data to NCEP FTP Server (WOC) and TOC
+	    if [[ "${SENDCOM}" == "YES" ]]; then
+		cpfs "0p25_blended_${PDY}${cyc}f${fhr}.grib2" "${COMOUT}/WAFS_0p25_blended_${PDY}${cyc}f${fhr}.grib2"
+	    fi
+
+	    if [[ "${SENDDBN_NTC}" == "YES" ]]; then
+		#   Distribute Data to NCEP FTP Server (WOC) and TOC
+		echo "No WMO header yet"
+	    fi
+
+	    if [[ "${SENDDBN}" == "YES" ]]; then
+		"${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_BL_GB2 "${job}" "${COMOUT}/WAFS_0p25_blended_${PDY}${cyc}f${fhr}.grib2"
+	    fi
+	fi
     fi
 fi

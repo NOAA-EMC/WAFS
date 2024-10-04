@@ -121,7 +121,6 @@ if [[ "${SENDDBN}" == "YES" ]]; then
 
         # Unblended US WAFS data sent to UK for blending, also sent to AWC
         "${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_UBL_GB2 "${job}" "${COMOUT}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2"
-	"${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_UBL_GB2_WIDX "${job}" "${COMOUT}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2.idx"
     fi
 
     # WAFS U/V/T/RH data sent to the same server as the unblended data as above
