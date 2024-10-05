@@ -66,12 +66,6 @@ fhrs="${seq1} ${seq2} ${seq3}"
 link_master_to_fhr "jwafs_grib2_0p25" "${fhrs}" "${CLEAN}"
 
 # JWAFS_BLENDING_0P25
-cd "${ECF_DIR}/scripts/grib2/0p25/blending"
-echo "Linking grib2/0p25/blending ..."
-seq1=$(seq -s ' ' 6 1 24)  # 006 -> 024; 1-hourly
-seq2=$(seq -s ' ' 27 3 48) # 027 -> 048; 3-hourly
-fhrs="${seq1} ${seq2}"
-link_master_to_fhr "jwafs_grib2_0p25_blending" "${fhrs}" "${CLEAN}"
 
 # JWAFS_GCIP
 cd "${ECF_DIR}/scripts/gcip"
