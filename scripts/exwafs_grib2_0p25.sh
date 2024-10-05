@@ -119,7 +119,7 @@ if [[ "${SENDDBN}" == "YES" ]]; then
         # Hazard WAFS data (ICESEV EDR CAT MWT on 100mb to 1000mb or on new ICAO levels) sent to AWC and to NOMADS for US stakeholders
         "${DBNROOT}/bin/dbn_alert" MODEL WAFS_AWF_0P25_GB2 "${job}" "${COMOUT}/${RUN}.t${cyc}z.awf.0p25.f${fhr}.grib2"
 
-        # Unblended US WAFS data sent to UK for blending, to the same server as 1.25 deg unblended data: wmo/grib2.tCCz.wafs_grb_wifsfFF.45
+        # Unblended US WAFS data sent to UK for blending, also sent to AWC
         "${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_UBL_GB2 "${job}" "${COMOUT}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2"
     fi
 
