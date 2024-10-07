@@ -13,7 +13,7 @@
 
 set -eu
 
-echo "Usage: ./setup_ecf.sh [PDYcyc]"
+echo "Usage: ./run.ecflow_pdy.sh [PDYcyc]"
 
 PDYcyc=${1:-$(date --utc "+%Y%m%d")00}
 
