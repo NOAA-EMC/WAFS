@@ -3,25 +3,23 @@
 set -eu
 
 # Get the root of the cloned WAFS directory
-readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
+readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/.." && pwd -P)
 
 # User Options
 BUILD_TYPE=${BUILD_TYPE:-"Release"}
 CMAKE_OPTS=${CMAKE_OPTS:-}
+MACHINE_ID=${MACHINE_ID:-"wcoss2"}
 COMPILER=${COMPILER:-"intel"}
 BUILD_DIR=${BUILD_DIR:-"${DIR_ROOT}/sorc/build/wafs"}
 INSTALL_PREFIX=${INSTALL_PREFIX:-"${DIR_ROOT}/sorc/install/wafs"}
 
 #==============================================================================#
 
-# Detect machine (sets MACHINE_ID)
-source "${DIR_ROOT}/ush/detect_machine.sh"
-
 # Load modules
-source "${DIR_ROOT}/ush/module-reset.sh"
+module reset
 source "${DIR_ROOT}/versions/build.ver"
 module use "${DIR_ROOT}/modulefiles"
-module load wafs_"${MACHINE_ID}.${COMPILER}"
+module load "wafs_${MACHINE_ID}.${COMPILER}"
 module list
 
 # Collect BUILD Options

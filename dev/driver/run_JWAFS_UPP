@@ -1,20 +1,24 @@
 #!/bin/bash
 
+#PBS -S /bin/bash
 #PBS -j oe
-#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib
-#PBS -N wafs_octant
-#PBS -l walltime=00:05:00
-#PBS -l select=1:ncpus=1
+#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_upp
+#PBS -N wafs_upp
 #PBS -l debug=true
+#PBS -l walltime=00:10:00
+#PBS -l select=1:mpiprocs=126:ompthreads=1:ncpus=126
+#PBS -l place=vscatter:exclhost
 #PBS -q debug
 #PBS -A GFS-DEV
 ##PBS -V
 
-# cd $PBS_O_WORKDIR
-
-# 8 means octants
-
 set -x
+
+# specify computation resource
+export MP_LABELIO=yes
+export MPIRUN='mpiexec -l -n 126 -ppn 126 --cpu-bind depth --depth 1'
+
+echo "starting time $PBS_JOBNAME"
 
 ############################################
 # Set up the HOME directory
@@ -22,12 +26,21 @@ set -x
 export NWROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao/git
 export HOMEwafs=${HOMEwafs:-${NWROOT}/WAFS.fork}
 
+# specify user's own post working directory for testing
+export EXECwafs=$HOMEwafs/exec
+# specify variables if testing post in non gfs structure environment
+#export PARMwafs=$HOMEwafs/parm/upp
+#export POSTGRB2TBL=$PARMwafs/params_grib2_tbl_new
+
 ############################################
 # Loading module
 ############################################
 source $HOMEwafs/versions/run.ver
 module reset
-source $HOMEwafs/dev/modulefiles/wafs.sh
+source $HOMEwafs/dev/modulefiles/upp.sh
+
+#export WGRIB2=/u/Wen.Meng/bin/wgrib2
+
 module list
 
 ############################################
@@ -41,7 +54,7 @@ export DBNROOT=${UTILROOT}/fakedbn
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
 export envir=prod
 
-############################################run
+############################################
 # set NET RUN
 ############################################
 ### NET: gfs/para/parallel-test/nam/rap/ dump/ens/nawips/nesdis/
@@ -51,33 +64,29 @@ export RUN=wafs
 ############################################
 # user defined
 ############################################
-#export PDY=`$NDATE -24 | cut -c 1-8`
-export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20240703
-
 export cyc=${cyc:-00}
-
+export cycle=t${cyc}z
 export fhr=006
+export PDY=$(cut -c 7-14 $COMROOT/date/t${cyc}z)
 
-# wafs for octants (8 WAFS files)
-export job=wafs_grib_${cyc}
+# wafs_grib2 for generating global WAFS on grid 45
+export job=wafs_upp_${cyc}
 
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 
-USER=`whoami`
+USER=$(whoami)
 
 ############################################
 # SENDCOM=YES--Copy output file to /com
-# SENDECF=YES--Allow to talk back to ECF
 # SENDDBN=YES--Alert output file to TOC
 # KEEPDATA=NO--Remove temporary working
 ############################################
 export SENDCOM=YES
-export SENDDBN=YES
-export SENDDBN_NTC=YES
+export SENDDBN=NO
+
 export KEEPDATA=YES
- 
+
 ############################################
 # Define DATA, COMOUT and COMIN
 ############################################
@@ -86,11 +95,12 @@ export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
 export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}
 
-export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/grib.$jobid
+DATAroot=/lfs/h2/emc/ptmp/$USER/working_wafs
 
-#############################################
+############################################
 # run the job
 #############################################
-sh $HOMEwafs/jobs/JWAFS_GRIB
+export DATA=$DATAroot/upp.f$fhr.${jobid}
 
-exit
+$HOMEwafs/jobs/JWAFS_UPP
+echo $?

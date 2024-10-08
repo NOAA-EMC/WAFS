@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #PBS -j oe
-#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_gcip
-#PBS -N wafs_gcip
-#PBS -l walltime=00:10:00
-#PBS -l select=1:ncpus=1:mem=25GB
+#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib2_1p25
+#PBS -N wafs_grib2
+#PBS -l walltime=00:05:00
+#PBS -l select=1:ncpus=1
 #PBS -q debug
 #PBS -l debug=true
 #PBS -A GFS-DEV
@@ -29,15 +29,12 @@ source $HOMEwafs/versions/run.ver
 module reset
 source $HOMEwafs/dev/modulefiles/wafs.sh
 
-module load bufr_dump/$bufr_dump_ver
-
 module list
 
 ############################################
 # Modify ROOT after loading modules
 ############################################
-echo $DCOMROOT
-export DCOMROOT=/lfs/h1/ops/prod/dcom
+export DBNROOT=${UTILROOT}/fakedbn
 
 ############################################
 # Define envir
@@ -55,18 +52,18 @@ export RUN=wafs
 ############################################
 # user defined
 ############################################
-export PDY=20240703
-
 export cyc=${cyc:-00}
-export fhr=000
+export fhr=006
+export PDY=$(cut -c 7-14 $COMROOT/date/t${cyc}z)
 
-# wafs_gcip for generating global icing analysis for every 3 hours
-export job=wafs_gcip_${cyc}
+export job=wafs_grib2_1p25_${cyc}
 
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 
-USER=`whoami`
+# wafs_grib2 for generating global WAFS on grid 45
+
+USER=$(whoami)
 
 ############################################
 # SENDCOM=YES--Copy output file to /com
@@ -75,25 +72,23 @@ USER=`whoami`
 # KEEPDATA=NO--Remove temporary working
 ############################################
 export SENDCOM=YES
-export SENDDBN=NO
-#export SENDDBN_NTC=NO
-#export SENDDBN_GB2=NO
+export SENDDBN=YES
+export SENDDBN_NTC=YES
 export KEEPDATA=YES
-
+ 
 ############################################
-# Define DATA COMOUT and COMIN
+# Define DATA, COMOUT and COMIN
 ############################################
 
 export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
-export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}:${COMPATHradar:-/lfs/h1/ops/prod/com/radarl2}
+export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}:/lfs/h2/emc/ptmp/yali.mao/wafs_dwn/prod/com/wafs
 
-export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/gcip.$jobid
+export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/grib2_1p25.$jobid
 
 ############################################
 # run the job
 #############################################
-
-sh $HOMEwafs/jobs/JWAFS_GCIP
+sh $HOMEwafs/jobs/JWAFS_GRIB2_1P25
 
 exit

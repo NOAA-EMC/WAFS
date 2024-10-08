@@ -1,121 +1,78 @@
 #!/bin/bash
-
-############################################
+########################################
 # WAFS GCIP PRODUCT GENERATION
-############################################
+########################################
 
 date
-export PS4='$SECONDS + ' 
+export PS4='$SECONDS + '
 set -x
 
-# keep the working directory or not
-export KEEPDATA=${KEEPDATA:-NO}
-
-############################################
-# Specify it is production or developmen
-############################################
-export envir=${envir:-prod}
-# print current environment
-env
-
-############################################
-# Working Directory
-############################################
+####################################
+# make temp directory
+####################################
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
+mkdir -p "${DATA}" && cd "${DATA}"
 
-############################################
-# Output for executables
-############################################
-export pgmout=OUTPUT.$$
-
-############################################
-# Load the UTILITIES module
-############################################
-#### module load prod_util
-#### module load grib_util
-
-############################################
+###########################################
 # Run setpdy and initialize PDY variables
-############################################
-export cycle=t${cyc}z 
+###########################################
+export cycle=${cycle:-"t${cyc}z"}
 setpdy.sh
 . ./PDY
 
-############################################
-# Set up the NET and RUN
-############################################
+####################################
+# SEND to COM, DBN, etc
+####################################
+export SENDCOM=${SENDCOM:-"YES"}
+
+####################################
+# Specify NET and RUN Name and model
+####################################
 export NET=${NET:-wafs}
 export RUN=${RUN:-wafs}
 
-############################################
-# Specify HOME Directory
-############################################
-export HOMEwafs=${HOMEwafs:-${NWROOT}/wafs.${wafs_ver}}
-export EXECwafs=$HOMEwafs/exec
-export FIXwafs=$HOMEwafs/fix/wafs
-export PARMwafs=$HOMEwafs/parm/wafs
-export USHwafs=$HOMEwafs/ush
-export SCRIPTSwafs=$HOMEwafs/scripts
+##############################################
+# Define COM directories
+##############################################
+export COMINgfs=${COMINgfs:-$(compath.py "${envir}/gfs/${gfs_ver}")"/gfs.${PDY}/${cyc}/atmos"}
+export COMINsat=${COMINsat:-"${DCOMROOT}/${PDY}/mcidas"}
+export COMINradar=${COMINradar:-$(compath.py "${envir}/radarl2/${radarl2_ver}")"/radar.${PDY}"}
+export COMOUT=${COMOUT:-$(compath.py -o "${NET}/${wafs_ver}")"/${RUN}.${PDY}/${cyc}/gcip"}
+mkdir -p "${COMOUT}"
 
-# For BUFR dump, TMPDIR must be defined
-export TMPDIR=$DATA  # will be overwritten in exwafs script for parallel runs on fhr
-# For BUFR dump, these two environment variables are defined by module load
-# HOMEobsproc_shared_bufr_dumplist <= module load bufr_dumplist/1.5.0
-# HOMEobsproc_dump   <= module load dumpjb/4.0.0
+####################################
+# Determine Job Output Name on System
+####################################
+export pgmout="OUTPUT.$$"
 
+####################################
+# Specify Execution Areas
+####################################
+export EXECwafs="${HOMEwafs}/exec"
+export PARMwafs="${HOMEwafs}/parm"
+export FIXwafs="${HOMEwafs}/fix"
 
-################################################
-# Set up the input/output directory
-################################################
-# model data
-export COMINgfs=${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})/gfs.${PDY}/${cyc}/atmos}
-
-# satellite data
-#ftp://satepsanone.nesdis.noaa.gov/2day/gmosaic/
-# Have to change IP address to digital ones, which BSUB can identify
-#export COMINsat=${COMINsat:-ftp://140.90.213.161/2day/gmosaic}
-export COMINsat=${COMINsat:-$DCOMROOT/$PDY/mcidas}
-
-#  radar data
-export COMINradar=${COMINradar:-$(compath.py ${envir}/radarl2/$radarl2_ver)/radar.$PDY}
-
-# metar/ships/lightning/pireps
-# data are dumped by $USHobsproc_dump/dumpjb
-#
-
-# COMOUT
-export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc/gcip}
-
-mkdir -p $COMOUT
+#########################################################
+# print current environment
+#########################################################
+env
 
 ############################################
-# Execute the script, parallel run for 000 003
+# Execute the script.
 ############################################
-${SCRIPTSwafs}/exwafs_gcip.sh $fhr
+"${HOMEwafs}/scripts/exwafs_gcip.sh"
 export err=$?
+err_chk
 
-if [ $err -eq 0 ] ; then
-  echo "JOB $job HAS COMPLETED NORMALLY!"
-elif [ $err -eq 1 ] ; then
-  echo "WARNING!!! JOB $job incomplete.  Missing satellite data."
-else
-  echo "JOB $job FAILED!!!!"
+if [[ -e "${pgmout}" ]]; then
+  cat "${pgmout}"
 fi
 
-############################################
-# print exec output
-############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
-fi
-
-############################################
-# remove temporary working directory
-############################################
-if [ $KEEPDATA != YES ] ; then
-    rm -rf $DATA
+##############################
+# Remove the Temporary working directory
+##############################
+if [[ "${KEEPDATA^^}" != "YES" ]]; then
+  rm -rf "${DATA}"
 fi
 
 date

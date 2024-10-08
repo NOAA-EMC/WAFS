@@ -50,4 +50,14 @@ fi
 
 %include <tail.h>
 %manual
+TASK: JWAFS_GRIB2_1P25
+
+PURPOSE: Triggered by JWAFS_UPP to produce WAFS files on grid 45
+
+This job will be triggered for each forecast hour once JWAFS_UPP is finished.
+This job will produce WAFS files on grid 45 , which is at 1.25 degree.
+This job will skip any intermediate forecast hour if GFS model output is not available or the upsteam JWAFS_UPP fails for that forecast hour.
+
+TROUBLESHOOTING
+If this job fails, make sure its upstream JWAFS_UPP output is available and re-run this job for the failed forecast hour.
 %end

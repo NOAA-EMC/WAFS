@@ -3,9 +3,10 @@
 #  UTILITY SCRIPT NAME :  exwafs_gfs_manager.sh
 #         DATE WRITTEN :  07/22/2024
 #
-#  Abstract:  This script manages upstream GFS data
+#  Abstract:  This script checks for upstream GFS data availability
+#             and triggers downstream JWAFS jobs
 #
-# History:  07/22/2024
+#  History:  07/22/2024
 #              - initial version
 #####################################################################
 
@@ -15,13 +16,16 @@ set -x
 gfs_fhrs=$(seq -s ' ' 0 1 120)
 
 # Forecast hours for JWAFS_UPP
-seq1=$(seq -s ' ' 0 1 24)   # 000 -> 024; 1-hourly
+seq0="0"                    # 000
+seq1=$(seq -s ' ' 6 1 24)   # 006 -> 024; 1-hourly
 seq2=$(seq -s ' ' 27 3 48)  # 027 -> 048; 3-hourly
 seq3=$(seq -s ' ' 54 6 120) # 054 -> 120; 6-hourly
-jwafs_upp_fhrs="${seq1} ${seq2} ${seq3}"
+jwafs_upp_fhrs="${seq0} ${seq1} ${seq2} ${seq3}"
 
-# Forecast hours for JWAFS_GRIB; 006 - 072; 6-hourly
-jwafs_grib_fhrs=$(seq -s ' ' 6 6 72)
+# Forecast hours for JWAFS_GRIB
+seq1=$(seq -s ' ' 12 6 48) # 012 -> 048; 6-hourly
+seq2="60 72"               # 060, 072
+jwafs_grib_fhrs="${seq1} ${seq2}"
 
 # Forecast hours for JWAFS_GCIP; 000, 003
 jwafs_gcip_fhrs="0 3"
@@ -36,7 +40,11 @@ for ((iter = 1; iter <= MAX_ITER; iter++)); do
     fhr3=$(printf "%03d" "${fhr}")
 
     # Trigger jobs based on GFS forecast output availability
-    if [[ -s "${COMINgfs}/gfs.${cycle}.logf${fhr3}.txt" ]]; then
+    gfs_log="${COMINgfs}/gfs.t${cyc}z.logf${fhr3}.txt"
+    gfs_atm="${COMINgfs}/gfs.t${cyc}z.atmf${fhr3}.nc"
+    gfs_sfc="${COMINgfs}/gfs.t${cyc}z.sfcf${fhr3}.nc"
+    gfs_grb="${COMINgfs}/gfs.t${cyc}z.master.grb2f${fhr3}"
+    if [[ -s "${gfs_log}" ]] && [[ -s "${gfs_atm}" ]] && [[ -s "${gfs_sfc}" ]] && [[ -s "${gfs_grb}" ]]; then
 
       # Release the JWAFS_UPP analysis job if this is f000
       if ((fhr == 0)); then
@@ -62,6 +70,7 @@ for ((iter = 1; iter <= MAX_ITER; iter++)); do
         ecflow_client --event "release_wafs_gcip_${fhr3}"
       fi
 
+      # Release JWAFS_GRIB job
       if [[ " ${jwafs_grib_fhrs} " == *" ${fhr} "* ]]; then
         set +x
         echo "Releasing JWAFS_GRIB job for fhr=${fhr3}"
@@ -87,10 +96,5 @@ for ((iter = 1; iter <= MAX_ITER; iter++)); do
 done # end of loop over all iterations
 
 if ((iter > MAX_ITER)); then
-  msg="FATAL ERROR: ABORTING after 3 hours of waiting for GFS forecast output at hours ${gfs_fhrs}."
-  err_exit "${msg}"
+  err_exit "FATAL ERROR: ABORTING after 3 hours of waiting for GFS forecast output at hours ${gfs_fhrs}."
 fi
-
-echo "HAS COMPLETED NORMALLY!"
-
-exit 0

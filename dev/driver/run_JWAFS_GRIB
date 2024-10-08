@@ -1,18 +1,18 @@
 #!/bin/bash
 
 #PBS -j oe
-#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib2_0p25
-#PBS -N wafs_grib2_0p25
+#PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib
+#PBS -N wafs_octant
 #PBS -l walltime=00:05:00
 #PBS -l select=1:ncpus=1
-#PBS -q debug
 #PBS -l debug=true
+#PBS -q debug
 #PBS -A GFS-DEV
 ##PBS -V
-##PBS -W umask=022
 
-#As first line, cd to current working directory where the job was submitted from
-#cd $PBS_O_WORKDIR
+# cd $PBS_O_WORKDIR
+
+# 8 means octants
 
 set -x
 
@@ -28,7 +28,6 @@ export HOMEwafs=${HOMEwafs:-${NWROOT}/WAFS.fork}
 source $HOMEwafs/versions/run.ver
 module reset
 source $HOMEwafs/dev/modulefiles/wafs.sh
-
 module list
 
 ############################################
@@ -42,7 +41,7 @@ export DBNROOT=${UTILROOT}/fakedbn
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
 export envir=prod
 
-############################################
+############################################run
 # set NET RUN
 ############################################
 ### NET: gfs/para/parallel-test/nam/rap/ dump/ens/nawips/nesdis/
@@ -52,21 +51,17 @@ export RUN=wafs
 ############################################
 # user defined
 ############################################
-#export PDY=`$NDATE -24 | cut -c 1-8`
-export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20240703
-
 export cyc=${cyc:-00}
-
 export fhr=006
+export PDY=$(cut -c 7-14 $COMROOT/date/t${cyc}z)
 
-# wafs_grib2 for generating global WAFS on grid 45
-export job=wafs_grib2_0p25_${cyc}
+# wafs for octants (8 WAFS files)
+export job=wafs_grib_${cyc}
 
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 
-USER=`whoami`
+USER=$(whoami)
 
 ############################################
 # SENDCOM=YES--Copy output file to /com
@@ -75,8 +70,8 @@ USER=`whoami`
 # KEEPDATA=NO--Remove temporary working
 ############################################
 export SENDCOM=YES
-export SENDDBN=NO
-export SENDDBN_NTC=NO
+export SENDDBN=YES
+export SENDDBN_NTC=YES
 export KEEPDATA=YES
  
 ############################################
@@ -85,14 +80,13 @@ export KEEPDATA=YES
 
 export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
-export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}:/lfs/h2/emc/ptmp/yali.mao/wafs_dwn/prod/com/wafs
-#/lfs/h2/emc/vpppg/noscrub/yali.mao/separation/prod/com/wafs:/lfs/h2/emc/ptmp/yali.mao/wafs_dwn/prod/com/wafs
+export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}
 
-export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/grib2_0p25.$jobid
+export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/grib.$jobid
 
-############################################
+#############################################
 # run the job
 #############################################
-sh $HOMEwafs/jobs/JWAFS_GRIB2_0P25
+sh $HOMEwafs/jobs/JWAFS_GRIB
 
 exit

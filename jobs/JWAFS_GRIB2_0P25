@@ -1,93 +1,77 @@
 #!/bin/bash
 
 ########################################
-# WAFS GRIB 0P25 PRODUCT GENERATION
+# WAFS GRIB2 0P25 PRODUCT GENERATION
 ########################################
 
 date
-export PS4='$SECONDS + ' 
+export PS4='$SECONDS + '
 set -x
 
-# keep the working directory or not
-export KEEPDATA=${KEEPDATA:-NO}
-
-############################################
-# Specify it is production or developmen
-############################################
-export envir=${envir:-prod}
-# print current environment
-env
-
-############################################
-# Working Directory
-############################################
+####################################
+# make temp directory
+####################################
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
-############################################
-# Output for executables
-############################################
-export pgmout=OUTPUT.$$
+mkdir -p "${DATA}" && cd "${DATA}"
 
 ###########################################
 # Run setpdy and initialize PDY variables
 ###########################################
-export cycle=t${cyc}z 
+export cycle=${cycle:-"t${cyc}z"}
 setpdy.sh
 . ./PDY
 
-############################################
-# Set up the NET and RUN
-############################################
+####################################
+# SEND to COM, DBN, etc
+####################################
+export SENDCOM=${SENDCOM:-"YES"}
+export SENDDBN=${SENDDBN:-"YES"}
+
+####################################
+# Specify NET and RUN Name and model
+####################################
 export NET=${NET:-wafs}
 export RUN=${RUN:-wafs}
 
-############################################
-# Specify HOME Directory 
-############################################
-export HOMEwafs=${HOMEwafs:-${NWROOT}/wafs.${wafs_ver}}
-export EXECwafs=$HOMEwafs/exec
-export FIXwafs=$HOMEwafs/fix/wafs
-export PARMwafs=$HOMEwafs/parm/wafs
-export USHwafs=$HOMEwafs/ush
-export SCRIPTSwafs=$HOMEwafs/scripts
+##############################################
+# Define COM directories
+##############################################
+export COMINgfs=${COMINgfs:-$(compath.py "${envir}/gfs/${gfs_ver}")"/gfs.${PDY}/${cyc}/atmos"}
+export COMIN=${COMIN:-$(compath.py "${envir}/${NET}/${wafs_ver}")"/${RUN}.${PDY}/${cyc}/upp"}
+export COMOUT=${COMOUT:-$(compath.py -o "${NET}/${wafs_ver}")"/${RUN}.${PDY}/${cyc}/grib2/0p25"}
+mkdir -p "${COMOUT}"
 
-################################################
-# Set up the input/output directory
-################################################
-export COMIN=${COMIN:-$(compath.py $envir/$NET/$wafs_ver)/$RUN.$PDY/$cyc/upp}
-export COMOUT=${COMOUT:-$(compath.py -o $NET/$wafs_ver)/$RUN.$PDY/$cyc/grib2/0p25}
-export PCOM=${PCOM:-$COMOUT/wmo}
+####################################
+# Determine Job Output Name on System
+####################################
+export pgmout="OUTPUT.$$"
 
-export COMINgfs=${COMINgfs:-$(compath.py $envir/gfs/$gfs_ver)/gfs.$PDY/$cyc/atmos}
+####################################
+# Specify Execution Areas
+####################################
+export FIXwafs="${HOMEwafs}/fix"
 
-if [ $SENDCOM = YES ] ; then
-  mkdir -p $COMOUT # $PCOM
-fi
+#########################################################
+# print current environment
+#########################################################
+env
 
 ############################################
 # Execute the script.
 ############################################
-${SCRIPTSwafs}/exwafs_grib2_0p25.sh $fhr
+"${HOMEwafs}/scripts/exwafs_grib2_0p25.sh"
+export err=$?
+err_chk
 
-export err=$?; err_chk
-
-echo "JOB $job HAS COMPLETED NORMALLY!"
-
-############################################
-# print exec output
-############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
+if [[ -e "${pgmout}" ]]; then
+  cat "${pgmout}"
 fi
 
-############################################
-# remove temporary working directory
-############################################
-if [ $KEEPDATA != YES ] ; then
-    rm -rf $DATA
+##############################
+# Remove the Temporary working directory
+##############################
+if [[ "${KEEPDATA^^}" != "YES" ]]; then
+  rm -rf "${DATA}"
 fi
 
 date
-

@@ -3,8 +3,8 @@
 #PBS -j oe
 #PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_grib2_0p25_blending
 #PBS -N wafs_blending_0p25
-#PBS -l walltime=00:25:00
-#PBS -l select=1:ncpus=1
+#PBS -l walltime=00:30:00
+#PBS -l select=1:ncpus=27:mem=50GB
 #PBS -q debug
 #PBS -l debug=true
 #PBS -A GFS-DEV
@@ -57,13 +57,8 @@ export RUN=wafs
 ############################################
 # user defined
 ############################################
-#export PDY=`$NDATE -24 | cut -c 1-8`
-export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20240703
-
 export cyc=${cyc:-00}
-
-export fhr=006
+export PDY=$(cut -c 7-14 $COMROOT/date/t${cyc}z)
 
 # wafs_blending for blending icing turbulence of US and UK
 export job=wafs_blending_0p25_${cyc}
@@ -71,7 +66,7 @@ export job=wafs_blending_0p25_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 
-USER=`whoami`
+USER=$(whoami)
 
 ############################################
 # SENDCOM=YES--Copy output file to /com
@@ -87,16 +82,24 @@ export KEEPDATA=YES
 ############################################
 # Define DATA PCOM, COMOUT and COMIN
 ############################################
-
+# For COMOUT
 export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
-export COMPATH=$COMROOT/wafs
+# For COMIN
+# export COMPATH=$COMROOT/wafs
+export COMPATH=/lfs/h2/emc/ptmp/yali.mao/wafsx001/prod/com/wafs
 
-export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/blending.$jobid
+export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs
 
 ############################################
 # run the job
 #############################################
+# Set up mailing list
+if [[ "${envir}" != "prod" ]]; then
+    MAILTO="nco.spa@noaa.gov"
+fi
+export MAILTO=${MAILTO:-"nco.spa@noaa.gov,ncep.sos@noaa.gov,nco.sos@noaa.gov,nco.hpc.dataflow@noaa.gov"}
+
 sh $HOMEwafs/jobs/JWAFS_GRIB2_0P25_BLENDING
 
 exit
