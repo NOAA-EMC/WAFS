@@ -24,6 +24,8 @@ The checkout procedure extracts the following WAFS components, while GTG is a su
 | UPP       | upp_wafs_v7.0.0      | Wen.Meng@noaa.gov |
 | GTG       | ncep_post_gtg.v2.1.0 | Yali.Mao@noaa.gov |
 
+The GTG repository is private which may protect you from checking out. To inquire the access, please contact the code managers with justification.
+
 To build all the WAFS components, execute:
 ```bash
 ./sorc/build_all.sh
@@ -202,6 +204,7 @@ HPSS Archive
 ------------
 * Directory changes and filename changes, refer back to 'Product Changes'
 * Add wafs.tCCz.0p25.anl.grib2
+* Add gfs.tCCz.wafs_0p25.fFFF.grib2 (non-hazard WAFS 0p25 data) 
 
 
 Job Dependencies and flow diagram
