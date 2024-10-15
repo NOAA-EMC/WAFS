@@ -3,7 +3,7 @@
 #PBS -j oe
 #PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_gcip
 #PBS -N wafs_gcip
-#PBS -l walltime=00:10:00
+#PBS -l walltime=00:15:00
 #PBS -l select=1:ncpus=1:mem=25GB
 #PBS -q debug
 #PBS -l debug=true
