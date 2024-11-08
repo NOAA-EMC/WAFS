@@ -1,4 +1,4 @@
-WAFS v7.0.0  RELEASE NOTES
+WAFS v7.0.1  RELEASE NOTES
 
 -------
 Prelude
@@ -14,8 +14,8 @@ The NOAA-EMC and NCAR organization spaces on GitHub are used to manage the WAFS 
 Checkout the package from GitHub and `cd` into the directory:
 ```bash
 cd ${PACKAGEROOT}
-git clone --recursive -b wafs.v7.0.0 https://github.com/noaa-emc/wafs wafs.v7.0.0
-cd wafs.v7.0.0
+git clone --recursive -b wafs.v7.0.1 https://github.com/noaa-emc/wafs wafs.v7.0.1
+cd wafs.v7.0.1
 ```
 
 The checkout procedure extracts the following WAFS components, while GTG is a subcomponent of UPP.:
@@ -132,7 +132,7 @@ Environment and Resource Changes
 Pre-implementation Testing Requirements
 ---------------------------------------
 * Which production jobs should be tested as part of this implementation?
-  * The entire WAFS v7.0.0 package needs to be installed and tested on WCOSS-2
+  * The entire WAFS v7.0.1 package needs to be installed and tested on WCOSS-2
 * Does this change require a 30-day evaluation?
   * No
 

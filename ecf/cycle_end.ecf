@@ -1,0 +1,10 @@
+#!/bin/bash -l
+
+model=wafs
+%include <head.h>
+%include <envir-p1.h>
+set -x
+cyc=%CYC%
+ecflow_client --requeue=force /${model}/primary/${cyc}/wafs
+%include <tail.h>
+exit 0
