@@ -94,7 +94,7 @@ if [ $RUN = "gfs" ] ; then
   channels="VIS SIR LIR SSR"
   # If one channel is missing, satFiles will be empty
   for channel in $channels ; do
-      satFile=GLOBCOMP$channel.${PDY}${vhour}
+      satFile=GLOBCOMP${channel}*${PDY}${vhour}*area
       if [[ $COMINsat == *ftp:* ]] ; then
 	  curl -O $COMINsat/$satFile
       else
@@ -134,10 +134,10 @@ if [ $RUN = "gfs" ] ; then
 	  fi
 	done
 
-	cp $COMINsat/$satFile .
+	cp $COMINsat/$satFile ${channel}.area
       fi
-      if [[ -s $satFile ]] ; then
-	  satFiles="$satFiles $satFile"
+      if [[ -s ${channel}.area ]] ; then
+	  satFiles="$satFiles ${channel}.area"
       else
 	  satFiles=""
 	  break
