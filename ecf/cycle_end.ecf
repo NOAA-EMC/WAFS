@@ -1,10 +1,20 @@
 #!/bin/bash -l
 
-model=wafs
+model=%SUITE%
 %include <head.h>
 %include <envir-p1.h>
 set -x
 cyc=%CYC%
-ecflow_client --requeue=force /${model}/primary/${cyc}/wafs
+ecflow_client --requeue=force /wafs/primary/${cyc}/wafs
+
 %include <tail.h>
+%manual
+TASK: cycle_end.ecf
+
+PURPOSE:
+  To force requeue of wafs package. It replaces 'repeat day 1' to solve system unstable issue.
+
+The job is scheduled to requeue wafs tasks by 'cron' one hour ahead of each cycle.
+
+%end
 exit 0

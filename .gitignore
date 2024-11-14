@@ -22,4 +22,3 @@ ecf/grib/jwafs_grib_f*.ecf
 
 # Ignore wafs.def
 ecf/def/wafs*.def
-ecf/cycle_end?*.ecf

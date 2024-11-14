@@ -17,9 +17,9 @@ set -eu
 readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/../.." && pwd -P)
 cd $DIR_ROOT/dev/ecf
 # create a suite def file in real time
-./setup_ecf.sh -x x001
+./setup_ecf.sh
 
-suitename="wafsx001"
+suitename="wafs"
 
 # set ECF_HOST according to which WCOSS2 machine
 if [[ $(hostname) =~ ^[d][login|dxfer] ]]  ; then
@@ -33,7 +33,7 @@ module load ecflow
 # Make sure ecflow_server is not halted
 ecflow_client --restart
 
-cd $DIR_ROOT/def
+cd $DIR_ROOT/ecf/def
 
 # echo "yes" | ecflow_client --delete=/$suitename
 # ecflow_client --load $PWD/$suitename.def

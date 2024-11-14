@@ -99,13 +99,7 @@ sed -e "s|@EXPID@|${EXPID}|g" \
     -e "s|@PACKAGEROOT@|${packageroot}|g" \
     -e "s|@PDY@|${PDYcyc:0:8}|g" \
     -e "s|@CYC@|${PDYcyc:8:2}|g" \
-    "${DIR_ROOT}/def/${template}" >"${DIR_ROOT}/def/wafs${EXPID}.def"
-
-# Make sure the right ecflow suite to be requeued by cycle_end
-if [[ -n "${EXPID}" ]]; then
-    sed -e "s|model=.*|model=wafs${EXPID}|g"  \
-	"${DIR_ROOT}/ecf/cycle_end.ecf" > "${DIR_ROOT}/ecf/cycle_end${EXPID}.ecf"
-fi
+    "${DIR_ROOT}/ecf/def/${template}" >"${DIR_ROOT}/ecf/def/wafs${EXPID}.def"
 
 # Link ecflow scripts
 echo "Link ecflow scripts in ... ecf/"

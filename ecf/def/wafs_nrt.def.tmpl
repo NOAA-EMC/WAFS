@@ -25,7 +25,7 @@ suite wafs@EXPID@
     edit COMPATH '%COMROOT%/wafs'
     family 00
       edit CYC '00'
-      task cycle_end@EXPID@
+      task cycle_end
         cron 23:05
       family wafs
         family @MODELVER@
@@ -434,7 +434,7 @@ suite wafs@EXPID@
     endfamily  # endfamily 00
     family 06
       edit CYC '06'
-      task cycle_end@EXPID@
+      task cycle_end
         cron 05:05
       family wafs
         family @MODELVER@
@@ -843,7 +843,7 @@ suite wafs@EXPID@
     endfamily  # endfamily 06
     family 12
       edit CYC '12'
-      task cycle_end@EXPID@
+      task cycle_end
         cron 11:05
       family wafs
         family @MODELVER@
@@ -1252,7 +1252,7 @@ suite wafs@EXPID@
     endfamily  # endfamily 12
     family 18
       edit CYC '18'
-      task cycle_end@EXPID@
+      task cycle_end
         cron 17:05
       family wafs
         family @MODELVER@
