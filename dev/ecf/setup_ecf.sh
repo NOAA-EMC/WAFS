@@ -10,7 +10,7 @@
 # Setting up ecflow suite requires the package to be cloned in a directory matching 'wafs.vX.Y.Z'
 # where X, Y, Z are numbers
 # The script replaces @VARIABLE@ names in suite definition files with values
-# and links ecflow scripts in the ecf/scripts directory
+# and links ecflow scripts in the ecf/ directory
 #
 # The script is expected to be run after the package is cloned and executables are built
 
@@ -102,7 +102,7 @@ sed -e "s|@EXPID@|${EXPID}|g" \
     "${DIR_ROOT}/ecf/def/${template}" >"${DIR_ROOT}/ecf/def/wafs${EXPID}.def"
 
 # Link ecflow scripts
-echo "Link ecflow scripts in ... ecf/scripts"
+echo "Link ecflow scripts in ... ecf/"
 cd "${DIR_ROOT}/ecf" || exit 1
 ./setup_ecf_links.sh
 

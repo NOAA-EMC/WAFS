@@ -6,9 +6,9 @@ set -eu
 readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}")")/../.." && pwd -P)
 
 job=${1?"Must specify a job to submit"}
-PDYcyc=${2:-"2024081918"}
+PDYcyc=${2:-"2024110112"}
 
-tmpdir=/lfs/h2/emc/ptmp/${USER}/working_wafs.${job}_${PDYcyc:0:8}
+tmpdir=/lfs/h2/emc/ptmp/${USER}/working_wafs.${job}_${PDYcyc}
 mkdir -p $tmpdir
 cd $tmpdir
 
@@ -36,7 +36,7 @@ elif [ $job = 'grib2_0p25_blending' ]; then
   -e "s|HOMEwafs=.*|HOMEwafs=$DIR_ROOT|g" \
   -e "s|PDY=.*|PDY=${PDYcyc:0:8}|g" \
   -e "s|cyc=.*|cyc=${PDYcyc:8:2}|g" \
-  -e "s|working_wafs|working_wafs.${job}_${PDYcyc:0:8}|g" \
+  -e "s|working_wafs|working_wafs.${job}_${PDYcyc}|g" \
   -i $jobcard
   qsub $jobcard
   exit
@@ -56,7 +56,7 @@ for fhr in $FHOURS; do
   -e "s|PDY=.*|PDY=${PDYcyc:0:8}|g" \
   -e "s|cyc=.*|cyc=${PDYcyc:8:2}|g" \
   -e "s|fhr=.*|fhr=$fhr|g" \
-  -e "s|working_wafs|working_wafs.${job}_${PDYcyc:0:8}|g" \
+  -e "s|working_wafs|working_wafs.${job}_${PDYcyc}|g" \
   $jobcard >$jobcard.$fhr
 
   qsub $jobcard.$fhr
