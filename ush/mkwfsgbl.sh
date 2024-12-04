@@ -108,12 +108,12 @@ fi
 
 # Send data to COM
 if [[ "${SENDCOM}" == "YES" ]]; then
-    cpfs "xtrn.wfsgfs${fhr}${sets}" "${COMOUTwmo}/xtrn.wfsgfs${cyc}${fhr}${sets}.${jobsuffix}"
+    cpfs "xtrn.wfsgfs${fhr}${sets}" "${COMOUTwmo}/xtrn.wfsgfs${cyc}${fhr}${sets}"
 fi
 
 # Alert via DBN
 if [[ "${SENDDBN_NTC}" == "YES" ]]; then
-    "${DBNROOT}/bin/dbn_alert" GRIB_LOW gfs "${job}" "${COMOUTwmo}/xtrn.wfsgfs${cyc}${fhr}${sets}.${jobsuffix}"
+    "${DBNROOT}/bin/dbn_alert" GRIB_LOW gfs "${job}" "${COMOUTwmo}/xtrn.wfsgfs${cyc}${fhr}${sets}"
 else
     echo "xtrn.wfsgfs${cyc}${fhr}${sets}.${job} file not posted to db_net."
 fi

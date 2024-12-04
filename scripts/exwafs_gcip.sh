@@ -43,12 +43,6 @@ shipFile="ships.ibm"
 lightningFile="ltngsr.ibm"
 pirepFile="pirep.ibm"
 
-# Setup mailing list once
-if [[ "${envir}" != "prod" ]]; then
-	maillist="nco.spa@noaa.gov"
-fi
-maillist=${maillist:-"nco.spa@noaa.gov,ncep.sos@noaa.gov"}
-
 satFiles=""
 channels="VIS SIR LIR SSR"
 # If one channel is missing, satFiles will be empty
@@ -75,9 +69,9 @@ for channel in ${channels}; do
 			echo >>mailmsg
 			echo "${job} will gracfully exit" >>mailmsg
 			cat mailmsg >"${COMOUT}/${RUN}.t${cyc}z.gcip.emailbody"
-			cat "${COMOUT}/${RUN}.t${cyc}z.gcip.emailbody" | mail.py -s "${subject}" "${maillist}" -v
+			cat "${COMOUT}/${RUN}.t${cyc}z.gcip.emailbody" | mail.py -s "${subject}" "${MAILTOgcip}" -v
 
-			exit 1
+			exit
 		fi
 	fi
 	if [[ -s "${satFile}" ]]; then

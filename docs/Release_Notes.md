@@ -171,6 +171,7 @@ Product Changes
     | gfs.tCCz.wafs_blend_0p25_usonly.emailbody  | wafs.tCCz.wafs_blend_0p25_ukmissing.emailbody |
     | gfs.tCCz.wafs_blend_0p25_ukonly.emailbody  | wafs.tCCz.wafs_blend_0p25_usmissing.emailbody |
     |                                            | wafs.tCCz.wafs_blend_0p25_noblending.emailbody (new) |
+    | wmo/xtrn.wfsgfsCCFF[a/b].gfs_atmos_wafs_fFF_CC | wmo/xtrn.wfsgfsCCFF[a/b] |
 
 
 * File content changes
