@@ -39,6 +39,7 @@ set -x
 #############################################################
 # WCOSS environment settings
 #############################################################
+export DCOMROOTsat=%DCOMROOTsat:$DCOMROOT%
 
 # Set up mailing list
 if [[ "${envir}" != "prod" ]]; then

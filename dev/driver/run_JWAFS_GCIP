@@ -38,6 +38,7 @@ module list
 ############################################
 echo $DCOMROOT
 export DCOMROOT=/lfs/h1/ops/prod/dcom
+export DCOMROOTsat=/lfs/h2/emc/ptmp/yali.mao/gmgsi_testdata
 
 ############################################
 # Define envir

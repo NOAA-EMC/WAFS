@@ -4,7 +4,7 @@ suite wafs@EXPID@
   edit wafs_ver '@MODELVER@'
   edit PACKAGEHOME '@PACKAGEROOT@/wafs.%wafs_ver%'
   edit ECF_INCLUDE '@PACKAGEROOT@/wafs.@MODELVER@/ecf/include'
-  edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+  edit ECF_FILES '%PACKAGEHOME%/ecf'
   edit ENVIR 'prod'
   edit QUEUE 'dev'
   edit QUEUE_ARCH 'dev_transfer'
@@ -207,6 +207,7 @@ suite wafs@EXPID@
               edit FHR 120
           endfamily  # endfamily upp
           family gcip
+            edit DCOMROOTsat '/lfs/h1/ops/dev/dcom'
             task jwafs_gcip_f000
               trigger ../jwafs_gfs_manager:release_wafs_gcip_000
               edit FHR 000
@@ -419,7 +420,6 @@ suite wafs@EXPID@
                 trigger ../../upp/jwafs_upp_f120 == complete
                 edit FHR 120
               family blending
-                edit DCOMROOT '/lfs/h1/ops/dev/dcom/test'
                 task jwafs_grib2_0p25_blending
                   trigger ../jwafs_grib2_0p25_f048 == complete
               endfamily  # endfamily blending

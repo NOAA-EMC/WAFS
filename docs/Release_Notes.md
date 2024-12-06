@@ -67,6 +67,7 @@ Parm Changes
 2. parm/upp is created after system building. Per AWC request, WAFS UPP control files add 4 low levels for icing and 1 upper lower for turbulence:
    - postxconfig-NT-GFS-WAFS.txt
    - postcntrl_gfs_wafs.xml
+3. parm/wafs/wafs_gcip_gfs.cfg is updated for GMGSI satellite update
 
 Script Changes
 --------------
@@ -91,6 +92,8 @@ Additionally there are other changes:
 5. In exwafs_grib2_0p25_blending.sh, use MPMD for each forecast hour to call ush/wafs_grib2_0p25_blending.sh.
    - Collect missing files from ush/wafs_grib2_0p25_blending.sh, send out warning email and dbn_alert of missing data once per cycle
    - Add not-blended email and dbn_alert if both UK and US unblended files are missing
+6. In exwafs_grib2_0p25_blending.sh, UK unblended data filenames are changed to whatever UK sends, NCO doesn't rename anymore.
+7. In exwafs_gcip.sh, GMGSI satellite filenames are changed.
 
 Fix Changes
 -----------
