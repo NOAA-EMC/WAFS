@@ -47,13 +47,13 @@ satFiles=""
 channels="VIS SIR LIR SSR"
 # If one channel is missing, satFiles will be empty
 for channel in ${channels}; do
-	satFile="GLOBCOMP${channel}.${PDY}${vhour}"
+	satFile="$(find ${COMINsat} -name GLOBCOMP${channel}*${PDY}${vhour}*area)"
 	if [[ "${COMINsat}" == *ftp:* ]]; then
 		curl -O "${COMINsat}/${satFile}"
 	else
-		# check the availability of satellite data file
-		if [[ -s "${COMINsat}/${satFile}" ]]; then
-			cpreq "${COMINsat}/${satFile}" .
+	        # check the availability of satellite data file
+		if [ ! -z ${satFile} ]; then
+			cpreq "${COMINsat}/$(basename ${satFile})" ${channel}.area
 		else
 			msg="GCIP at ${vhour}z ABORTING, no satellite ${channel} file!"
 			echo "${msg}"
@@ -74,8 +74,8 @@ for channel in ${channels}; do
 			exit
 		fi
 	fi
-	if [[ -s "${satFile}" ]]; then
-		satFiles="${satFiles} ${satFile}"
+	if [[ -s "${channel}.area" ]]; then
+		satFiles="${satFiles} ${channel}.area"
 	else
 		satFiles=""
 		break
