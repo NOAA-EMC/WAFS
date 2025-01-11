@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_grib2_1p25_f%FHR%_%CYC%
+#PBS -N %RUN%_grib2_0p25_f%FHR%_%CYC%%VER:%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -41,7 +41,7 @@ set -x
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEwafs}/jobs/JWAFS_GRIB2_1P25
+${HOMEwafs}/jobs/JWAFS_GRIB2_0P25
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
@@ -50,12 +50,14 @@ fi
 
 %include <tail.h>
 %manual
-TASK: JWAFS_GRIB2_1P25
+TASK: JWAFS_GRIB2_0P25
 
-PURPOSE: Triggered by JWAFS_UPP to produce WAFS files on grid 45
+PURPOSE: Triggered by JWAFS_UPP to produce WAFS grid files at 0.25 degree, and trigger the blending job:
+  JWAFS_GRIB2_0P25_BLENDING
 
 This job will be triggered for each forecast hour once JWAFS_UPP is finished.
-This job will produce WAFS files on grid 45 , which is at 1.25 degree.
+This job will produce WAFS grid files at 0.25 degree resolution.
+This job will produce wafs.tCCz.awf.0p25.fFFF.grib2, while FFF [006-036] has extra levels of icing and turbulence than FFF [039-048]
 This job will skip any intermediate forecast hour if GFS model output is not available or the upsteam JWAFS_UPP fails for that forecast hour.
 
 TROUBLESHOOTING

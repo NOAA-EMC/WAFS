@@ -38,8 +38,7 @@ module list
 ############################################
 export DBNROOT=${UTILROOT}/fakedbn
 # for UK (canned)  data
-export DCOMROOT=/lfs/h1/ops/prod/dcom
-export DCOMROOT=/lfs/h1/ops/dev/dcom/test
+#export DCOMROOT=/lfs/h1/ops/dev/dcom/test
 
 ############################################
 # Define envir
@@ -87,7 +86,7 @@ export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
 # For COMIN
 # export COMPATH=$COMROOT/wafs
-export COMPATH=/lfs/h2/emc/ptmp/yali.mao/wafsx001/prod/com/wafs
+export COMPATH=/lfs/h2/emc/ptmp/$USER/wafs_dwn/prod/com/wafs
 
 export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs
 

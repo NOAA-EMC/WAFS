@@ -1,35 +1,35 @@
 suite wafs@EXPID@
-  edit MACHINE_SITE '@MACHINE_SITE@'
-  edit USER '@USER@'
-  edit wafs_ver '@MODELVER@'
-  edit PACKAGEHOME '@PACKAGEROOT@/wafs.%wafs_ver%'
-  edit ECF_INCLUDE '@PACKAGEROOT@/wafs.@MODELVER@/ecf/include'
-  edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
-  edit ENVIR 'prod'
-  edit QUEUE 'dev'
-  edit QUEUE_ARCH 'dev_transfer'
-  edit PROJENVIR 'DEV'
-  edit PROJ 'GFS'  # TODO: Change to 'WAFS' when ready
-  edit PARATEST 'NO'
-  edit SENDDBN 'NO'
-  edit SENDDBN_NTC 'NO'
-  edit SENDCANNEDDBN 'NO'
-  edit KEEPDATA 'NO'
-  edit RUN_ENVIR 'dev'
-  edit COMROOT '/lfs/h2/emc/ptmp/%USER%/wafs@EXPID@/%ENVIR%/com'
-  edit DATAROOT '/lfs/h2/emc/stmp/%USER%/wafs@EXPID@/tmp'
-  edit OUTPUTDIR '/lfs/h2/emc/stmp/%USER%/wafs@EXPID@/output'
-  edit COMPATH '%COMROOT%/wafs'
-  repeat day 1
   family primary
-    family wafs
-      edit NET 'wafs'
-      edit RUN 'wafs'
-      family @MODELVER@
-        family 00
-          edit CYC '00'
+    edit MACHINE_SITE '@MACHINE_SITE@'
+    edit USER '@USER@'
+    edit wafs_ver '@MODELVER@'
+    edit PACKAGEHOME '@PACKAGEROOT@/wafs.%wafs_ver%'
+    edit ECF_INCLUDE '@PACKAGEROOT@/wafs.@MODELVER@/ecf/include'
+    edit ECF_FILES '%PACKAGEHOME%/ecf'
+    edit ENVIR 'prod'
+    edit QUEUE 'dev'
+    edit NET 'wafs'
+    edit RUN 'wafs'
+    edit QUEUE_ARCH 'dev_transfer'
+    edit PROJENVIR 'DEV'
+    edit PROJ 'GFS'  # TODO: Change to 'WAFS' when ready
+    edit PARATEST 'NO'
+    edit SENDDBN 'NO'
+    edit SENDDBN_NTC 'NO'
+    edit SENDCANNEDDBN 'NO'
+    edit KEEPDATA 'NO'
+    edit RUN_ENVIR 'dev'
+    edit COMROOT '/lfs/h2/emc/ptmp/%USER%/wafs@EXPID@/%ENVIR%/com'
+    edit DATAROOT '/lfs/h2/emc/stmp/%USER%/wafs@EXPID@/tmp'
+    edit OUTPUTDIR '/lfs/h2/emc/stmp/%USER%/wafs@EXPID@/output'
+    edit COMPATH '%COMROOT%/wafs'
+    family 00
+      edit CYC '00'
+      task cycle_end
+        cron 23:05
+      family wafs
+        family @MODELVER@
           task jwafs_gfs_manager
-            trigger :TIME >= 0335 and :TIME < 0935
             event 1 release_wafs_upp_anl  # upp
             event 2 release_wafs_upp_000
             event 3 release_wafs_upp_006
@@ -82,6 +82,7 @@ suite wafs@EXPID@
             event 50 release_wafs_grib_048
             event 51 release_wafs_grib_060
             event 52 release_wafs_grib_072
+	    time 03:35
           family upp
             task jwafs_upp_anl
               trigger ../jwafs_gfs_manager:release_wafs_upp_anl
@@ -208,11 +209,13 @@ suite wafs@EXPID@
               edit FHR 120
           endfamily  # endfamily upp
           family gcip
+	    edit DCOMROOTsat '/lfs/h1/ops/dev/dcom'
+	    time 04:40
             task jwafs_gcip_f000
-              trigger :TIME >= 0440 and ../jwafs_gfs_manager:release_wafs_gcip_000
+              trigger ../jwafs_gfs_manager:release_wafs_gcip_000
               edit FHR 000
             task jwafs_gcip_f003
-              trigger :TIME >= 0440 and ../jwafs_gfs_manager:release_wafs_gcip_003
+              trigger ../jwafs_gfs_manager:release_wafs_gcip_003
               edit FHR 003
           endfamily  # endfamily gcip
           family grib
@@ -420,18 +423,22 @@ suite wafs@EXPID@
                 trigger ../../upp/jwafs_upp_f120 == complete
                 edit FHR 120
               family blending
-                trigger :TIME >= 0430 and :TIME < 1030
-                edit DCOMROOT '/lfs/h1/ops/dev/dcom/test'
                 task jwafs_grib2_0p25_blending
                   trigger ../jwafs_grib2_0p25_f048 == complete
+	          time 04:30
               endfamily  # endfamily blending
             endfamily  # endfamily 0p25
           endfamily  # endfamily grib2
-        endfamily  # endfamily 00
-        family 06
-          edit CYC '06'
+        endfamily  # endfamily @MODELVER@
+      endfamily  # endfamily wafs
+    endfamily  # endfamily 00
+    family 06
+      edit CYC '06'
+      task cycle_end
+        cron 05:05
+      family wafs
+        family @MODELVER@
           task jwafs_gfs_manager
-            trigger :TIME >= 0935 and :TIME < 1535
             event 1 release_wafs_upp_anl  # upp
             event 2 release_wafs_upp_000
             event 3 release_wafs_upp_006
@@ -484,6 +491,7 @@ suite wafs@EXPID@
             event 50 release_wafs_grib_048
             event 51 release_wafs_grib_060
             event 52 release_wafs_grib_072
+	    time 09:35
           family upp
             task jwafs_upp_anl
               trigger ../jwafs_gfs_manager:release_wafs_upp_anl
@@ -610,11 +618,13 @@ suite wafs@EXPID@
               edit FHR 120
           endfamily  # endfamily upp
           family gcip
+	    edit DCOMROOTsat '/lfs/h1/ops/dev/dcom'
+	    time 10:40
             task jwafs_gcip_f000
-              trigger :TIME >= 1040 and ../jwafs_gfs_manager:release_wafs_gcip_000
+              trigger ../jwafs_gfs_manager:release_wafs_gcip_000
               edit FHR 000
             task jwafs_gcip_f003
-              trigger :TIME >= 1040 and ../jwafs_gfs_manager:release_wafs_gcip_003
+              trigger ../jwafs_gfs_manager:release_wafs_gcip_003
               edit FHR 003
           endfamily  # endfamily gcip
           family grib
@@ -822,18 +832,22 @@ suite wafs@EXPID@
                 trigger ../../upp/jwafs_upp_f120 == complete
                 edit FHR 120
               family blending
-                trigger :TIME >= 1030 and :TIME < 1630
-                edit DCOMROOT '/lfs/h1/ops/dev/dcom/test'
                 task jwafs_grib2_0p25_blending
                   trigger ../jwafs_grib2_0p25_f048 == complete
+	          time 10:30
               endfamily  # endfamily blending
             endfamily  # endfamily 0p25
           endfamily  # endfamily grib2
-        endfamily  # endfamily 06
-        family 12
-          edit CYC '12'
+        endfamily  # endfamily MODELVER
+      endfamily  # endfamily wafs
+    endfamily  # endfamily 06
+    family 12
+      edit CYC '12'
+      task cycle_end
+        cron 11:05
+      family wafs
+        family @MODELVER@
           task jwafs_gfs_manager
-            trigger :TIME >= 1535 and :TIME < 2135
             event 1 release_wafs_upp_anl  # upp
             event 2 release_wafs_upp_000
             event 3 release_wafs_upp_006
@@ -886,6 +900,7 @@ suite wafs@EXPID@
             event 50 release_wafs_grib_048
             event 51 release_wafs_grib_060
             event 52 release_wafs_grib_072
+	    time 15:35
           family upp
             task jwafs_upp_anl
               trigger ../jwafs_gfs_manager:release_wafs_upp_anl
@@ -1012,11 +1027,13 @@ suite wafs@EXPID@
               edit FHR 120
           endfamily  # endfamily upp
           family gcip
+	    edit DCOMROOTsat '/lfs/h1/ops/dev/dcom'
+	    time 16:40
             task jwafs_gcip_f000
-              trigger :TIME >= 1640 and ../jwafs_gfs_manager:release_wafs_gcip_000
+              trigger ../jwafs_gfs_manager:release_wafs_gcip_000
               edit FHR 000
             task jwafs_gcip_f003
-              trigger :TIME >= 1640 and ../jwafs_gfs_manager:release_wafs_gcip_003
+              trigger ../jwafs_gfs_manager:release_wafs_gcip_003
               edit FHR 003
           endfamily  # endfamily gcip
           family grib
@@ -1224,18 +1241,22 @@ suite wafs@EXPID@
                 trigger ../../upp/jwafs_upp_f120 == complete
                 edit FHR 120
               family blending
-                trigger :TIME >= 1630 and :TIME < 2230
-                edit DCOMROOT '/lfs/h1/ops/dev/dcom/test'
                 task jwafs_grib2_0p25_blending
                   trigger ../jwafs_grib2_0p25_f048 == complete
+                  time 16:30
               endfamily  # endfamily blending
             endfamily  # endfamily 0p25
           endfamily  # endfamily grib2
-        endfamily  # endfamily 12
-        family 18
-          edit CYC '18'
+        endfamily  # endfamily MODELVER
+      endfamily  # endfamily wafs
+    endfamily  # endfamily 12
+    family 18
+      edit CYC '18'
+      task cycle_end
+        cron 17:05
+      family wafs
+        family @MODELVER@
           task jwafs_gfs_manager
-            trigger :TIME >= 2135
             event 1 release_wafs_upp_anl  # upp
             event 2 release_wafs_upp_000
             event 3 release_wafs_upp_006
@@ -1288,6 +1309,7 @@ suite wafs@EXPID@
             event 50 release_wafs_grib_048
             event 51 release_wafs_grib_060
             event 52 release_wafs_grib_072
+	    time 21:35
           family upp
             task jwafs_upp_anl
               trigger ../jwafs_gfs_manager:release_wafs_upp_anl
@@ -1414,11 +1436,13 @@ suite wafs@EXPID@
               edit FHR 120
           endfamily  # endfamily upp
           family gcip
+	    edit DCOMROOTsat '/lfs/h1/ops/dev/dcom'
+	    time 22:40
             task jwafs_gcip_f000
-              trigger :TIME >= 2240 and ../jwafs_gfs_manager:release_wafs_gcip_000
+              trigger ../jwafs_gfs_manager:release_wafs_gcip_000
               edit FHR 000
             task jwafs_gcip_f003
-              trigger :TIME >= 2240 and ../jwafs_gfs_manager:release_wafs_gcip_003
+              trigger ../jwafs_gfs_manager:release_wafs_gcip_003
               edit FHR 003
           endfamily  # endfamily gcip
           family grib
@@ -1626,15 +1650,14 @@ suite wafs@EXPID@
                 trigger ../../upp/jwafs_upp_f120 == complete
                 edit FHR 120
               family blending
-                trigger :TIME >= 2230
-                edit DCOMROOT '/lfs/h1/ops/dev/dcom/test'
                 task jwafs_grib2_0p25_blending
                   trigger ../jwafs_grib2_0p25_f048 == complete
+                  time 22:30
               endfamily  # endfamily blending
             endfamily  # endfamily 0p25
           endfamily  # endfamily grib2
-        endfamily  # endfamily 18
-      endfamily  # endfamily @MODELVER@
-    endfamily  # endfamily wafs
+        endfamily  # endfamily @MODELVER@
+      endfamily  # endfamily wafs
+    endfamily  # endfamily 18
   endfamily  # endfamily primary
 endsuite  # endsuite wafs@EXPID@

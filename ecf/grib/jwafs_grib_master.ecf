@@ -1,11 +1,10 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_upp_f%FHR%_%CYC%
+#PBS -N %RUN%_grib_f%FHR%_%CYC%%VER:%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:15:00
-#PBS -l select=1:mpiprocs=126:ompthreads=1:ncpus=126
-#PBS -l place=vscatter:exclhost
+#PBS -l walltime=00:10:00
+#PBS -l select=1:ncpus=1
 #PBS -l debug=true
 
 export model=wafs
@@ -27,14 +26,8 @@ set +x
 module load PrgEnv-intel/${PrgEnv_intel_ver}
 module load craype/${craype_ver}
 module load intel/${intel_ver}
-module load cray-mpich/${craympich_ver}
-module load cray-pals/${cray_pals_ver}
 module load libjpeg/${libjpeg_ver}
-module load hdf5/${hdf5_ver}
-module load netcdf/${netcdf_ver}
-module load g2tmpl/${g2tmpl_ver}
-module load prod_util/${prod_util_ver}
-module load grib_util/${grib_util_ver}
+module load grib_util/$grib_util_ver
 module load wgrib2/${wgrib2_ver}
 
 module list
@@ -47,7 +40,7 @@ set -x
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEwafs}/jobs/JWAFS_UPP
+${HOMEwafs}/jobs/JWAFS_GRIB
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
@@ -56,17 +49,14 @@ fi
 
 %include <tail.h>
 %manual
-TASK: JWAFS_UPP
+TASK: JWAFS_GRIB
 
-PURPOSE: Triggered by JWAFS_GFS_MANAGER to produce WAFS master files, and trigger the following two jobs:
-  JWAFS_GRIB2_0P25
-  JWAFS_GRIB2_1P25
+PURPOSE: Triggered by JWAFS_GFS_MANAGER to produce WAFS grib1 data.
 
 This job will be triggered for each forecast hour by JWAFS_GFS_MANAGER once GFS forecast model output is available.
-Different from genearl UPP, this job will be with GTG to produce WAFS master files for its downstream jobs.
-This job will use different control files for forecast hour [000-048] and [054-120], so forecast products are different. forecast hour [000-048] contains icing and turublence, while [054-120] doesn't.
+This job will produce data which is saved to wmo/ folder only.
 This job will skip any intermediate forecast hour if the forecast model output is not available for that forecast hour
 
 TROUBLESHOOTING
-If this job fails, make sure GFS forecast model output is available and re-run this job for the failed forecast hour. To debug, make sure GTG related source code, scripts and parm files work correctly.
+If this job fails, make sure GFS forecast model output is available and re-run this job for the failed forecast hour.
 %end

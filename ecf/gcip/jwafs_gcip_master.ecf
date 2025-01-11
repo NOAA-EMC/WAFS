@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_gcip_f%FHR%_%CYC%
+#PBS -N %RUN%_gcip_f%FHR%_%CYC%%VER:%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -39,6 +39,13 @@ set -x
 #############################################################
 # WCOSS environment settings
 #############################################################
+if [ -n "%DCOMROOTsat:%" ]; then export DCOMROOTsat=%DCOMROOTsat:-DCOMROOT% ; fi
+
+# Set up mailing list
+if [[ "${envir}" != "prod" ]]; then
+    MAILTOgcip=${MAILTOgcip:-"nco.spa@noaa.gov"}
+fi
+export MAILTOgcip=${MAILTOgcip:-"nco.spa@noaa.gov,nco.sos@noaa.gov"}
 
 ############################################################
 # CALL executable job script here

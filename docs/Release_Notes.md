@@ -1,4 +1,4 @@
-WAFS v7.0.0  RELEASE NOTES
+WAFS v7.0.1  RELEASE NOTES
 
 -------
 Prelude
@@ -14,8 +14,8 @@ The NOAA-EMC and NCAR organization spaces on GitHub are used to manage the WAFS 
 Checkout the package from GitHub and `cd` into the directory:
 ```bash
 cd ${PACKAGEROOT}
-git clone --recursive -b wafs.v7.0.0 https://github.com/noaa-emc/wafs wafs.v7.0.0
-cd wafs.v7.0.0
+git clone --recursive -b wafs.v7.0.1 https://github.com/noaa-emc/wafs wafs.v7.0.1
+cd wafs.v7.0.1
 ```
 
 The checkout procedure extracts the following WAFS components, while GTG is a subcomponent of UPP.:
@@ -67,6 +67,7 @@ Parm Changes
 2. parm/upp is created after system building. Per AWC request, WAFS UPP control files add 4 low levels for icing and 1 upper lower for turbulence:
    - postxconfig-NT-GFS-WAFS.txt
    - postcntrl_gfs_wafs.xml
+3. parm/wafs/wafs_gcip_gfs.cfg is updated for GMGSI satellite update
 
 Script Changes
 --------------
@@ -91,6 +92,8 @@ Additionally there are other changes:
 5. In exwafs_grib2_0p25_blending.sh, use MPMD for each forecast hour to call ush/wafs_grib2_0p25_blending.sh.
    - Collect missing files from ush/wafs_grib2_0p25_blending.sh, send out warning email and dbn_alert of missing data once per cycle
    - Add not-blended email and dbn_alert if both UK and US unblended files are missing
+6. In exwafs_grib2_0p25_blending.sh, UK unblended data filenames are changed to whatever UK sends, NCO doesn't rename anymore.
+7. In exwafs_gcip.sh, GMGSI satellite filenames are changed.
 
 Fix Changes
 -----------
@@ -132,7 +135,7 @@ Environment and Resource Changes
 Pre-implementation Testing Requirements
 ---------------------------------------
 * Which production jobs should be tested as part of this implementation?
-  * The entire WAFS v7.0.0 package needs to be installed and tested on WCOSS-2
+  * The entire WAFS v7.0.1 package needs to be installed and tested on WCOSS-2
 * Does this change require a 30-day evaluation?
   * No
 
@@ -171,6 +174,7 @@ Product Changes
     | gfs.tCCz.wafs_blend_0p25_usonly.emailbody  | wafs.tCCz.wafs_blend_0p25_ukmissing.emailbody |
     | gfs.tCCz.wafs_blend_0p25_ukonly.emailbody  | wafs.tCCz.wafs_blend_0p25_usmissing.emailbody |
     |                                            | wafs.tCCz.wafs_blend_0p25_noblending.emailbody (new) |
+    | wmo/xtrn.wfsgfsCCFF[a/b].gfs_atmos_wafs_fFF_CC | wmo/xtrn.wfsgfsCCFF[a/b] |
 
 
 * File content changes
