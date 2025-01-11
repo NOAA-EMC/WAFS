@@ -64,8 +64,8 @@ for channel in ${channels}; do
 			echo "*** WARNING !! COULD NOT FIND GLOBCOMPVIS Satellite Data  *** " >>mailmsg
 			echo "*************************************************************" >>mailmsg
 			echo >>mailmsg
-			echo "One or more GLOBCOMPVIS Satellite Data files are missing, including " >>mailmsg
-			echo "   ${COMINsat}/${satFile} " >>mailmsg
+			echo "One or more GLOBCOMP${channel} Satellite Data files are missing, including " >>mailmsg
+			echo "   ${COMINsat}/GLOBCOMP${channel}*${PDY}${vhour}*area " >>mailmsg
 			echo >>mailmsg
 			echo "${job} will gracfully exit" >>mailmsg
 			cat mailmsg >"${COMOUT}/${RUN}.t${cyc}z.gcip.emailbody"
