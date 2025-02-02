@@ -46,7 +46,7 @@ set -x
 if [[ "${envir}" != "prod" ]]; then
     MAILTO=${MAILTO:-"nco.spa@noaa.gov"}
 fi
-export MAILTO=${MAILTO:-"nco.spa@noaa.gov,nco.sos@noaa.gov,nco.hpc.dataflow@noaa.gov"}
+export MAILTO=${MAILTO:-"nco.spa@noaa.gov,nco.sos@noaa.gov,sdm@noaa.gov,nco.hpc.dataflow@noaa.gov"}
 
 ${HOMEwafs}/jobs/JWAFS_GRIB2_0P25_BLENDING
 if [ $? -ne 0 ]; then

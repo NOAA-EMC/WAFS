@@ -103,7 +103,7 @@ elif [[ "${MISSING_UK_WAFS}" == "YES" ]]; then
     echo "turning back on dbn alert for unblended US WAFS product"
     # Avoid duplicate dbn_alert of unblended grib2 file which was done in the upstream grib2_0p25 job, fix bugzilla 1226
     # "${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_UBL_GB2 "${job}" "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2"
-    "${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_UBL_GB2_WIDX "${job}" "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2.idx"
+    # "${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_UBL_GB2_WIDX "${job}" "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2.idx"
 else
     # retrieve UK products
     # Three(3) unblended UK files for each cycle+fhour: icing, turb, cb
@@ -128,8 +128,8 @@ else
 
 	err=$?
 	if (( err != 0 )); then
-	    echo "turning back on dbn alert for unblended US WAFS product"
-	    "${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_UBL_GB2_WIDX "${job}" "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2.idx"
+	    #echo "turning back on dbn alert for unblended US WAFS product"
+	    #"${DBNROOT}/bin/dbn_alert" MODEL WAFS_0P25_UBL_GB2_WIDX "${job}" "${COMINus}/WAFS_0p25_unblended_${PDY}${cyc}f${fhr}.grib2.idx"
 	    echo "WAFS blending 0p25 program failed at " ${PDY}${cyc}F${fhr} > ../no_blending_files.$fhr
 	else
 	    # Distribute US WAFS unblend Data to NCEP FTP Server (WOC) and TOC
