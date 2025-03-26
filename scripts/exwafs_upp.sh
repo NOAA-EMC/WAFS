@@ -17,12 +17,13 @@ set -x
 POSTGRB2TBL=${POSTGRB2TBL:-"${g2tmpl_ROOT}/share/params_grib2_tbl_new"}
 MPIRUN=${MPIRUN:-"mpiexec -l -n 126 -ppn 126 --cpu-bind depth --depth 1"}
 
+nampgb_suffix="popascal=.true., numx=1"
 if [[ "${fhr}" == "anl" ]]; then # Analysis
 
     VDATE="${PDY}${cyc}"
     ATMINP="${COMINgfs}/gfs.t${cyc}z.atmanl.nc"
     FLXINP="${COMINgfs}/gfs.t${cyc}z.sfcanl.nc"
-    PostFlatFile="${PARMwafs}/upp/postxconfig-NT-GFS-WAFS-ANL.txt"
+    PostFlatFile="${PARMwafs}/upp/postxconfig-NT-gfs-wafs-anl.txt"
 
 else # Forecast
 
@@ -31,9 +32,11 @@ else # Forecast
     FLXINP="${COMINgfs}/gfs.t${cyc}z.sfcf${fhr}.nc"
     ifhr="$((10#${fhr}))"
     if ((ifhr <= 48)); then
-        PostFlatFile="${PARMwafs}/upp/postxconfig-NT-GFS-WAFS.txt"
+        PostFlatFile="${PARMwafs}/upp/postxconfig-NT-gfs-wafs.txt"
+	
+	nampgb_suffix="gtg_on=.true., $nampgb_suffix"
     else
-        PostFlatFile="${PARMwafs}/upp/postxconfig-NT-GFS-WAFS-EXT.txt"
+        PostFlatFile="${PARMwafs}/upp/postxconfig-NT-gfs-wafs-ext.txt"
     fi
 
 fi
@@ -45,26 +48,28 @@ cpreq "${ATMINP}" ./atmfile
 cpreq "${FLXINP}" ./flxfile
 cpreq "${POSTGRB2TBL}" .
 cpreq "${PostFlatFile}" ./postxconfig-NT.txt
-cpreq "${PARMwafs}/upp/nam_micro_lookup.dat" ./eta_micro_lookup.dat
 if [[ "${fhr}" != "anl" ]]; then
-    cpreq "${PARMwafs}/upp/gtg.config.gfs" gtg.config
-    cpreq "${PARMwafs}/upp/gtg_imprintings.txt" gtg_imprintings.txt
+    cpreq "${PARMwafs}/upp/gtg.input.gfs" gtg.input.gfs
+    cpreq "${PARMwafs}/upp/gtg.config.gfs" gtg.config.gfs
+    cpreq "${PARMwafs}/upp/imprintings.gtg_gfs.txt" imprintings.gtg_gfs.txt
 fi
 
 # Create the itag file
 rm -f itag
 cat >itag <<EOF
-atmfile
-netcdfpara
-grib2
-${VDATE:0:4}-${VDATE:4:2}-${VDATE:6:2}_${VDATE:8:2}:00:00
-GFS
-flxfile
-
-&nampgb
+&model_inputs
+fileName="atmfile"
+IOFORM="netcdf"
+grib="grib2"
+DateStr="${VDATE:0:4}-${VDATE:4:2}-${VDATE:6:2}_${VDATE:8:2}:00:00"
+MODELNAME="GFS"
+SUBMODELNAME="GFS"
+fileNameFlux="flxfile"
+/
+&NAMPGB
   kpo=60,
   po=97720.,94210.,90810.,87510.,84310.,81200.,78190.,75260.,72430.,69680.,67020.,64440.,61940.,59520.,57180.,54920.,52720.,50600.,48550.,46560.,44650.,42790.,41000.,39270.,37600.,35990.,34430.,32930.,31490.,30090.,28740.,27450.,26200.,25000.,23840.,22730.,21660.,20650.,19680.,18750.,17870.,17040.,16240.,15470.,14750.,14060.,13400.,12770.,12170.,11600.,11050.,10530.,10040.,9570.,9120.,8700.,8280.,7900.,7520.,7170.,
-  popascal=.true.,
+  $nampgb_suffix
 /
 EOF
 cat itag

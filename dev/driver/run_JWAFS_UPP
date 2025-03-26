@@ -5,9 +5,8 @@
 #PBS -o /lfs/h2/emc/ptmp/yali.mao/working_wafs/log.wafs_upp
 #PBS -N wafs_upp
 #PBS -l debug=true
-#PBS -l walltime=00:15:00
-#PBS -l select=1:mpiprocs=126:ompthreads=1:ncpus=126
-#PBS -l place=vscatter:exclhost
+#PBS -l walltime=00:30:00
+#PBS -l place=vscatter:exclhost,select=6:ompthreads=1:ncpus=25:mem=480GB
 #PBS -q debug
 #PBS -A GFS-DEV
 ##PBS -V
@@ -16,7 +15,7 @@ set -x
 
 # specify computation resource
 export MP_LABELIO=yes
-export MPIRUN='mpiexec -l -n 126 -ppn 126 --cpu-bind depth --depth 1'
+export MPIRUN='mpiexec -l -n 150 -ppn 25'
 
 echo "starting time $PBS_JOBNAME"
 
@@ -24,7 +23,7 @@ echo "starting time $PBS_JOBNAME"
 # Set up the HOME directory
 ############################################
 export NWROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao/git
-export HOMEwafs=${HOMEwafs:-${NWROOT}/WAFS.fork}
+export HOMEwafs=${HOMEwafs:-${NWROOT}/wafs.fork}
 
 # specify user's own post working directory for testing
 export EXECwafs=$HOMEwafs/exec
@@ -94,6 +93,7 @@ export KEEPDATA=YES
 export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
 export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}
+export COMINgfs="/lfs/h2/emc/vpppg/noscrub/yali.mao/gfsv17data/gfs.$PDY/$cyc/model/atmos/history"
 
 DATAroot=/lfs/h2/emc/ptmp/$USER/working_wafs
 
