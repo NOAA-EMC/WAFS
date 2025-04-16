@@ -147,3 +147,8 @@ fi
 if [[ "${SENDCOM}" == "YES" ]]; then
 	cpfs "${outputfile}" "${COMOUT}/${outputfile}"
 fi
+
+# Alert via DBN
+if [[ "${SENDDBN}" == "YES" ]]; then
+    "${DBNROOT}/bin/dbn_alert" MODEL WAFS_GCIP_GB2 "${job}" "${COMOUT}/${outputfile}"
+fi
