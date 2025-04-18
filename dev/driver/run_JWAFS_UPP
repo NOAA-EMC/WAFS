@@ -92,8 +92,8 @@ export KEEPDATA=YES
 
 export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
+COMPATHgfs=/lfs/h2/emc/vpppg/noscrub/yali.mao/gfsv17data/prod/com/gfs
 export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}
-export COMINgfs="/lfs/h2/emc/vpppg/noscrub/yali.mao/gfsv17data/gfs.$PDY/$cyc/model/atmos/history"
 
 DATAroot=/lfs/h2/emc/ptmp/$USER/working_wafs
 

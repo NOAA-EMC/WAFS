@@ -18,6 +18,7 @@ cp "${DIR_ROOT}/dev/driver/${jobcard}" .
 if [ $job = 'upp' ]; then
   FHOURS="anl 000 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020 021 022 023 024 \
   027 030 033 036 039 042 045 048 054 060 066 072 078 084 090 096 102 108 114 120"
+  FHOURS="024"
 elif [ $job = 'gcip' ]; then
   FHOURS="000 003"
 elif [ $job = 'grib2_0p25' ]; then
@@ -27,10 +28,13 @@ elif [ $job = 'grib2_0p25' ]; then
   else #39
     export FHOURS=${FHOURS:-"6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 27 30 33 36 39 42 45 48 54 60 66 72 78 84 90 96 102 108 114 120"}
   fi
+  export FHOURS="024"
 elif [ $job = 'grib2_1p25' ]; then
   export FHOURS=${FHOURS:-"00 06 09 12 15 18 21 24 27 30 33 36 42 48 54 60 66 72"}
+  export FHOURS="024"
 elif [ $job = 'grib' ]; then
   export FHOURS=${FHOURS:-"06 12 18 24 30 36 42 48 54 60 66 72"}
+  export FHOURS="24"
 elif [ $job = 'grib2_0p25_blending' ]; then
   sed -e "s|log.wafs_$job|log.wafs_$job|g" \
   -e "s|HOMEwafs=.*|HOMEwafs=$DIR_ROOT|g" \

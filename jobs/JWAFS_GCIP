@@ -35,7 +35,7 @@ export RUN=${RUN:-wafs}
 ##############################################
 # Define COM directories
 ##############################################
-export COMINgfs=${COMINgfs:-$(compath.py "${envir}/gfs/${gfs_ver}")"/gfs.${PDY}/${cyc}/atmos"}
+export COMINgfs=${COMINgfs:-$(compath.py "${envir}/gfs/${gfs_ver}")"/gfs.${PDY}/${cyc}/model/atmos/master"}
 export DCOMROOTsat=${DCOMROOTsat:-"$DCOMROOT"}
 export COMINsat=${COMINsat:-"${DCOMROOTsat}/${PDY}/mcidas"}
 export COMINradar=${COMINradar:-$(compath.py "${envir}/radarl2/${radarl2_ver}")"/radar.${PDY}"}

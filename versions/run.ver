@@ -1,6 +1,6 @@
 export wafs_ver=v7.0.2
 
-export gfs_ver=v16.3
+export gfs_ver=v17.0
 export radarl2_ver=v1.2
 export bufr_dump_ver=1.1.2
 export util_shared_ver=1.4.0
