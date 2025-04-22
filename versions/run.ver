@@ -1,6 +1,6 @@
-export wafs_ver=v7.0.1
+export wafs_ver=v7.0.2
 
-export gfs_ver=v16.3
+export gfs_ver=v17.0
 export radarl2_ver=v1.2
 export bufr_dump_ver=1.1.2
 export util_shared_ver=1.4.0
@@ -21,5 +21,5 @@ export netcdf_ver=4.7.4
 export g2tmpl_ver=1.13.0
 export prod_util_ver=2.0.14
 export grib_util_ver=1.2.3
-export wgrib2_ver=2.0.7
+export wgrib2_ver=2.0.8
 

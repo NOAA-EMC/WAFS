@@ -19,7 +19,7 @@ set -x
 # Set up the HOME directory
 ############################################
 export NWROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao/git
-export HOMEwafs=${HOMEwafs:-${NWROOT}/WAFS.fork}
+export HOMEwafs=${HOMEwafs:-${NWROOT}/wafs.fork}
 
 ############################################
 # Loading module

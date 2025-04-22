@@ -85,7 +85,7 @@ done
 # Copy GFS master file and prepare modelFile
 cpreq "${COMINgfs}/gfs.t${cyc}z.master.grb2f${fhr}" ./gfs_master.grib2
 modelFile="modelfile.grb"
-${WGRIB2} "gfs_master.grib2" | grep -E ":HGT:|:VVEL:|:CLWMR:|:TMP:|:SPFH:|:RWMR:|:SNMR:|:GRLE:|:ICMR:|:RH:" | grep -E "00 mb:|25 mb:|50 mb:|75 mb:|:HGT:surface" | ${WGRIB2} -i "gfs_master.grib2" -grib "${modelFile}"
+${WGRIB2} "gfs_master.grib2" | grep -E ":HGT:|:VVEL:|:CLMR:|:TMP:|:SPFH:|:RWMR:|:SNMR:|:GRLE:|:ICMR:|:RH:" | grep -E "00 mb:|25 mb:|50 mb:|75 mb:|:HGT:surface" | ${WGRIB2} -i "gfs_master.grib2" -grib "${modelFile}"
 
 # Composite gcip command options
 configFile="gcip.config"
@@ -146,4 +146,9 @@ fi
 # Send output to COM
 if [[ "${SENDCOM}" == "YES" ]]; then
 	cpfs "${outputfile}" "${COMOUT}/${outputfile}"
+fi
+
+# Alert via DBN
+if [[ "${SENDDBN}" == "YES" ]]; then
+    "${DBNROOT}/bin/dbn_alert" MODEL WAFS_GCIP_GB2 "${job}" "${COMOUT}/${outputfile}"
 fi

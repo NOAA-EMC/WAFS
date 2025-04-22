@@ -20,7 +20,7 @@ set -x
 # Set up the HOME directory
 ############################################
 export NWROOT=/lfs/h2/emc/vpppg/noscrub/yali.mao/git
-export HOMEwafs=${HOMEwafs:-${NWROOT}/WAFS.fork}
+export HOMEwafs=${HOMEwafs:-${NWROOT}/wafs.fork}
 
 ############################################
 # Loading module
@@ -86,6 +86,7 @@ export KEEPDATA=YES
 
 export COMROOT=/lfs/h2/emc/ptmp/$USER/wafs_dwn/$envir/com
 
+COMPATHgfs=/lfs/h2/emc/vpppg/noscrub/yali.mao/gfsv17data/prod/com/gfs
 export COMPATH=${COMPATHgfs:-/lfs/h1/ops/prod/com/gfs}:${COMPATHradar:-/lfs/h1/ops/prod/com/radarl2}
 
 export DATA=/lfs/h2/emc/ptmp/$USER/working_wafs/gcip.$jobid
