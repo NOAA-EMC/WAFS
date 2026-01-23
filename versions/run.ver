@@ -1,4 +1,4 @@
-export wafs_ver=v7.0.2
+export wafs_ver=v7.1.0
 
 export gfs_ver=v17.0
 export radarl2_ver=v1.2
