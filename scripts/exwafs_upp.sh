@@ -21,15 +21,15 @@ nampgb_suffix="popascal=.true., numx=1"
 if [[ "${fhr}" == "anl" ]]; then # Analysis
 
     VDATE="${PDY}${cyc}"
-    ATMINP="${COMINgfs}/gfs.t${cyc}z.atmanl.nc"
-    FLXINP="${COMINgfs}/gfs.t${cyc}z.sfcanl.nc"
+    ATMINP="${COMINgfs}/gfs.t${cyc}z.atm.anl.nc"
+    FLXINP="${COMINgfs}/gfs.t${cyc}z.sfc.anl.nc"
     PostFlatFile="${PARMwafs}/upp/postxconfig-NT-gfs-wafs-anl.txt"
 
 else # Forecast
 
     VDATE=$(${NDATE} +${fhr} ${PDY}${cyc})
-    ATMINP="${COMINgfs}/gfs.t${cyc}z.atmf${fhr}.nc"
-    FLXINP="${COMINgfs}/gfs.t${cyc}z.sfcf${fhr}.nc"
+    ATMINP="${COMINgfs}/gfs.t${cyc}z.atm.f${fhr}.nc"
+    FLXINP="${COMINgfs}/gfs.t${cyc}z.sfc.f${fhr}.nc"
     ifhr="$((10#${fhr}))"
     if ((ifhr <= 48)); then
         PostFlatFile="${PARMwafs}/upp/postxconfig-NT-gfs-wafs.txt"

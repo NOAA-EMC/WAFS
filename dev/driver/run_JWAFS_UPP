@@ -6,7 +6,9 @@
 #PBS -N wafs_upp
 #PBS -l debug=true
 #PBS -l walltime=00:30:00
-#PBS -l place=vscatter:exclhost,select=6:ompthreads=1:ncpus=25:mem=480GB
+##PBS -l place=vscatter:exclhost,select=6:ompthreads=1:ncpus=25:mem=480GB
+#PBS -l select=2:mpiprocs=63:ompthreads=1:ncpus=63
+#PBS -l place=vscatter:exclhost
 #PBS -q debug
 #PBS -A GFS-DEV
 ##PBS -V
@@ -14,8 +16,14 @@
 set -x
 
 # specify computation resource
+export threads=1
+#export OMP_NUM_THREADS=$threads
 export MP_LABELIO=yes
-export MPIRUN='mpiexec -l -n 150 -ppn 25'
+#export MPIRUN='mpiexec -l -n 150 -ppn 25'
+export MPIRUN="mpiexec -l -n 126 -ppn 63 --cpu-bind core --depth $threads"
+
+# keep proceeses off hyperthread cores
+#export OMP_PROC_BIND=true
 
 echo "starting time $PBS_JOBNAME"
 
