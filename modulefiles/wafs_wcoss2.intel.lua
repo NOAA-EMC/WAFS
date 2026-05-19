@@ -37,3 +37,4 @@ load(pathJoin("ip", ip_ver))
 load(pathJoin("g2", g2_ver))
 
 whatis("Description: WAFS environment on WCOSS2 with Intel Compilers")
+io.stderr:write("Modulefiles loaded for WAFS Compiling")

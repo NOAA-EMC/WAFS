@@ -11,6 +11,9 @@ if [[ ! -d "${DIR_ROOT}/exec" ]]; then
 fi
 
 # Build upp executable file
+module reset
+source "${DIR_ROOT}/versions/build.ver"
+
 cd "${DIR_ROOT}/sorc/wafs_upp.fd/tests"
 ./compile_upp.sh -g
 
