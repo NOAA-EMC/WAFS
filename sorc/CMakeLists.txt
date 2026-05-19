@@ -24,6 +24,11 @@ endif()
 
 # Find packages.
 find_package(bacio REQUIRED)
+if(bacio_VERSION LESS 2.5.0)
+  add_library(bacio::bacio ALIAS bacio::bacio_4)
+else()
+  add_library(bacio::bacio_4 ALIAS bacio::bacio)
+endif()
 find_package(w3emc REQUIRED)
 find_package(sp REQUIRED)
 find_package(ip REQUIRED)
