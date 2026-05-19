@@ -30,7 +30,7 @@ target_link_libraries(
   g2::g2_4
   ip::ip_4
   sp::sp_4
-  bacio::bacio_4
+  bacio::bacio
   w3emc::w3emc_4
   bufr::bufr_4
 )

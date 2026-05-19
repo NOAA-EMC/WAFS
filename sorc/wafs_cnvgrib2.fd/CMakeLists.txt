@@ -18,7 +18,7 @@ add_executable(${exe_name} ${fortran_src})
 target_link_libraries(
   ${exe_name}
   g2::g2_4
-  bacio::bacio_4
+  bacio::bacio
   w3emc::w3emc_4
 )
 
