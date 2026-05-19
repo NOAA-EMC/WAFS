@@ -81,9 +81,8 @@ for channel in ${channels}; do
 		break
 	fi
 done
-
 # Copy GFS master file and prepare modelFile
-cpreq "${COMINgfs}/gfs.t${cyc}z.master.grb2f${fhr}" ./gfs_master.grib2
+cpreq "${COMINgfs}/gfs.t${cyc}z.master.f${fhr}.grib2" ./gfs_master.grib2
 modelFile="modelfile.grb"
 ${WGRIB2} "gfs_master.grib2" | grep -E ":HGT:|:VVEL:|:CLMR:|:TMP:|:SPFH:|:RWMR:|:SNMR:|:GRLE:|:ICMR:|:RH:" | grep -E "00 mb:|25 mb:|50 mb:|75 mb:|:HGT:surface" | ${WGRIB2} -i "gfs_master.grib2" -grib "${modelFile}"
 

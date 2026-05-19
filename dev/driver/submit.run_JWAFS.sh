@@ -15,6 +15,8 @@ cd $tmpdir
 jobcard=run_JWAFS_${job^^}
 cp "${DIR_ROOT}/dev/driver/${jobcard}" .
 
+export COMPATHgfs=/lfs/h2/emc/vpppg/noscrub/yali.mao/gfsv17data/prod/com/gfs
+
 if [ $job = 'upp' ]; then
   FHOURS="anl 000 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020 021 022 023 024 \
   027 030 033 036 039 042 045 048 054 060 066 072 078 084 090 096 102 108 114 120"

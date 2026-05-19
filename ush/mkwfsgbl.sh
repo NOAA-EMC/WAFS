@@ -39,7 +39,7 @@ set -x
 
 ifhr=$((10#$fhr))
 fhr3=$(printf "%03i" "${ifhr}")
-GFS_MASTER="${COMINgfs}/gfs.t${cyc}z.master.grb2f${fhr3}"
+GFS_MASTER="${COMINgfs}/gfs.t${cyc}z.master.f${fhr3}.grib2"
 
 ##############################
 # Copy Input Field to $DATA

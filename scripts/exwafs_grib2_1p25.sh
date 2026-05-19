@@ -32,7 +32,7 @@
 
 set -x
 
-GFS_MASTER="${COMINgfs}/gfs.t${cyc}z.master.grb2f${fhr}"
+GFS_MASTER="${COMINgfs}/gfs.t${cyc}z.master.f${fhr}.grib2"
 WAFS_MASTER="${COMIN}/${RUN}.t${cyc}z.master.f${fhr}.grib2"
 
 ifhr="$((10#${fhr}))"
