@@ -62,7 +62,7 @@ COMINgfs is updated for GFSv17 filename and subfolder changes.
 
 Parm Changes
 ------------
-parm/upp is created during system checkou:
+parm/upp is created during system checkout:
  - gtg.config.gfs : updated calibrations for GTG because of GFS science changes
  - gtg.input.gfs : new GTG configuration file
  - imprintings.gtg_gfs.txt : renamed from gtg_imprintings.txt, no change
@@ -89,7 +89,7 @@ No change
 Module Changes
 --------------
  - Refer to https://docs.google.com/presentation/d/16SQJRjVsYsZOc1BbmYN0WRSYzF50_jbs4TTqVdeybeM/edit?slide=id.g275012a997e_0_2#slide=id.g275012a997e_0_2
- - In sorc/build_upp.sh, add the following line to compile WAFS and its subcomponent UPP with the same modules.
+ - In sorc/build_upp.sh, add the following line for WAFS's subcomponent UPP to use the same modules as WAFS for compiling
 ```bash
 source "${DIR_ROOT}/versions/build.ver"
 ```
