@@ -40,10 +40,10 @@ for ((iter = 1; iter <= MAX_ITER; iter++)); do
     fhr3=$(printf "%03d" "${fhr}")
 
     # Trigger jobs based on GFS forecast output availability
-    gfs_log="${COMINgfs}/gfs.t${cyc}z.logf${fhr3}.txt"
-    gfs_atm="${COMINgfs}/gfs.t${cyc}z.atmf${fhr3}.nc"
-    gfs_sfc="${COMINgfs}/gfs.t${cyc}z.sfcf${fhr3}.nc"
-    gfs_grb="${COMINgfs}/gfs.t${cyc}z.master.grb2f${fhr3}"
+    gfs_log="${COMINgfs}/history/gfs.t${cyc}z.log.f${fhr3}.txt"
+    gfs_atm="${COMINgfs}/history/gfs.t${cyc}z.atm.f${fhr3}.nc"
+    gfs_sfc="${COMINgfs}/history/gfs.t${cyc}z.sfc.f${fhr3}.nc"
+    gfs_grb="${COMINgfs}/master/gfs.t${cyc}z.master.f${fhr3}.grib2"
     if [[ -s "${gfs_log}" ]] && [[ -s "${gfs_atm}" ]] && [[ -s "${gfs_sfc}" ]] && [[ -s "${gfs_grb}" ]]; then
 
       # Release the JWAFS_UPP analysis job if this is f000
