@@ -62,15 +62,15 @@ COMINgfs is updated for GFSv17 filename and subfolder changes.
 
 Parm Changes
 ------------
-parm/upp is created after system building:
+parm/upp is created during system checkou:
  - gtg.config.gfs : updated calibrations for GTG because of GFS science changes
  - gtg.input.gfs : new GTG configuration file
- - gtg_imprintings.txt : renamed to imprintings.gtg_gfs.txt, no change
+ - imprintings.gtg_gfs.txt : renamed from gtg_imprintings.txt, no change
  - nam_micro_lookup.dat : deleted, not needed for WAFS UPP runs
  - postcntrl_gfs_wafs.xml : removed paramset of WAFS on ICAO_STD_SFC
- - postxconfig-NT-GFS-WAFS-ANL.txt : updated for UPP
- - postxconfig-NT-GFS-WAFS-EXT.txt : updated for UPP
- - postxconfig-NT-GFS-WAFS.txt: updated for UPP and removed paramset of WAFS on ICAO_STD_SFC
+ - postxconfig-NT-gfs-wafs-anl.txt, renamd from postxconfig-NT-GFS-WAFS-ANL.txt : updated for UPP
+ - postxconfig-NT-gfs-wafs-ext.txt, renamded from postxconfig-NT-GFS-WAFS-EXT.txt : updated for UPP
+ - postxconfig-NT-gfs-wafs.txt, renamded from postxconfig-NT-GFS-WAFS.txt: updated for UPP and removed paramset of WAFS on ICAO_STD_SFC
 
 Script Changes
 --------------
