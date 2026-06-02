@@ -27,6 +27,8 @@ The checkout procedure extracts the following WAFS components, while GTG is a su
 
 The GTG repository is private which may protect you from checking out. To inquire the access, please contact the code managers with justification.
 
+The checkout procedure also creates a parm/upp folder and copies related UPP parm files to this folder.
+
 To build all the WAFS components, execute:
 ```bash
 ./sorc/build_all.sh
@@ -45,18 +47,18 @@ Updated files: build.ver and run.ver
 
 Sorc Changes
 ------------
-UPP upgrade to github revision #4552551
-GTG upgrade to github revision #c49023a
+- UPP upgrade to github revision #4552551
+- GTG upgrade to github revision #c49023a
 
 Job Changes
 -----------
 COMINgfs is updated for GFSv17 filename and subfolder changes.
-jobs/JWAFS_GFS_MANAGER
-jobs/JWAFS_GCIP
-jobs/JWAFS_GRIB
-jobs/JWAFS_GRIB2_0P25
-jobs/JWAFS_GRIB2_1P25
-jobs/JWAFS_UPP
+- jobs/JWAFS_GFS_MANAGER
+- jobs/JWAFS_GCIP
+- jobs/JWAFS_GRIB
+- jobs/JWAFS_GRIB2_0P25
+- jobs/JWAFS_GRIB2_1P25
+- jobs/JWAFS_UPP
 
 Parm Changes
 ------------
@@ -88,7 +90,9 @@ Module Changes
 --------------
  - Refer to https://docs.google.com/presentation/d/16SQJRjVsYsZOc1BbmYN0WRSYzF50_jbs4TTqVdeybeM/edit?slide=id.g275012a997e_0_2#slide=id.g275012a997e_0_2
  - In sorc/build_upp.sh, add the following line to compile WAFS and its subcomponent UPP with the same modules.
-   source "${DIR_ROOT}/versions/build.ver"
+```bash
+source "${DIR_ROOT}/versions/build.ver"
+```
  - CMakeLists.txt files are updated to add compatibility for future bacio version upgrades
 
 Changes to File Sizes
