@@ -33,7 +33,7 @@ export RUN=${RUN:-wafs}
 ##############################################
 # Define COM directories
 ##############################################
-export COMINgfs=${COMINgfs:-$(compath.py "${envir}/gfs/${gfs_ver}")"/gfs.${PDY}/${cyc}/atmos"}
+export COMINgfs=${COMINgfs:-$(compath.py "${envir}/gfs/${gfs_ver}")"/gfs.${PDY}/${cyc}/model/atmos"}
 
 ####################################
 # Determine Job Output Name on System
