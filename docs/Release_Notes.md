@@ -1,10 +1,10 @@
-WAFS v7.0.1  RELEASE NOTES
+WAFS v7.1.0  RELEASE NOTES
 
 -------
 Prelude
 -------
 
-This implementation is a separation of the WAFS component from the GFSv16 application, no science change.
+This implementation is a WAFS upgrade for GFSv17 upgrade implementation.
 
 Implementation Instructions
 ---------------------------
@@ -14,17 +14,20 @@ The NOAA-EMC and NCAR organization spaces on GitHub are used to manage the WAFS 
 Checkout the package from GitHub and `cd` into the directory:
 ```bash
 cd ${PACKAGEROOT}
-git clone --recursive -b wafs.v7.0.1 https://github.com/noaa-emc/wafs wafs.v7.0.1
-cd wafs.v7.0.1
+git clone -b wafs.v7.1.0 https://github.com/noaa-emc/wafs wafs.v7.1.0
+cd wafs.v7.1.0
+./sorc/checkout_upp.sh
 ```
 
 The checkout procedure extracts the following WAFS components, while GTG is a subcomponent of UPP.:
-| Component | Tag                  | POC               |
+| Component | Revision             | POC               |
 | --------- | -------------------- | ----------------- |
-| UPP       | upp_wafs_v7.0.0      | Wen.Meng@noaa.gov |
-| GTG       | ncep_post_gtg.v2.1.0 | Yali.Mao@noaa.gov |
+| UPP       | wafs_upp.fd @4552551 | Wen.Meng@noaa.gov |
+| GTG       | post_gtg.fd @c49023a | Yali.Mao@noaa.gov |
 
 The GTG repository is private which may protect you from checking out. To inquire the access, please contact the code managers with justification.
+
+The checkout procedure also creates a parm/upp folder and copies related UPP parm files to this folder.
 
 To build all the WAFS components, execute:
 ```bash
@@ -39,192 +42,96 @@ Lastly, link the `ecflow` scripts by executing:
 
 Version File Changes
 --------------------
-New files: build.ver and run.ver
+Updated files: build.ver and run.ver
 
 
 Sorc Changes
 ------------
-No change from GFSv16
+- UPP upgrade to github revision #4552551
+- GTG upgrade to github revision #c49023a
 
 Job Changes
 -----------
-Filename changes according to EE2 standards:
- |   wafs.v7                   |    GFSv16                     
- |   ------------------------- |    ----------------------------------------------------|
- |   JWAFS_GCIP                |<- JGFS_ATMOS_WAFS_GCIP                                 |
- |   JWAFS_GRIB                |<- JGFS_ATMOS_WAFS                                      |
- |   JWAFS_GRIB2_0P25          |<- JGFS_ATMOS_WAFS_GRIB2_0P25                           |
- |   JWAFS_GRIB2_0P25_BLENDING |<- JGFS_ATMOS_WAFS_BLENDING_0P25                        |
- |   JWAFS_GRIB2_1P25          |<- JGFS_ATMOS_WAFS_GRIB2                                |
- |                             |   JGFS_ATMOS_WAFS_BLENDING (removed after cleaning up) |
- |   JWAFS_GFS_MANAGER (new)   |                                                        |
- |   JWAFS_UPP         (new)   |                                                        |
-
+COMINgfs is updated for GFSv17 filename and subfolder changes.
+- jobs/JWAFS_GFS_MANAGER
+- jobs/JWAFS_GCIP
+- jobs/JWAFS_GRIB
+- jobs/JWAFS_GRIB2_0P25
+- jobs/JWAFS_GRIB2_1P25
+- jobs/JWAFS_UPP
 
 Parm Changes
 ------------
-1. Remove parm/wafs/legend
-2. parm/upp is created after system building. Per AWC request, WAFS UPP control files add 4 low levels for icing and 1 upper lower for turbulence:
-   - postxconfig-NT-GFS-WAFS.txt
-   - postcntrl_gfs_wafs.xml
-3. parm/wafs/wafs_gcip_gfs.cfg is updated for GMGSI satellite update
+parm/upp is created during system checkout:
+ - gtg.config.gfs : updated calibrations for GTG because of GFS science changes
+ - gtg.input.gfs : new GTG configuration file
+ - imprintings.gtg_gfs.txt : renamed from gtg_imprintings.txt, no change
+ - nam_micro_lookup.dat : deleted, not needed for WAFS UPP runs
+ - postcntrl_gfs_wafs.xml : removed paramset of WAFS on ICAO_STD_SFC
+ - postxconfig-NT-gfs-wafs-anl.txt, renamd from postxconfig-NT-GFS-WAFS-ANL.txt : updated for UPP
+ - postxconfig-NT-gfs-wafs-ext.txt, renamded from postxconfig-NT-GFS-WAFS-EXT.txt : updated for UPP
+ - postxconfig-NT-gfs-wafs.txt, renamded from postxconfig-NT-GFS-WAFS.txt: updated for UPP and removed paramset of WAFS on ICAO_STD_SFC
 
 Script Changes
 --------------
-First of all, filename changes according to EE2 standards:
- |   wafs.v7                       |    GFSv16
- |   ----------------------------- |    ---------------------------------------------------------|
- |   exwafs_gcip.sh                |<- exgfs_atmos_wafs_gcip.sh                                  |
- |   exwafs_grib2_0p25_blending.sh |<- exgfs_atmos_wafs_blending_0p25.sh                         |
- |   exwafs_grib2_0p25.sh          |<- exgfs_atmos_wafs_grib2_0p25.sh                            |
- |   exwafs_grib2_1p25.sh          |<- exgfs_atmos_wafs_grib2.sh                                 |
- |   exwafs_grib.sh                |<- exgfs_atmos_wafs_grib.sh                                  |
- |                                 |   exgfs_atmos_wafs_blending.sh (removed after cleaning up)  |
- |   exwafs_gfs_manager.sh (new)   |                                                             |
- |   exwafs_upp.sh (new)           |                                                             |
- |   ush/wafs_grib2_0p25_blending.sh (new) |                                                     |
-
-Additionally there are other changes:
-1. In exwafs_grib2_0p25_blending.sh, extend the waiting time window for UK data from 15 to 25 minutes
-2. In exwafs_grib2_0p25.sh, only include fields at the extra levels when forecast hour is between 06 and 36 per AWC request
-3. In ush/mkwfsgbl.sh: change input dependency from GFS pgrb2.1p00 to master file.
-4. Remove files under ush/ folder: wafs_blending.sh wafs_grib2.regrid.sh wafs_intdsk.sh
-5. In exwafs_grib2_0p25_blending.sh, use MPMD for each forecast hour to call ush/wafs_grib2_0p25_blending.sh.
-   - Collect missing files from ush/wafs_grib2_0p25_blending.sh, send out warning email and dbn_alert of missing data once per cycle
-   - Add not-blended email and dbn_alert if both UK and US unblended files are missing
-6. In exwafs_grib2_0p25_blending.sh, UK unblended data filenames are changed to whatever UK sends, NCO doesn't rename anymore.
-7. In exwafs_gcip.sh, GMGSI satellite filenames are changed.
+GFSv17 filename changes are reflected in the following scripts:
+1. scripts/exwafs_gcip.sh, additionally CLWMR is updated to CLMR for a newer version wgrib2 v2.0.8
+2. scripts/exwafs_gfs_manager.sh
+3. scripts/exwafs_grib2_0p25.sh
+4. scripts/exwafs_grib2_1p25.sh
+5. scripts/exwafs_upp.sh, additionally script is updated for new 'itag' for upgraded UPP
+6. ush/mkwfsgbl.sh
 
 Fix Changes
 -----------
-1. Remove fix/wafs/legend folder
-2. Remove files under fix/wafs:
-   - grib2_blended_wafs_wifs_fFF.0p25
-   - grib2_gfs_wafs_wifs_fFF.0p25
-   - grib_wafsgfs_intdsk
-   - grib_wafsgfs_intdskf00   
-3. Under fix/wafs, filenames are changed.
-   - faa_gfsmaster.grb2.list   → grib2_gfs_awf_master.list
-   - gfs_master.grb2_0p25.list → grib2_0p25_gfs_master2d.list
-   - gfs_wafs.grb2_0p25.list   → grib2_0p25_wafs_hazard.list
-   - grib2_gfs_awffFF.45       → grib2_gfs_awffFFF.45 (FF FFF - forecast hours)
-   - grib2_gfs_wafsfFF.45      → grib2_wafsfFFF.45 (FF FFF - forecast hours)
-   - wafs_0p25_admin_msg       → wafs_blending_0p25_admin_msg
-   - wafs_gfsmaster.grb2.list  → grib2_wafs.gfs_master.list
-   - wafs.namelist             → grib_wafs.namelist
+No change
 
 Module Changes
 --------------
-No change
+ - Refer to https://docs.google.com/presentation/d/16SQJRjVsYsZOc1BbmYN0WRSYzF50_jbs4TTqVdeybeM/edit?slide=id.g275012a997e_0_2#slide=id.g275012a997e_0_2
+ - In sorc/build_upp.sh, add the following line for WAFS's subcomponent UPP to use the same modules as WAFS for compiling
+```bash
+source "${DIR_ROOT}/versions/build.ver"
+```
+ - CMakeLists.txt files are updated to add compatibility for future bacio version upgrades
 
 Changes to File Sizes
 ---------------------
-* UPP: increased by 35G (new, moved from GFS to WAFS)
-* GRIB2_0P25: increased by 0.1G
+No change
 
 Environment and Resource Changes
 --------------------------------
-1. Add ecFlow to WAFS package
-2. Add UPP as a WAFS component
-3. Add MPMD to WAFS_GRIB2_0P25_BLENDING; For other jobs, get rid of MPMD, each forecast hour will be run in its own job card. 
-4. WAFS_GRIB job dependency is changed from GFS pgrb2.1p00 to GFS master file.
-5. WAFS_GRIB2_0P25_BLENDING runtime decreases from 4 minutes to 0.5 minutes after switching from sequential to parallel run for each forecast hour
-6. Package increases from 33M to 288M (increase due to offline UPP source)
-7. According to EE2 standards, input data are copied to DATA work folder instead of being soft linked. For this reason, the overall DATA folder size rockets up to 709.6G from 39G
+No change
 
 Pre-implementation Testing Requirements
 ---------------------------------------
 * Which production jobs should be tested as part of this implementation?
-  * The entire WAFS v7.0.1 package needs to be installed and tested on WCOSS-2
+  * The entire WAFS v7.1.0 package needs to be installed and tested on WCOSS-2
 * Does this change require a 30-day evaluation?
-  * No
+  * Yes
 
 
 Product Changes
 ---------------
-* Directory changes
-  * From com/gfs/v16.3/gfs.YYYYMMDD/CC/atmos to com/wafs/v7.0/wafs.YYYYMMDD/CC
-  * Inside WAFS, there are subfolders categoried by job names
-    * |-- upp
-    * |-- gcip
-    * |-- grib
-    * |-- grib2
-    * |----- 1p25
-    * |----- 0p25
-    * |-------- blending
-* Files to be retired
-  * `gfs.tCCz.wafs_icao.grb2fFFF`
-  * wafs.tCCz.master.fFFF.grib2 where FFF is from 001 to 005
-* Filename changes
-  * Renamed according to EE2 implementation standards
-  * Exceptions: files sent to UK keep the original names except forecast hour is changed to 3 digits
-  * Details:
-    | GFSv16                                 | wafs.v7                                  |
-    | -------------------------------------- | ---------------------------------------- |
-    | gfs.tCCz.wafs.0p25.anl                 | wafs.tCCz.0p25.anl.grib2                 |
-    | gfs.tCCz.wafs.grb2fFFF                 | wafs.tCCz.master.fFFF.grib2              |
-    | gfs.tCCz.wafs_0p25_unblended.fFF.grib2 | WAFS_0p25_unblended_YYYYMMDDHHfFFF.grib2 |
-    | gfs.tCCz.awf_0p25.fFFF.grib2           | wafs.tCCz.awf.0p25.fFFF.grib2            |
-    | gfs.tCCz.awf_grb45fFF.grib2            | wafs.tCCz.awf_grid45.fFFF.grib2          |
-    | wmo/grib2.tCCz.awf_grbfFF.45           | wmo/grib2.wafs.tCCz.awf_grid45.fFFF      |
-    | gfs.tCCz.wafs_grb45fFF.grib2           | gfs.tCCz.wafs_grb45fFFF.grib2            |
-    | wmo/grib2.tCCz.wafs_grbfFF.45          | wmo/grib2.wafs.tCCz.grid45.fFFF          |
-    | gfs.tCCz.gcip.fFF.grib2                | wafs.tCCz.gcip.fFFF.grib2                |
-    | WAFS_0p25_blended_YYYYMMDDHHfFF.grib2  | WAFS_0p25_blended_ YYYYMMDDHHfFFF.grib2  |
-    | gfs.tCCz.wafs_blend_0p25_usonly.emailbody  | wafs.tCCz.wafs_blend_0p25_ukmissing.emailbody |
-    | gfs.tCCz.wafs_blend_0p25_ukonly.emailbody  | wafs.tCCz.wafs_blend_0p25_usmissing.emailbody |
-    |                                            | wafs.tCCz.wafs_blend_0p25_noblending.emailbody (new) |
-    | wmo/xtrn.wfsgfsCCFF[a/b].gfs_atmos_wafs_fFF_CC | wmo/xtrn.wfsgfsCCFF[a/b] |
-
-
-* File content changes
-  * Add EDPARM CATEDR MWTURB on 127.7 mb, ICESEV on 875.1 908.1 942.1 977.2 mb to:
-    * wafs.tCCz.master.fFFF.grib2 when FFF<=048
-    * grib2/0p25/wafs.tCCz.awf.0p25.fFFF.grib2 when FFF<=036
-
+No change
 
 Dissemination Information
 -------------------------
-* dbn_alert subtype changes
-  |                                          | GFSv16                | wafs.v7           |
-  | ---------------------------------------- | --------------------- |------------------ |
-  | gfs.tCCz.wafs_0p25.fFFF.grib2            | GFS_WAFS_0P25_GB2     | WAFS_0P25_GB2     |
-  | WAFS_0p25_unblended_YYYYMMDDHHfFFF.grib2 | GFS_WAFS_0P25_UBL_GB2 | WAFS_0P25_UBL_GB2 |
-  | wafs.tCCz.awf.0p25.fFFF.grib2            | GFS_AWF_0P25_GB2      | WAFS_AWF_0P25_GB2 |
-  | wmo/grib2.wafs.tCCz.awf_grid45.fFFF      | gfs                   | wafs              |
-  | gfs.tCCz.wafs_grb45fFFF.grib2            | GFS_WAFS_1P25_GB2     | WAFS_1P25_GB2     |
-  | wmo/grib2.wafs.tCCz.grid45.fFFF          | gfs                   | wafs              |
-  | WAFS_0p25_blended_ YYYYMMDDHHfFFF.grib2  | GFS_WAFS_0P25_BL_GB2  | WAFS_0P25_BL_GB2  |
-
-* Where should this output be sent?
-  * Same as current operations in GFS WAFS
-* Who are the users?
-  * AWC, UK Met Office, SPC, and ICAO subscribed users
-* Which output files should be transferred from PROD WCOSS to DEV WCOSS?
-  * All WAFS files should be transferred
-
+No change
 
 HPSS Archive
 ------------
-* Directory changes and filename changes, refer back to 'Product Changes'
-* Add wafs.tCCz.0p25.anl.grib2
-* Add gfs.tCCz.wafs_0p25.fFFF.grib2 (non-hazard WAFS 0p25 data) 
-
+No change
 
 Job Dependencies and flow diagram
 ---------------------------------
-* Job dependencies refers to this document: https://docs.google.com/spreadsheets/d/1Nt343Z9x9UycweFik3HRFpXkqIjs7m20s15yGOhsgUY/edit?gid=1172497604#gid=1172497604
-* Flow diagram refer to page 6 in this document: https://docs.google.com/presentation/d/1yhdTfTHoBvV7K6jR2nfvkNAWn_eDJ2lTvDueRp9C89w/edit#slide=id.g2eeab8aa817_0_0
-
+No change
 
 Documentation
 -------------
-* WAFS.V7 Implementation Kick-off Meeting Slides https://docs.google.com/presentation/d/1yhdTfTHoBvV7K6jR2nfvkNAWn_eDJ2lTvDueRp9C89w
-* WAFSv7 products and dbn_alert: https://docs.google.com/spreadsheets/d/1Nt343Z9x9UycweFik3HRFpXkqIjs7m20s15yGOhsgUY
+* WAFS.V7.1 Implementation Kick-off Meeting Slides https://docs.google.com/presentation/d/16SQJRjVsYsZOc1BbmYN0WRSYzF50_jbs4TTqVdeybeM
 
 
 Prepared By
 -----------
 * yali.mao@noaa.gov
-* rahul.mahajan@noaa.gov
-* Hui-Ya.Chuang@noaa.gov
