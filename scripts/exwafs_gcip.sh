@@ -47,7 +47,7 @@ satFiles=""
 channels="VIS SIR LIR SSR"
 # If one channel is missing, satFiles will be empty
 for channel in ${channels}; do
-	satFile="$(find ${COMINsat} -name GLOBCOMP${channel}*${PDY}${vhour}*area)"
+	satFile="$(find ${COMINsat} -name GLOBCOMP${channel}*_s${PDY}${vhour}*area)"
 	if [[ "${COMINsat}" == *ftp:* ]]; then
 		curl -O "${COMINsat}/${satFile}"
 	else
