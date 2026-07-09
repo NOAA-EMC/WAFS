@@ -22,8 +22,8 @@ cd wafs.v7.1.0
 The checkout procedure extracts the following WAFS components, while GTG is a subcomponent of UPP.:
 | Component | Revision             | POC               |
 | --------- | -------------------- | ----------------- |
-| UPP       | wafs_upp.fd @4552551 | Wen.Meng@noaa.gov |
-| GTG       | post_gtg.fd @c49023a | Yali.Mao@noaa.gov |
+| UPP       | wafs_upp.fd release/wafs_v7.1@7eebc31 | Wen.Meng@noaa.gov |
+| GTG       | post_gtg.fd release/wafs_v7.1@8fdeb7a | Yali.Mao@noaa.gov |
 
 The GTG repository is private which may protect you from checking out. To inquire the access, please contact the code managers with justification.
 
@@ -47,8 +47,8 @@ Updated files: build.ver and run.ver
 
 Sorc Changes
 ------------
-- UPP upgrade to github revision #4552551
-- GTG upgrade to github revision #c49023a
+- UPP upgrade to github revision #7eebc31
+- GTG upgrade to github revision #8fdeb7a
 
 Job Changes
 -----------
@@ -71,11 +71,13 @@ parm/upp is created during system checkout:
  - postxconfig-NT-gfs-wafs-anl.txt, renamd from postxconfig-NT-GFS-WAFS-ANL.txt : updated for UPP
  - postxconfig-NT-gfs-wafs-ext.txt, renamded from postxconfig-NT-GFS-WAFS-EXT.txt : updated for UPP
  - postxconfig-NT-gfs-wafs.txt, renamded from postxconfig-NT-GFS-WAFS.txt: updated for UPP and removed paramset of WAFS on ICAO_STD_SFC
+parm/wafs
+ - wafs_gcip_gfs.cfg: add GOES-19 satellite sensor and its longitude location
 
 Script Changes
 --------------
 GFSv17 filename changes are reflected in the following scripts:
-1. scripts/exwafs_gcip.sh, additionally CLWMR is updated to CLMR for a newer version wgrib2 v2.0.8
+1. scripts/exwafs_gcip.sh, additionally CLWMR is updated to CLMR for a newer version wgrib2 v2.0.8, fix bugzilla 1712
 2. scripts/exwafs_gfs_manager.sh
 3. scripts/exwafs_grib2_0p25.sh
 4. scripts/exwafs_grib2_1p25.sh
