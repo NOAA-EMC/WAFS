@@ -30,13 +30,13 @@ export SENDCOM=${SENDCOM:-"YES"}
 # Specify NET and RUN Name and model
 ####################################
 export NET=${NET:-wafs}
-export RUN=${RUN:-wafs}
+export RUN=${RUN:-gefs}
 
 ##############################################
 # Define COM directories
 ##############################################
-export COMINgfs=${COMINgfs:-$(compath.py "${envir}/gfs/${gfs_ver}")"/gfs.${PDY}/${cyc}"}
-export COMOUT=${COMOUT:-$(compath.py -o "${NET}/${wafs_ver}")"/${RUN}.${PDY}/${cyc}/upp"}
+export COMINgefs=${COMINgefs:-$(compath.py "${envir}/gefs/${gefs_ver}")"/gefs.${PDY}/${cyc}/atmos/sfcsig"}
+export COMOUT=${COMOUT:-$(compath.py -o "${NET}/${wafs_ver}")"/${RUN}.${PDY}/${cyc}"}
 mkdir -p "${COMOUT}"
 
 ####################################
@@ -47,8 +47,10 @@ export pgmout="OUTPUT.$$"
 ####################################
 # Specify Execution Areas
 ####################################
-export EXECwafs="${HOMEwafs}/exec"
-export PARMwafs="${HOMEwafs}/parm"
+export USHwafs=${USHwafs:-$HOMEwafs/ush}
+export EXECwafs=${EXECwafs:-$HOMEwafs/exec}
+export PARMwafs=${PARMwafs:-$HOMEwafs/parm}
+export FIXwafs=${FIXwafs:-$HOMEwafs/fix}
 
 #########################################################
 # print current environment
@@ -64,7 +66,7 @@ export OMP_NUM_THREADS=1
 ntasks=$(cat $PBS_NODEFILE | wc -l)
 export MPIRUN=${MPIRUN:-"mpiexec -l -n $ntasks -ppn $ntasks --cpu-bind depth --depth 1"}
 
-"${HOMEwafs}/scripts/exwafs_upp.sh"
+"${HOMEwafs}/scripts/exwafs_gefs_upp.sh"
 export err=$?
 err_chk
 

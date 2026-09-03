@@ -22,3 +22,5 @@ module load netcdf/$netcdf_ver
 #module load crtm/$crtm_ver # WAFS doesn't need CRTM
 module load cray-mpich/$craympich_ver
 module load g2tmpl/$g2tmpl_ver
+
+module load nemsio/$nemsio_ver

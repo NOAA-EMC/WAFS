@@ -15,7 +15,6 @@
 set -x
 
 POSTGRB2TBL=${POSTGRB2TBL:-"${g2tmpl_ROOT}/share/params_grib2_tbl_new"}
-MPIRUN=${MPIRUN:-"mpiexec -l -n 126 -ppn 126 --cpu-bind depth --depth 1"}
 
 nampgb_suffix="popascal=.true., numx=1"
 if [[ "${fhr}" == "anl" ]]; then # Analysis
