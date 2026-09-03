@@ -16,7 +16,6 @@ cd $tmpdir
 jobcard=run_JWAFS_${job^^}
 cp "${DIR_ROOT}/dev/driver/${jobcard}" .
 
-
 if [ $regression = 'yes' ] ; then
     # For regression tests: 
     export COMPATHgfs=/lfs/h2/emc/ptmp/yali.mao/regression/prod/com/gfs
@@ -32,20 +31,24 @@ else
     ln -sf /lfs/h2/emc/gfstemp/emc.global/comroot/retrov17_01_realtime $COMPATHgfs/v17.0
 fi
 
+members="one"
 if [ $job = 'upp' ]; then
-  FHOURS="anl 000 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020 021 022 023 024 \
-  027 030 033 036 039 042 045 048 054 060 066 072 078 084 090 096 102 108 114 120"
+  FHOURS="anl 000 $(seq -w 6 1 024) $(seq -w 27 3 048) $(seq -w 54 6 120)"
 elif [ $job = 'gcip' ]; then
   FHOURS="000 003"
+elif [ $job = 'gefs_upp' ]; then
+  FHOURS="$(seq -w 6 3 048)"
+  members=$(seq -w 1 30 | sed 's/^/gep/' | tr '\n' ' ')
+  members="gec00 ${members}"
 elif [ $job = 'grib2_0p25' ]; then
   export FHOUT_GFS=${FHOUT_GFS:-1}
   if [ $FHOUT_GFS -eq 3 ]; then #27
-    export FHOURS=${FHOURS:-"6 9 12 15 18 21 24 27 30 33 36 39 42 45 48 54 60 66 72 78 84 90 96 102 108 114 120"}
+      export FHOURS="$(seq 6 3 48) $(seq 54 6 120)"
   else #39
-    export FHOURS=${FHOURS:-"6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 27 30 33 36 39 42 45 48 54 60 66 72 78 84 90 96 102 108 114 120"}
+      export FHOURS="$(seq 6 1 24) $(seq 27 3 48) $(seq 54 6 120)"
   fi
 elif [ $job = 'grib2_1p25' ]; then
-  export FHOURS=${FHOURS:-"00 06 09 12 15 18 21 24 27 30 33 36 42 48 54 60 66 72"}
+    FHOURS="00 $(seq -w 6 3 36) $(seq 42 6 72)"
 elif [ $job = 'grib' ]; then
   export FHOURS=${FHOURS:-"06 12 18 24 30 36 42 48 54 60 66 72"}
 elif [ $job = 'grib2_0p25_blending' ]; then
@@ -68,15 +71,23 @@ for fhr in $FHOURS; do
     fi
   fi
 
-  sed -e "s|log.wafs_$job|log.wafs_$job.$fhr|g" \
-  -e "s|HOMEwafs=.*|HOMEwafs=$DIR_ROOT|g" \
-  -e "s|COMPATHgfs=.*|COMPATHgfs=$COMPATHgfs|g" \
-  -e "s|PDY=.*|PDY=${PDYcyc:0:8}|g" \
-  -e "s|cyc=.*|cyc=${PDYcyc:8:2}|g" \
-  -e "s|fhr=.*|fhr=$fhr|g" \
-  -e "s|working_wafs|working_wafs.${job}_${PDYcyc}|g" \
-  $jobcard >$jobcard.$fhr
-
-  qsub $jobcard.$fhr
+  for RUNMEM in $members ; do
+      if [ $RUNMEM = "one" ] ; then
+	  appendix=""
+      else
+	  appendix=".$RUNMEM"
+      fi
+      sed -e "s|log.wafs_$job|log.wafs_$job.$fhr$appendix|g" \
+	  -e "s|HOMEwafs=.*|HOMEwafs=$DIR_ROOT|g" \
+	  -e "s|COMPATHgfs=.*|COMPATHgfs=$COMPATHgfs|g" \
+	  -e "s|PDY=.*|PDY=${PDYcyc:0:8}|g" \
+	  -e "s|cyc=.*|cyc=${PDYcyc:8:2}|g" \
+	  -e "s|fhr=.*|fhr=$fhr|g" \
+	  -e "s|working_wafs|working_wafs.${job}_${PDYcyc}|g" \
+	  -e "s|RUNMEM=.*|RUNMEM=$RUNMEM|g" \
+	  $jobcard >$jobcard.$fhr$appendix
+      qsub $jobcard.$fhr$appendix
+  done
+      
 done
 
