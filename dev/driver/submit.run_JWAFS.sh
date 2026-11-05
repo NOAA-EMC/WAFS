@@ -26,7 +26,7 @@ if [ $regression = 'yes' ] ; then
     ln -sf /lfs/h2/emc/vpppg/noscrub/wen.meng/test_suite/data_in/gfs/gfs.t00z.sfcf006.nc $COMPATHgfs/v17.0/gfs.${PDYcyc:0:8}/${PDYcyc:8:2}/model/atmos/history/gfs.t00z.sfc.f006.nc
 else
     # For GFSv17 tests
-    export COMPATHgfs=/lfs/h2/emc/ptmp/yali.mao/gfs.realtime/prod/com/gfs
+    export COMPATHgfs=/lfs/h2/emc/vpppg/noscrub/yali.mao/gfs.realtime/prod/com/gfs
     rm -rf $COMPATHgfs
     mkdir -p $COMPATHgfs
     ln -sf /lfs/h2/emc/gfstemp/emc.global/comroot/retrov17_01_realtime $COMPATHgfs/v17.0
