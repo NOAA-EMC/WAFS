@@ -18,11 +18,10 @@ git clone -b wafs.v7.1.0 https://github.com/noaa-emc/wafs wafs.v7.1.0
 cd wafs.v7.1.0
 ./sorc/checkout_upp.sh
 ```
-
 The checkout procedure extracts the following WAFS components, while GTG is a subcomponent of UPP.:
 | Component | Revision             | POC               |
 | --------- | -------------------- | ----------------- |
-| UPP       | wafs_upp.fd release/wafs_v7.1@7eebc31 | Wen.Meng@noaa.gov |
+| UPP       | wafs_upp.fd release/wafs_v7.1@46d8baf | Wen.Meng@noaa.gov |
 | GTG       | post_gtg.fd release/wafs_v7.1@8fdeb7a | Yali.Mao@noaa.gov |
 
 The GTG repository is private which may protect you from checking out. To inquire the access, please contact the code managers with justification.
@@ -45,9 +44,13 @@ Version File Changes
 Updated files: build.ver and run.ver
 
 
+Job Card changes
+-----------------
+- ecf/upp/jwafs_upp_master.ecf: using two nodes, select=2:mpiprocs=120:ompthreads=1:ncpus=120:mem=300GB
+
 Sorc Changes
 ------------
-- UPP upgrade to github revision #7eebc31
+- UPP upgrade to github revision #46d8baf
 - GTG upgrade to github revision #8fdeb7a
 
 Job Changes
@@ -58,7 +61,7 @@ COMINgfs is updated for GFSv17 filename and subfolder changes.
 - jobs/JWAFS_GRIB
 - jobs/JWAFS_GRIB2_0P25
 - jobs/JWAFS_GRIB2_1P25
-- jobs/JWAFS_UPP
+- jobs/JWAFS_UPP, also includes MPIRUN update for the job card change
 
 Parm Changes
 ------------

@@ -61,6 +61,11 @@ env
 # Run UPP with 1 thread
 export OMP_NUM_THREADS=1
 
+ntasks=$(cat $PBS_NODEFILE | wc -l)
+nnodes=$(sort -u "$PBS_NODEFILE" | wc -l)
+ppn=$(( ntasks / nnodes))
+export MPIRUN=${MPIRUN:-"mpiexec -l -n $ntasks -ppn $ppn --cpu-bind depth --depth 1"}
+
 "${HOMEwafs}/scripts/exwafs_upp.sh"
 export err=$?
 err_chk
